@@ -1,0 +1,650 @@
+{
+  "common": {
+    "brand": {
+      "name": "DolphinQuiz",
+      "tagline": "Educational Trial Class Sales Funnel Tool",
+      "copyright": "Copyright © 2026 DolphinQuiz",
+      "allRightsReserved": "All rights reserved"
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "signUp": "Sign Up",
+      "signOut": "Sign Out",
+      "getStarted": "Get Started",
+      "startFree": "Start Free",
+      "startTrial": "Start Trial",
+      "contactSales": "Contact Sales",
+      "learnMore": "Learn More",
+      "viewAll": "View All",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "update": "Update",
+      "continue": "Continue",
+      "back": "Back",
+      "next": "Next"
+    },
+    "status": {
+      "loading": "Loading...",
+      "verified": "Verified",
+      "pending": "Pending",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "navigation": {
+    "main": {
+      "pricing": "Pricing",
+      "blog": "Blog",
+      "contact": "Contact",
+      "docs": "Docs",
+      "dashboard": "Dashboard",
+      "credits": "Credits",
+      "profile": "Profile",
+      "settings": "Settings"
+    },
+    "footer": {
+      "legal": {
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "cookies": "Cookie Policy",
+        "refund": "Refund Policy"
+      },
+      "social": {
+        "twitter": "Twitter",
+        "linkedin": "LinkedIn",
+        "github": "GitHub"
+      }
+    }
+  },
+  "hero": {
+    "badge": "⚡ Educational Trial Class Sales Funnel Tool",
+    "title": "DolphinQuiz",
+    "description": "DolphinQuiz is an educational trial class sales funnel tool. From traffic to conversion, data drives every step. Create interactive placement quizzes, auto-assess student levels, and track conversion rates in real time.",
+    "cta": {
+      "primary": "Start Free",
+      "secondary": "Book a Demo"
+    },
+    "modal": {
+      "eyebrow": "Code Access",
+      "title": "Get the source code from our course community",
+      "description": "The full DolphinQuiz codebase, update notes, and companion materials are distributed inside our course community.",
+      "instruction": "If you're enrolled, open the course page below in a new tab to access the code, updates, and course resources.",
+      "linkLabel": "Open the course community",
+      "linkHint": "Course community:  ",
+      "close": "Close"
+    }
+  },
+  "features": {
+    "title": "Everything You Need for Vibe Coding Success",
+    "subtitle": "Stop wasting time on boilerplate. Focus on describing your unique features while DolphinQuiz handles the foundation. Ship faster with AI.",
+    "items": {
+      "aiOptimized": {
+        "title": "Built for AI-Assisted Development",
+        "description": "Perfectly structured for Cursor, Windsurf, and Claude Code. Every file, every component optimized for AI understanding and modification."
+      },
+      "zeroPipeline": {
+        "title": "Zero to Production Pipeline",
+        "description": "Authentication, payments, database, deployment - all configured. Just prompt your AI assistant and watch your SaaS come to life."
+      },
+      "nonTechnical": {
+        "title": "Non-Technical Founder Friendly",
+        "description": "Don't know React from Rails? Doesn't matter. If you can describe your idea clearly, you can ship a SaaS product."
+      },
+      "productionGrade": {
+        "title": "Production-Grade from Day One",
+        "description": "Real users, real scale. Built on Next.js and PostgreSQL - the same stack powering billion-dollar companies."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Pricing Plans",
+    "subtitle": "Simple, transparent pricing that scales with your business",
+    "description": "Choose the plan that fits your business scale.",
+    "comparison": {
+      "title": "Plan Comparison",
+      "rows": {
+        "purchaseType": "Purchase type",
+        "monthlyPrice": "Monthly price",
+        "bestFor": "Best for"
+      },
+      "values": {
+        "subscription": "Subscription",
+        "tba": "TBA",
+        "bestForFree": "For individual users getting started",
+        "bestForPro": "For small to medium teams",
+        "bestForMax": "For large teams and heavy usage"
+      }
+    },
+    "tiers": {
+      "free": {
+        "name": "Free",
+        "price": "Free",
+        "description": "For individual users exploring the product.",
+        "cta": "Get Started",
+        "features": [
+          "Basic feature access",
+          "For individual users",
+          "Specifics finalized after MVP phase"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "TBA",
+        "description": "For small to medium teams with higher usage needs.",
+        "cta": "Choose Pro",
+        "features": [
+          "Higher usage limits",
+          "For small to medium teams",
+          "Specifics finalized after MVP phase"
+        ]
+      },
+      "max": {
+        "name": "Max",
+        "price": "TBA",
+        "description": "For large teams and heavy usage scenarios with maximum capacity.",
+        "cta": "Choose Max",
+        "features": [
+          "Maximum usage limits",
+          "For large teams",
+          "Specifics finalized after MVP phase"
+        ]
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Success Stories from Vibe Coders",
+    "subtitle": "Real developers and non-technical founders sharing their experience building AI SaaS products with DolphinQuiz and Vibe Coding.",
+    "items": [
+      {
+        "name": "Alex Chen",
+        "quote": "I'm not a developer. I'm a marketer. But I shipped my AI SaaS in 3 days using DolphinQuiz + Cursor. Now making $5K MRR.",
+        "designation": "Marketing Manager turned Founder"
+      },
+      {
+        "name": "Jordan Lee",
+        "quote": "Spent years learning to code. Now my non-technical co-founder ships features faster than me using Vibe Coding. This is the future.",
+        "designation": "Technical Co-founder"
+      },
+      {
+        "name": "Alice Johnson",
+        "quote": "From idea to $10K MRR in 2 months. All vibes, no code. DolphinQuiz made it possible to compete with funded startups.",
+        "designation": "Serial Entrepreneur"
+      },
+      {
+        "name": "Bob Smith",
+        "quote": "Built and launched 3 different AI SaaS products this quarter alone. Vibe Coding with DolphinQuiz is my secret weapon.",
+        "designation": "Indie Hacker"
+      },
+      {
+        "name": "Cathy Lee",
+        "quote": "I describe features in plain English to Claude Code. DolphinQuiz handles the rest. Shipping has never been this fast.",
+        "designation": "Product Manager"
+      },
+      {
+        "name": "David Wright",
+        "quote": "The authentication, payments, and deployment just work. I focus on unique features. My SaaS was profitable week one.",
+        "designation": "Solo Founder"
+      },
+      {
+        "name": "Eva Green",
+        "quote": "The efficiency it brings is unmatched. It's a vital tool that has helped us cut costs and improve our end product significantly.",
+        "designation": "Operations Director"
+      },
+      {
+        "name": "Frank Moore",
+        "quote": "A robust solution that fits perfectly into our workflow. It has enhanced our team's capabilities and allowed us to tackle more complex projects.",
+        "designation": "Project Manager"
+      },
+      {
+        "name": "Grace Hall",
+        "quote": "It's incredibly intuitive and easy to use. Even those without technical expertise can leverage its power to improve their workflows.",
+        "designation": "Marketing Specialist"
+      },
+      {
+        "name": "Henry Ford",
+        "quote": "It has saved us countless hours. Highly recommended for anyone looking to enhance their efficiency and productivity.",
+        "designation": "Operations Analyst"
+      },
+      {
+        "name": "Ivy Wilson",
+        "quote": "A must-have tool for any professional. It's revolutionized the way we approach problem-solving and decision-making.",
+        "designation": "Business Consultant"
+      },
+      {
+        "name": "Jack Brown",
+        "quote": "The results are always impressive. This AI has helped us to not only meet but exceed our performance targets.",
+        "designation": "Performance Manager"
+      },
+      {
+        "name": "Kathy Adams",
+        "quote": "It helps us achieve what was once thought impossible. The AI's capabilities are groundbreaking and have opened new avenues for us.",
+        "designation": "Innovation Lead"
+      },
+      {
+        "name": "Leo Carter",
+        "quote": "Transformative technology with real impact. It has streamlined our operations and brought unprecedented efficiency to our processes.",
+        "designation": "Technology Strategist"
+      },
+      {
+        "name": "Mia Turner",
+        "quote": "It's simply revolutionary! The way it integrates with our existing systems and enhances them is nothing short of miraculous.",
+        "designation": "Systems Integrator"
+      }
+    ]
+  },
+  "companies": {
+    "title": "Built with Industry-Leading Technologies",
+    "subtitle": "Built on modern stack trusted by the world's best teams"
+  },
+  "gridFeatures": {
+    "auth": {
+      "title": "Authentication System",
+      "description": "Better Auth with email/password and OAuth. Session management and protected routes ready."
+    },
+    "deploy": {
+      "title": "One-Click Deploy",
+      "description": "Deploy to Vercel, Railway, or any platform instantly. Production-ready from day one."
+    },
+    "typescript": {
+      "title": "TypeScript + Tailwind",
+      "description": "Modern tech stack with Next.js 14, TypeScript, Tailwind CSS, and shadcn/ui components."
+    },
+    "database": {
+      "title": "Database + ORM",
+      "description": "PostgreSQL with Drizzle ORM. Type-safe queries and migrations configured."
+    },
+    "seo": {
+      "title": "SEO & Marketing",
+      "description": "Meta tags, Open Graph, sitemap, and analytics. Everything for organic growth."
+    },
+    "vibeCoding": {
+      "title": "Vibe Coding Ready",
+      "description": "Optimized for Cursor, Windsurf, and Claude Code. AI understands every component."
+    }
+  },
+  "cta": {
+    "title": "Ready to Ship Your AI SaaS?",
+    "description": "Join hundreds of developers who launched their SaaS products with DolphinQuiz and Vibe Coding.",
+    "button": "Get Code"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to your account",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "hello@johndoe.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign Up",
+      "signInButton": "Sign in",
+      "signingIn": "Signing in...",
+      "errors": {
+        "invalidEmail": "Please enter valid email",
+        "emailRequired": "Please enter email",
+        "passwordRequired": "Please enter password",
+        "loginFailed": "Login failed. Please try again.",
+        "googleLoginFailed": "Google login failed. Please try again."
+      }
+    },
+    "signup": {
+      "title": "Sign up for an account",
+      "nameLabel": "Full name",
+      "namePlaceholder": "Alex Johnson",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "hello@johndoe.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "phoneLabel": "Phone number",
+      "phonePlaceholder": "Enter your phone number",
+      "phoneInvalid": "Please enter a valid phone number",
+      "turnstileLabel": "Human verification",
+      "turnstileVerify": "Please complete verification",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "signUpButton": "Sign Up",
+      "signingUp": "Signing up...",
+      "errors": {
+        "nameRequired": "Please enter your name",
+        "invalidEmail": "Please enter valid email",
+        "emailRequired": "Please enter email",
+        "passwordRequired": "Please enter password",
+        "phoneRequired": "Please enter your phone number",
+        "phoneInvalid": "Please enter a valid phone number",
+        "turnstileRequired": "Please complete verification",
+        "signupFailed": "Sign up failed. Please try again.",
+        "googleSignupFailed": "Google sign up failed. Please try again."
+      }
+    },
+    "social": {
+      "googleSignIn": "Continue with Google",
+      "or": "Or continue with"
+    },
+    "checkEmail": {
+      "title": "Check Your Email",
+      "description": "We've sent a verification link to your email address. Please click the link to verify your account and get started.",
+      "notReceived": "Didn't receive the email?",
+      "checkSpam": "Check your spam or junk folder",
+      "checkEmailCorrect": "Make sure you entered the correct email",
+      "waitAndCheck": "Wait a few minutes and check again",
+      "resendButton": "Resend Verification Email",
+      "resending": "Sending...",
+      "resendSuccess": "Verification email sent successfully! Please check your inbox.",
+      "resendError": "Failed to resend verification email.",
+      "backToLogin": "Back to Login",
+      "securityNote": "For your security, the verification link will expire in 24 hours."
+    },
+    "verifyEmail": {
+      "verifying": "Verifying Email",
+      "verifyingDescription": "Please wait while we verify your email address...",
+      "success": "Email Verified!",
+      "successDescription": "Your email has been successfully verified! Redirecting to login...",
+      "alreadyVerified": "Already Verified",
+      "failed": "Verification Failed",
+      "goToLogin": "Go to Login",
+      "backToSignUp": "Back to Sign Up",
+      "requestNew": "Request New Verification Email",
+      "checkSpamNote": "Check your spam folder if you don't see our emails"
+    },
+    "emailVerifiedGuard": {
+      "title": "Email Verification Required",
+      "description": "Please verify your email address to access this page. Check your inbox for the verification link we sent to:",
+      "resendButton": "Resend Verification Email",
+      "resending": "Sending...",
+      "resendSuccess": "Verification email sent! Please check your inbox.",
+      "resendError": "Failed to send verification email. Please try again.",
+      "signOutLink": "Sign out and try a different account"
+    }
+  },
+  "Admin": {
+    "sidebar": {
+      "title": "Admin Panel",
+      "subtitle": "System Management",
+      "dashboard": "Dashboard",
+      "users": "User Management",
+      "backToDashboard": "Back to User Dashboard"
+    },
+    "header": {
+      "welcome": "Welcome",
+      "adminBadge": "Admin"
+    },
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "recentUsers": "Recent Users",
+      "viewAllUsers": "View All Users",
+      "unknownUser": "Unknown User"
+    },
+    "users": {
+      "title": "User Management",
+      "searchPlaceholder": "Search by name or email...",
+      "searchAction": "Search",
+      "clearSearch": "Clear",
+      "totalUsers": "{count} users",
+      "matchingUsers": "{count} matching users for \"{query}\"",
+      "pageSummary": "Showing {from}-{to} of {total}",
+      "emptyState": "No users found yet",
+      "emptySearchState": "No users match this search",
+      "user": "User",
+      "role": "Role",
+      "status": "Status",
+      "joined": "Joined",
+      "actions": "Actions",
+      "admin": "Admin",
+      "banned": "Banned",
+      "active": "Active",
+      "unverified": "Unverified",
+      "edit": "Edit",
+      "ban": "Ban",
+      "unban": "Unban",
+      "viewDetails": "View Details",
+      "banReason": "Ban Reason",
+      "banExpires": "Ban Expires",
+      "userDetails": "User Details",
+      "name": "Name",
+      "email": "Email",
+      "lastActive": "Last Active",
+      "close": "Close",
+      "roleUpdated": "Role updated successfully",
+      "roleUpdateFailed": "Failed to update role",
+      "userBanned": "User has been banned",
+      "userUnbanned": "User has been unbanned",
+      "banFailed": "Failed to ban/unban user",
+      "manage": "Manage",
+      "adjust": "Adjust",
+      "reason": "Reason",
+      "manualAdjustment": "Manual Adjustment",
+      "cancel": "Cancel",
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {{current}} of {{total}}"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "cards": {
+      "personalInfo": {
+        "title": "Personal Info",
+        "labels": {
+          "name": "Name",
+          "email": "Email",
+          "status": "Status",
+          "notSet": "Not set"
+        }
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "editProfile": "Edit Profile",
+        "accountSettings": "Account Settings",
+        "securitySettings": "Security Settings"
+      },
+      "statistics": {
+        "title": "Statistics",
+        "labels": {
+          "loginCount": "Login Count",
+          "memberSince": "Member Since",
+          "today": "Today"
+        }
+      }
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account settings and preferences",
+    "sections": {
+      "basicInfo": {
+        "title": "Basic Information",
+        "fullName": "Full Name",
+        "email": "Email Address",
+        "verificationStatus": "Verification Status",
+        "notSet": "Not set",
+        "nameNotSet": "Name not set",
+        "accountId": "Account ID"
+      },
+      "accountSettings": {
+        "title": "Account Settings",
+        "memberSince": "Member Since",
+        "lastLogin": "Last Login",
+        "accountType": "Account Type"
+      }
+    },
+    "form": {
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "updateButton": "Update Profile",
+      "updating": "Updating...",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your profile and account security from one place.",
+    "sections": {
+      "profile": {
+        "title": "Profile",
+        "description": "Update the name shown across your workspace.",
+        "nameLabel": "Display name",
+        "namePlaceholder": "Enter your name",
+        "emailLabel": "Email address",
+        "save": "Save changes",
+        "saving": "Saving...",
+        "saveSuccess": "Profile updated successfully.",
+        "saveError": "Failed to update profile.",
+        "validation": "Name must be at least 2 characters."
+      },
+      "security": {
+        "title": "Security",
+        "description": "Review account status and sign out safely.",
+        "emailStatus": "Email status",
+        "accountId": "Account ID",
+        "memberSince": "Member since",
+        "viewProfile": "View profile",
+        "signOut": "Sign out"
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+    "description": "Please reach out to us and we will get back to you at the speed of light.",
+    "testimonial": {
+      "title": "DolphinQuiz AI is used by thousands of users",
+      "description": "With lots of AI applications around, DolphinQuiz AI stands out with its state of the art AI capabilities."
+    },
+    "form": {
+      "nameLabel": "Full Name",
+      "namePlaceholder": "John Doe",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "hello@johndoe.com",
+      "companyLabel": "Company",
+      "companyPlaceholder": "Your Company",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Enter your message here",
+      "submitButton": "Submit",
+      "submitting": "Sending...",
+      "submitSuccess": "Message sent successfully!",
+      "submitError": "Failed to send message. Please try again."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Latest insights and updates from our team",
+    "readMore": "Read More",
+    "minRead": "min read"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "description": "Answer 3 quick questions to get a personalized trial class recommendation.",
+    "register": {
+      "title": "Sign up to start the Quiz",
+      "subtitle": "Fill in the form below to register and start the Quiz flow",
+      "nameLabel": "Full name",
+      "namePlaceholder": "Alex Johnson",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "hello@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "phoneLabel": "Phone number",
+      "phonePlaceholder": "Enter your phone number",
+      "turnstileLabel": "Human verification",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "signUpButton": "Sign up & start Quiz",
+      "signingUp": "Signing up...",
+      "successTitle": "Registration successful",
+      "successDescription": "Entering the Quiz flow...",
+      "errors": {
+        "signupFailed": "Sign up failed, please try again.",
+        "googleSignupFailed": "Google sign up failed, please try again."
+      }
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "404 - Page Not Found",
+      "message": "The page you are looking for doesn't exist.",
+      "backHome": "Go to Homepage"
+    },
+    "500": {
+      "title": "Something Went Wrong",
+      "message": "We're experiencing technical difficulties. Please try again later.",
+      "backHome": "Back to Home"
+    },
+    "general": {
+      "title": "An Error Occurred",
+      "message": "Something unexpected happened. Please try again.",
+      "tryAgain": "Try Again"
+    }
+  },
+  "featuredTestimonials": {
+    "people": [
+      {
+        "name": "John Doe",
+        "designation": "Software Engineer"
+      },
+      {
+        "name": "Robert Johnson",
+        "designation": "Product Manager"
+      },
+      {
+        "name": "Jane Smith",
+        "designation": "Data Scientist"
+      },
+      {
+        "name": "Emily Davis",
+        "designation": "UX Designer"
+      },
+      {
+        "name": "Taylor Brooks",
+        "designation": "Full-Stack Developer"
+      },
+      {
+        "name": "Dora",
+        "designation": "The Explorer"
+      }
+    ]
+  },
+  "footer": {
+    "tagline": "Transform your SaaS ideas into reality with the power of AI.",
+    "product": {
+      "title": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "documentation": "Documentation"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "cookies": "Cookies"
+    },
+    "social": {
+      "title": "Social",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "github": "GitHub"
+    },
+    "newsletter": {
+      "title": "Subscribe to Newsletter",
+      "description": "Get the latest updates and news directly in your inbox.",
+      "placeholder": "Enter your email",
+      "subscribe": "Subscribe"
+    }
+  }
+}

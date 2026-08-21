@@ -1,0 +1,64 @@
+---
+title: Project Structure
+description: Overview of the codebase layout and key directories.
+---
+
+## Directory Overview
+
+```
+├── app/[locale]/              # i18n routes
+│   ├── (auth)/                # Auth pages (login, signup, forgot-password)
+│   ├── (marketing)/           # Public pages (home, pricing, blog, contact)
+│   ├── (protected)/           # Authenticated pages (dashboard, profile, credits)
+│   ├── (admin)/               # Admin panel (users, subscriptions, credits)
+│   ├── demo/                  # AI demo pages (chat, image, video)
+│   └── docs/                  # Documentation (Fumadocs)
+├── app/api/                   # API routes
+│   ├── auth/                  # Better Auth + custom auth endpoints
+│   ├── payments/creem/        # Creem checkout + webhook
+│   ├── chat/                  # Chat API (streaming)
+│   ├── image/                 # Image generation API
+│   ├── video/                 # Video generation API (async)
+│   ├── admin/                 # Admin operations API
+│   └── cron/                  # Scheduled tasks (credit grants)
+├── components/                # Reusable UI components
+├── features/                  # Feature modules (auth, admin, forms, navigation)
+├── lib/                       # Core business logic
+│   ├── auth.ts                # Better Auth config
+│   ├── db/                    # Database connection and schema
+│   ├── credits.ts             # Credit system logic
+│   ├── payments/creem.ts      # Creem payment integration
+│   ├── billing/               # Subscription and credit scheduling
+│   ├── volcano-engine/        # Volcano Engine API wrappers
+│   └── email.ts               # Email sending logic
+├── constants/                 # Constants
+│   ├── billing.ts             # Pricing plans and credit packs
+│   ├── tier.ts                # User tier definitions
+│   └── website.ts             # Site metadata
+├── content/docs/              # Documentation content (MDX)
+├── messages/                  # i18n translation files (en, zh)
+└── drizzle/                   # Database migration files
+```
+
+## Route Groups
+
+| Group | Path | Access | Purpose |
+|-------|------|--------|---------|
+| `(auth)` | `/login`, `/signup` | Public | Authentication flows |
+| `(marketing)` | `/`, `/pricing`, `/blog` | Public | Marketing and SEO pages |
+| `(protected)` | `/dashboard`, `/profile` | Auth required | User app features |
+| `(admin)` | `/admin/*` | Admin role | Management panel |
+| `demo` | `/demo/*` | Public | AI feature demos |
+| `docs` | `/docs/*` | Public | Documentation |
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `lib/auth.ts` | Better Auth configuration with registration hooks |
+| `lib/credits.ts` | Credit deduction, refund, and balance check |
+| `lib/db/schema.ts` | Complete database schema (Drizzle ORM) |
+| `constants/billing.ts` | Pricing plans, credit amounts, Creem product IDs |
+| `lib/payments/creem.ts` | Creem API integration (checkout, webhooks) |
+| `proxy.ts` | Next.js proxy for i18n routing |
+| `i18n.config.ts` | Locale configuration |

@@ -1,0 +1,20 @@
+# robots.txt for DolphinQuiz
+# TODO: Replace 'your-domain.com' with your actual domain before deploying
+
+User-agent: *
+Allow: /
+
+# Disallow admin and API pages
+Disallow: /admin/
+Disallow: /api/
+
+# Disallow authentication pages (optional, uncomment to hide from search engines)
+# Disallow: /*/signup
+# Disallow: /*/login
+# Disallow: /*/check-email
+
+# Disallow demo pages (optional)
+# Disallow: /*/demo
+
+# Sitemap location (update domain before deployment)
+Sitemap: https://your-domain.com/sitemap.xml

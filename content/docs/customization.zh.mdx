@@ -1,0 +1,68 @@
+---
+title: 自定义指南
+description: 如何自定义定价、AI 设置等。
+---
+
+## 修改定价计划
+
+编辑 `constants/billing.ts`：
+
+```typescript
+starter_monthly: {
+  priceCents: 2900,        // 修改价格
+  creditsPerCycle: 1000,   // 修改积分数量
+  creemPriceId: "prod_xxx" // 对应 Creem 产品 ID
+}
+```
+
+## 修改积分消耗
+
+编辑消耗常量：
+
+| 功能 | 文件 | 变量 |
+|------|------|------|
+| 对话 | `lib/credits.ts` | `CHAT_CREDIT_COST` |
+| 图像 | `app/api/image/generate/route.ts` | 内联常量 |
+| 视频 | `app/api/video/generate/route.ts` | 内联常量 |
+
+## 替换 AI 提供商
+
+从火山引擎切换到 OpenAI：
+
+1. 安装 OpenAI SDK：`pnpm add openai`
+2. 替换 `lib/volcano-engine/` 中的文件
+3. 更新环境变量
+4. 保持 API 路由中相同的积分扣除模式
+
+## 添加新语言
+
+1. 复制 `messages/en.json` 到 `messages/XX.json`（新语言代码）
+2. 翻译所有字符串
+3. 在 `i18n.config.ts` 中添加语言：
+
+```typescript
+export const locales = ['en', 'zh', 'XX'] as const;
+```
+
+4. 更新 `proxy.ts` 和 `lib/i18n.ts`
+
+## 自定义主题
+
+颜色在 `app/globals.css` 中使用 CSS 自定义属性定义：
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  /* ... */
+}
+```
+
+深色模式变量在 `.dark` 类中。
+
+## 添加新的受保护页面
+
+1. 在 `app/[locale]/(protected)/your-page/page.tsx` 创建新页面
+2. 布局的会话检查会自动保护该页面
+3. 在 `features/navigation/config.ts` 中添加导航

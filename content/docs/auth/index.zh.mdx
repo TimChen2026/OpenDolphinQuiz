@@ -1,0 +1,64 @@
+---
+title: 认证系统概览
+description: 基于 Better Auth 的用户认证系统。
+---
+
+## 概述
+
+DolphinQuiz Starter 使用 [Better Auth](https://better-auth.com/) 进行用户认证，支持邮箱密码登录和可选的 Google OAuth。
+
+### 支持的认证方式
+
+- **邮箱 + 密码** — 传统注册，需要邮箱验证
+- **Google OAuth** — 可选的 Google 账号社交登录
+
+### 注册流程
+
+1. 用户提交姓名、邮箱和密码
+2. 创建账户，邮箱验证待完成
+3. 系统自动赠送 **300 积分**（`registration_bonus`）
+4. 通过 Resend 发送验证邮件
+5. 用户验证邮箱后解锁完整访问权限
+
+### 配置
+
+认证配置在 `lib/auth.ts`：
+
+```typescript
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg",
+  }),
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true,
+  },
+  ...(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET
+    ? {
+        socialProviders: {
+          google: {
+            clientId: process.env.AUTH_GOOGLE_ID,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET,
+          },
+        },
+      }
+    : {}),
+});
+```
+
+如果没有配置 Google 凭据，邮箱密码登录仍然可用，登录页和注册页中的 Google 按钮也会自动隐藏。
+
+### 会话管理
+
+- 会话存储在 `session` 表中
+- 会话验证会检查封禁状态（`isBanActive()`）
+- 受保护路由使用 `lib/auth/session.ts` 中的 `getActiveSessionUser()`
+
+### 路由保护
+
+| 路由分组 | 保护方式 |
+|---------|---------|
+| `(protected)` | 需要登录 — `SessionGuard` 组件 |
+| `(admin)` | 需要 `role='admin'` — `AdminGuard` 组件 |
+| `(auth)` | 公开 — 无需登录 |
+| `(marketing)` | 公开 |

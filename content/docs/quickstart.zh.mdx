@@ -1,0 +1,111 @@
+---
+title: 快速开始
+description: 几分钟内启动你的 DolphinQuiz 项目。
+---
+
+## 前提条件
+
+### 1. Node.js
+
+Node.js 用于运行 Next.js 开发服务器、本地构建脚本和项目工具链。
+
+如果尚未安装，请从 [Node.js 官网](https://nodejs.org/) 下载并安装 `20.9+` 版本。
+
+```bash
+# 检查是否已安装 Node.js
+node --version
+```
+
+### 2. pnpm
+
+项目使用 `pnpm` 作为包管理器，当前仓库锁定的是 `pnpm 10`。
+
+如果尚未安装 `pnpm`，请先安装 Node.js，再执行：
+
+```bash
+# 安装 pnpm
+npm install -g pnpm
+
+# 检查 pnpm 版本
+pnpm --version
+```
+
+### 3. PostgreSQL 连接信息
+
+PostgreSQL 数据库（推荐 Supabase、Neon 或 Vercel Postgres）
+
+## 安装步骤
+
+### 1. 获取项目代码
+
+如果你已经从课程社区拿到源码压缩包，先解压并进入项目目录即可。
+
+如果你打算通过 Git 获取源码，可以运行：
+
+```bash
+git clone https://github.com/Idea-To-Business/DolphinQuiz.git
+cd DolphinQuiz
+```
+
+### 2. 安装依赖
+
+```bash
+pnpm install
+```
+
+### 3. 配置环境变量
+
+把示例环境文件复制成本地环境文件：
+
+```bash
+cp .env.example .env.local
+```
+
+然后编辑 `.env.local`，填入你的配置。
+
+最少需要以下配置：
+
+```ini
+DATABASE_URL="postgresql://user:password@host/db?sslmode=require"
+BETTER_AUTH_SECRET="至少32字符的随机密钥"
+BETTER_AUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+完整列表请查看[环境变量](./environment)。
+
+### 4. 初始化数据库
+
+```bash
+pnpm db:push
+```
+
+生产环境建议使用迁移：
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+```
+
+### 5. 启动开发服务器
+
+```bash
+pnpm dev
+```
+
+访问 `http://localhost:3000`，先用你要设为管理员的邮箱注册账号。
+
+### 6. 将账号提升为管理员
+
+```bash
+ADMIN_EMAIL=admin@example.com pnpm admin:setup
+```
+
+把 `admin@example.com` 替换成你刚刚注册使用的邮箱。
+
+## 下一步
+
+- [项目结构](./project-structure) — 了解代码布局
+- [认证系统](./auth) — 配置登录方式
+- [支付系统](./payments) — 设置计费和订阅
+- [AI 功能](./ai) — 配置 AI 集成

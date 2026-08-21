@@ -1,0 +1,55 @@
+---
+title: 管理后台
+description: 用户管理、积分调整和订阅控制。
+---
+
+## 概述
+
+管理后台位于 `/admin`，需要 `user.role = 'admin'`。
+
+## 设置
+
+创建管理员账户：
+
+```bash
+ADMIN_EMAIL=your@email.com pnpm admin:setup
+```
+
+或手动在数据库中将已有用户的 `role` 设为 `'admin'`。
+
+## 功能
+
+### 用户管理（`/admin/users`）
+
+- 按姓名或邮箱搜索用户
+- 分页用户列表（每页 20 条）
+- 查看：姓名、邮箱、验证状态、积分、角色、封禁状态、计划
+
+### 用户操作
+
+| 操作 | 端点 | 说明 |
+|------|------|------|
+| 调整积分 | `PUT /api/admin/users/[userId]/credits` | 增加或减少积分 |
+| 修改订阅 | `PUT /api/admin/users/[userId]/subscription` | 更新用户计划 |
+| 封禁用户 | 通过管理面板 | 临时或永久封禁 |
+
+### 订阅管理（`/admin/subscriptions`）
+
+- 查看所有活跃订阅
+- 按计划和状态筛选
+
+### 积分账本（`/admin/credits`）
+
+- 查看所有用户的积分交易记录
+- 按原因、日期范围筛选
+
+## 权限控制
+
+管理路由由 `features/admin/components/admin-guard.tsx` 中的 `AdminGuard` 保护：
+
+```typescript
+// 检查 user.role === 'admin'
+// 非管理员重定向到仪表板
+```
+
+API 路由通过 `lib/auth/admin.ts` 检查管理员状态。

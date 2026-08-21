@@ -1,0 +1,55 @@
+---
+title: Admin Dashboard
+description: User management, credit adjustment, and subscription control.
+---
+
+## Overview
+
+The admin dashboard is available at `/admin` and requires `user.role = 'admin'`.
+
+## Setup
+
+Create an admin account:
+
+```bash
+ADMIN_EMAIL=your@email.com pnpm admin:setup
+```
+
+Or manually set `role = 'admin'` in the database for an existing user.
+
+## Features
+
+### User Management (`/admin/users`)
+
+- Search users by name or email
+- Paginated user list (20 per page)
+- View: name, email, verification status, credits, role, ban status, plan
+
+### User Actions
+
+| Action | Endpoint | Description |
+|--------|----------|-------------|
+| Adjust credits | `PUT /api/admin/users/[userId]/credits` | Add or remove credits |
+| Change subscription | `PUT /api/admin/users/[userId]/subscription` | Update user's plan |
+| Ban user | Via admin panel | Temporary or permanent ban |
+
+### Subscription Management (`/admin/subscriptions`)
+
+- View all active subscriptions
+- Filter by plan and status
+
+### Credit Ledger (`/admin/credits`)
+
+- View all credit transactions across users
+- Filter by reason, date range
+
+## Authorization
+
+Admin routes are protected by `AdminGuard` in `features/admin/components/admin-guard.tsx`:
+
+```typescript
+// Checks user.role === 'admin'
+// Redirects non-admins to dashboard
+```
+
+API routes check admin status via `lib/auth/admin.ts`.

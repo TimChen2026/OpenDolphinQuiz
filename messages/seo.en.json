@@ -1,0 +1,52 @@
+{
+  "home": {
+    "title": "DolphinQuiz - Educational Trial Class Sales Funnel Tool",
+    "description": "DolphinQuiz is an educational trial class sales funnel tool. Turn every trial class into paying students with interactive quizzes. From traffic to conversion, data drives every step.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "pricing": {
+    "title": "Pricing - DolphinQuiz",
+    "description": "Choose the perfect DolphinQuiz plan for your educational institution. Create interactive placement quizzes, auto-assess student levels, and track conversion rates in real time.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "blog": {
+    "title": "Blog - DolphinQuiz",
+    "description": "Latest insights and updates from the DolphinQuiz team. Learn about trial class conversion, sales funnel optimization, and interactive quiz best practices.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "contact": {
+    "title": "Contact Us - DolphinQuiz",
+    "description": "Get in touch with the DolphinQuiz team. We'd love to hear from you and respond as quickly as possible.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "login": {
+    "title": "Login - DolphinQuiz",
+    "description": "Sign in to your DolphinQuiz account to manage your interactive quizzes and sales funnels.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "signup": {
+    "title": "Sign Up - DolphinQuiz",
+    "description": "Create your DolphinQuiz account and start building your first interactive quiz sales funnel today.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "terms": {
+    "title": "Terms of Service - DolphinQuiz",
+    "description": "Read our terms of service to understand the rules and guidelines for using the DolphinQuiz platform.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "privacy": {
+    "title": "Privacy Policy - DolphinQuiz",
+    "description": "Learn how DolphinQuiz collects, uses, and protects your personal information and data.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "cookies": {
+    "title": "Cookie Policy - DolphinQuiz",
+    "description": "Understand how DolphinQuiz uses cookies and similar tracking technologies on our platform.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "refund": {
+    "title": "Refund Policy - DolphinQuiz",
+    "description": "Review our refund policy to understand the conditions and process for requesting refunds.",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  }
+}

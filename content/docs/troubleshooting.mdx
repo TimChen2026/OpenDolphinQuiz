@@ -1,0 +1,63 @@
+---
+title: Troubleshooting
+description: Common issues and how to resolve them.
+---
+
+## Webhooks Not Firing
+
+**Symptoms**: Payments succeed but credits aren't granted.
+
+1. Check Creem Dashboard → Webhooks for delivery logs
+2. Verify `CREEM_WEBHOOK_SECRET` matches your Creem settings
+3. Ensure webhook endpoint is publicly accessible
+4. Check server logs for signature verification errors
+
+## Annual Credits Not Auto-Granting
+
+**Symptoms**: Users on yearly plans don't receive monthly credits.
+
+1. Verify cron job is running (check `/api/cron/subscription-grants`)
+2. Check `subscriptionCreditSchedule` table for `nextGrantAt` timestamps
+3. Ensure `CRON_SECRET` is configured correctly
+
+## User Can't Access Admin Panel
+
+1. Confirm `user.role = 'admin'` in the database
+2. Check `features/admin/components/admin-guard.tsx` logic
+3. Ensure the user's session is valid (try logging out and back in)
+
+## Email Not Sending
+
+1. Verify `RESEND_API_KEY` is set correctly
+2. Check Resend dashboard for delivery logs
+3. In development, emails may use `onboarding@resend.dev` as sender
+4. For production, verify your sending domain in Resend
+
+## AI API Returning Errors
+
+1. Check `VOLCANO_ENGINE_API_KEY` is valid
+2. Verify `VOLCANO_ENGINE_API_URL` endpoint
+3. Check your Volcano Engine quota/balance
+4. Review server logs for specific error messages
+
+## Database Connection Issues
+
+1. Verify `DATABASE_URL` connection string
+2. Ensure `?sslmode=require` for cloud databases
+3. Check if your IP is allowlisted (if using IP restrictions)
+4. Try connecting directly: `psql $DATABASE_URL`
+
+## Build Errors After Upgrade
+
+If you encounter TypeScript errors after upgrading dependencies:
+
+```bash
+# Clear Next.js cache
+rm -rf .next
+
+# Reinstall dependencies
+pnpm install
+
+# Try building again
+pnpm build
+```

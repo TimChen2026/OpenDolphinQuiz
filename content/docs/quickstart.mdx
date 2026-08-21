@@ -1,0 +1,111 @@
+---
+title: Quickstart
+description: Get your DolphinQuiz project running in minutes.
+---
+
+## Prerequisites
+
+### 1. Node.js
+
+Node.js runs the Next.js dev server, local build scripts, and the project toolchain.
+
+If you do not have it yet, install `20.9+` from the [Node.js website](https://nodejs.org/).
+
+```bash
+# Check whether Node.js is installed
+node --version
+```
+
+### 2. pnpm
+
+This project uses `pnpm` as its package manager, and the repository is currently pinned to `pnpm 10`.
+
+If `pnpm` is not installed yet, install Node.js first and then run:
+
+```bash
+# Install pnpm
+npm install -g pnpm
+
+# Check the pnpm version
+pnpm --version
+```
+
+### 3. PostgreSQL connection details
+
+PostgreSQL database (Supabase, Neon, or Vercel Postgres recommended)
+
+## Installation
+
+### 1. Get the project source
+
+If you already received a source ZIP from the course community, unzip it and enter the project directory.
+
+If you want to fetch the code with Git, run:
+
+```bash
+git clone https://github.com/Idea-To-Business/DolphinQuiz.git
+cd DolphinQuiz
+```
+
+### 2. Install dependencies
+
+```bash
+pnpm install
+```
+
+### 3. Configure environment variables
+
+Copy the example environment file to your local environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` and fill in your values.
+
+At minimum, you need:
+
+```ini
+DATABASE_URL="postgresql://user:password@host/db?sslmode=require"
+BETTER_AUTH_SECRET="at-least-32-characters-random-key"
+BETTER_AUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+See [Environment Variables](./environment) for the full list.
+
+### 4. Set up the database
+
+```bash
+pnpm db:push
+```
+
+This pushes the Drizzle schema to your database. For production, use migrations:
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+```
+
+### 5. Start the dev server
+
+```bash
+pnpm dev
+```
+
+Visit `http://localhost:3000` and sign up with the email address you want to make an admin.
+
+### 6. Promote your account to admin
+
+```bash
+ADMIN_EMAIL=admin@example.com pnpm admin:setup
+```
+
+Replace `admin@example.com` with the email address you used to sign up.
+
+## What's Next?
+
+- [Project Structure](./project-structure) — Understand the codebase layout
+- [Authentication](./auth) — Configure auth providers
+- [Payments](./payments) — Set up billing and subscriptions
+- [AI Features](./ai) — Configure AI integrations

@@ -1,0 +1,37 @@
+---
+title: 邮箱验证
+description: 邮箱验证的工作原理和配置方法。
+---
+
+## 工作原理
+
+用户注册时会收到验证邮件。在验证完成之前，`EmailVerifiedGuard` 组件会限制对受保护路由的访问。
+
+### 验证流程
+
+1. 用户注册 → 自动发送验证邮件
+2. 邮件包含带唯一 token 的验证链接
+3. 用户点击链接 → 验证 token → 标记邮箱已验证
+4. `EmailVerifiedGuard` 允许访问受保护内容
+
+### 重新发送验证
+
+用户可以在 `/verify-email` 页面请求新的验证邮件。API 端点：
+
+```
+POST /api/auth/resend-verification
+```
+
+### 禁用验证
+
+如需禁用邮箱验证（不建议在生产环境使用）：
+
+```typescript
+// lib/auth.ts
+emailAndPassword: {
+  enabled: true,
+  requireEmailVerification: false, // 禁用
+}
+```
+
+并从 `app/[locale]/(protected)/layout.tsx` 中移除 `EmailVerifiedGuard`。

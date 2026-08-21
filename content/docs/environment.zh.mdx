@@ -1,0 +1,92 @@
+---
+title: 环境变量
+description: 所有环境变量的完整参考。
+---
+
+## 必需变量
+
+### 数据库
+
+```ini
+DATABASE_URL="postgresql://user:password@host/db?sslmode=require"
+```
+
+### 认证
+
+```ini
+BETTER_AUTH_SECRET="至少32字符的随机密钥"
+BETTER_AUTH_URL="http://localhost:3000"
+```
+
+### 应用 URL
+
+```ini
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+## 服务集成
+
+### 火山引擎（AI 功能）
+
+对话、图像生成和视频生成必需：
+
+```ini
+VOLCANO_ENGINE_API_KEY="your-volcano-engine-api-key"
+VOLCANO_ENGINE_API_URL="https://ark.cn-beijing.volces.com/api/v3"
+```
+
+### Creem（支付）
+
+订阅和一次性购买必需：
+
+```ini
+CREEM_API_KEY="your-creem-api-key"
+CREEM_WEBHOOK_SECRET="whsec_..."
+```
+
+测试模式（跳过真实支付）：
+
+```ini
+CREEM_SIMULATE="true"
+```
+
+### Resend（邮件）
+
+认证邮件和通知必需：
+
+```ini
+RESEND_API_KEY="re_your_api_key"
+RESEND_FROM_EMAIL="Your App <noreply@yourdomain.com>"
+```
+
+### Google OAuth（可选）
+
+```ini
+AUTH_GOOGLE_ID="your-google-client-id"
+AUTH_GOOGLE_SECRET="your-google-client-secret"
+```
+
+### 定时任务
+
+```ini
+CRON_SECRET="your-cron-secret"
+```
+
+## 可选分析工具
+
+```ini
+NEXT_PUBLIC_POSTHOG_KEY="phc_..."
+NEXT_PUBLIC_GOOGLE_ANALYTICS_ID="G-..."
+NEXT_PUBLIC_CLARITY_PROJECT_ID="..."
+```
+
+## 可选存储（S3 兼容）
+
+```ini
+STORAGE_ENDPOINT="https://..."
+STORAGE_BUCKET="your-bucket"
+STORAGE_REGION="auto"
+STORAGE_ACCESS_KEY_ID="..."
+STORAGE_SECRET_ACCESS_KEY="..."
+STORAGE_PUBLIC_URL="https://..."
+```

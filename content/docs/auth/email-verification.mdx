@@ -1,0 +1,37 @@
+---
+title: Email Verification
+description: How email verification works and how to configure it.
+---
+
+## How It Works
+
+When a user registers, they receive a verification email. Until verified, access to protected routes is restricted by the `EmailVerifiedGuard` component.
+
+### Verification Flow
+
+1. User registers → verification email sent automatically
+2. Email contains a verification link with a unique token
+3. User clicks link → token validated → email marked as verified
+4. `EmailVerifiedGuard` allows access to protected content
+
+### Resend Verification
+
+Users can request a new verification email from the `/verify-email` page. The API endpoint is:
+
+```
+POST /api/auth/resend-verification
+```
+
+### Disabling Verification
+
+To disable email verification (not recommended for production):
+
+```typescript
+// lib/auth.ts
+emailAndPassword: {
+  enabled: true,
+  requireEmailVerification: false, // disable
+}
+```
+
+And remove `EmailVerifiedGuard` from `app/[locale]/(protected)/layout.tsx`.

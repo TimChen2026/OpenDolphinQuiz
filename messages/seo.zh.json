@@ -1,0 +1,52 @@
+{
+  "home": {
+    "title": "DolphinQuiz - 教育试听课销售漏斗工具",
+    "description": "DolphinQuiz 是教育试听课销售漏斗工具，用互动测验让每节试听课都变成付费学员。从流量到成交，数据驱动每一步。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "pricing": {
+    "title": "定价方案 - DolphinQuiz",
+    "description": "为您的教育机构选择完美的 DolphinQuiz 方案。创建互动式入学测验，自动评估学员水平，实时追踪转化率。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "blog": {
+    "title": "博客 - DolphinQuiz",
+    "description": "来自 DolphinQuiz 团队的最新见解与更新。了解教育试听课转化、销售漏斗优化以及互动测验最佳实践。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "contact": {
+    "title": "联系我们 - DolphinQuiz",
+    "description": "与 DolphinQuiz 团队取得联系。我们很乐意倾听您的声音，并会尽快回复。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "login": {
+    "title": "登录 - DolphinQuiz",
+    "description": "登录您的 DolphinQuiz 账户，管理您的互动测验和销售漏斗。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "signup": {
+    "title": "注册 - DolphinQuiz",
+    "description": "创建您的 DolphinQuiz 账户，立即开始构建您的第一个互动测验销售漏斗。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "terms": {
+    "title": "服务条款 - DolphinQuiz",
+    "description": "阅读我们的服务条款，了解使用 DolphinQuiz 平台的规则和指南。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "privacy": {
+    "title": "隐私政策 - DolphinQuiz",
+    "description": "了解 DolphinQuiz 如何收集、使用和保护您的个人信息和数据。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "cookies": {
+    "title": "Cookie 政策 - DolphinQuiz",
+    "description": "了解 DolphinQuiz 如何在我们的平台上使用 cookies 和类似的跟踪技术。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  },
+  "refund": {
+    "title": "退款政策 - DolphinQuiz",
+    "description": "查看我们的退款政策，了解申请退款的条件和流程。",
+    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+  }
+}

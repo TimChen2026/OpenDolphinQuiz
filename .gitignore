@@ -1,0 +1,89 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# pnpm
+.pnpm-home/
+.pnpm-store/
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.env
+
+# local documentation
+.local-docs/
+.mcp.json
+
+# fumadocs generated
+.source/
+public/fumadocs-style.css
+
+# scripts
+/scripts/manage-users.ts
+
+# superpowers SDD workspace
+.superpowers/
+
+# 内部参考文档（不对外开源）
+原基础构建AGENTS.md
+原基础构建CLAUDE.md
+DolphinQuiz.design/
+docs/superpowers/
+项目需求文档/
+项目验收/
+test-project-number.mjs
+test-project-number.html
+
+# 内部文档/杂项（不对外开源）
+docs/spec/
+Projects/
+tsc_check.txt
+网站运行方法.txt
+package-lock.json

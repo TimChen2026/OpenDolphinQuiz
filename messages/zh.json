@@ -1,0 +1,662 @@
+{
+  "common": {
+    "brand": {
+      "name": "DolphinQuiz",
+      "tagline": "教育试听课销售漏斗工具",
+      "copyright": "版权所有 © 2026 DolphinQuiz",
+      "allRightsReserved": "保留所有权利"
+    },
+    "actions": {
+      "signIn": "登录",
+      "signUp": "注册",
+      "signOut": "退出登录",
+      "getStarted": "开始使用",
+      "startFree": "免费开始",
+      "startTrial": "开始试用",
+      "contactSales": "联系销售",
+      "learnMore": "了解更多",
+      "viewAll": "查看全部",
+      "submit": "提交",
+      "cancel": "取消",
+      "save": "保存",
+      "delete": "删除",
+      "edit": "编辑",
+      "update": "更新",
+      "continue": "继续",
+      "back": "返回",
+      "next": "下一步"
+    },
+    "status": {
+      "loading": "加载中...",
+      "verified": "已验证",
+      "pending": "待处理",
+      "active": "已激活",
+      "inactive": "未激活"
+    }
+  },
+  "navigation": {
+    "main": {
+      "pricing": "定价",
+      "blog": "博客",
+      "contact": "联系我们",
+      "docs": "文档",
+      "dashboard": "仪表盘",
+      "credits": "积分",
+      "profile": "个人资料",
+      "settings": "设置"
+    },
+    "footer": {
+      "legal": {
+        "terms": "服务条款",
+        "privacy": "隐私政策",
+        "cookies": "Cookie 政策",
+        "refund": "退款政策"
+      },
+      "social": {
+        "twitter": "Twitter",
+        "linkedin": "领英",
+        "github": "GitHub"
+      }
+    }
+  },
+  "hero": {
+    "badge": "⚡ 教育试听课销售漏斗工具",
+    "title": "DolphinQuiz",
+    "description": "DolphinQuiz 是教育试听课销售漏斗工具，从流量到成交，数据驱动每一步。创建互动式入学测验，自动评估学员水平，实时追踪转化率。",
+    "cta": {
+      "primary": "免费开始使用",
+      "secondary": "预约演示"
+    },
+    "modal": {
+      "eyebrow": "源码获取",
+      "title": "请在课程社区获取源码",
+      "description": "DolphinQuiz 的完整源码、更新说明和配套资料都放在课程社区里统一发放。",
+      "instruction": "如果你已经加入课程，点击下方链接即可在新窗口打开课程社区，获取代码与相关资料。",
+      "linkLabel": "前往课程社区",
+      "linkHint": "课程社区：",
+      "close": "关闭"
+    }
+  },
+  "features": {
+    "title": "Vibe Coding 成功所需的一切功能",
+    "subtitle": "告别在样板代码上浪费时间。专注于描述您的独特功能，DolphinQuiz 会为您处理好底层基础。借助 AI 加速产品交付。",
+    "items": {
+      "aiOptimized": {
+        "title": "为 AI 辅助开发而生",
+        "description": "为 Cursor、Windsurf 和 Claude Code 等工具完美结构化。每个文件、每个组件都经过优化，便于 AI 理解和修改。"
+      },
+      "zeroPipeline": {
+        "title": "从零到生产的完整流程",
+        "description": "身份验证、支付、数据库、部署——一切均已配置完毕。只需向您的 AI 助手发出指令，即可见证您的 SaaS 产品诞生。"
+      },
+      "nonTechnical": {
+        "title": "对非技术背景的创始人友好",
+        "description": "分不清 React 和 Rails？没关系。只要您能清晰地描述您的想法，就能成功交付一款 SaaS 产品。"
+      },
+      "productionGrade": {
+        "title": "从第一天起即达生产级别",
+        "description": "支持真实用户、真实规模。基于 Next.js、PostgreSQL 构建——与价值数十亿美元公司使用的技术栈一致。"
+      }
+    }
+  },
+  "pricing": {
+    "title": "定价方案",
+    "subtitle": "简单透明的定价，随您的业务一同扩展",
+    "description": "选择适合您业务规模的方案。",
+    "comparison": {
+      "title": "方案对比",
+      "rows": {
+        "purchaseType": "购买类型",
+        "monthlyPrice": "月付价格",
+        "bestFor": "适合人群"
+      },
+      "values": {
+        "subscription": "订阅",
+        "tba": "待定",
+        "bestForFree": "适合个人用户初步体验",
+        "bestForPro": "适合中小团队日常使用",
+        "bestForMax": "适合大型团队和高频使用"
+      }
+    },
+    "tiers": {
+      "free": {
+        "name": "Free",
+        "price": "$0 / month",
+        "description": "适合个人用户初步体验产品功能。",
+        "cta": "开始使用",
+        "features": [
+          "1个Quiz问卷",
+          "每天客户询盘:最多5次/天",
+          "每月最多30个潜在客户",
+          "客户信息保留30天",
+          "每个月预警提醒最多6次",  
+          "每周访问量分布图表",
+          "功能说明"                    
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "待定",
+        "description": "适合中小团队日常使用，提供更多功能配额。",
+        "cta": "选择专业版",
+        "features": [
+          "最多6个Quiz问卷",
+          "每年最多10000个潜在客户",
+          "提供每周、每月、每季、每年的数据分析服务,包括对客户访问、关键主题、主要访问时间、销售经理业务情况等10个维度提供统计服务,并提供可视化显示;",
+          "提供每月、每季、每年分析服务,提供分析报告",  
+          "每个项目都具有红、黄色预警服务",
+          "功能说明",
+          "客户服务与售后技术支持" 
+        ]
+      },
+      "max": {
+        "name": "Max",
+        "price": "待定",
+        "description": "适合大型团队和高频使用场景，提供最高配额。",
+        "cta": "选择旗舰版",
+        "features": [
+          "最多12个Quiz问卷",
+          "每年最多30000个潜在客户",
+          "提供每周、每月、每季、每年的数据分析服务,包括对客户访问、关键主题、主要访问时间、销售经理业务情况等10个维度提供统计服务,并提供可视化显示;",
+          "提供每月、每季、每年分析服务,提供分析报告",  
+          "每个项目都具有红、黄色预警服务",
+          "功能说明",
+          "客户服务与售后技术支持" 
+        ]
+      }
+    }
+  },
+  "testimonials": {
+    "title": "来自 Vibe Coders 的成功故事",
+    "subtitle": "真实开发者与非技术背景创始人分享他们使用 DolphinQuiz 和 Vibe Coding 构建 AI SaaS 产品的经验。",
+    "items": [
+      {
+        "name": "Alex Chen",
+        "quote": "我不是开发者，我是营销人员。但我使用 DolphinQuiz + Cursor 在 3 天内发布了我的 AI SaaS。现在每月收入 5000 美元。",
+        "designation": "营销经理转型创始人"
+      },
+      {
+        "name": "Jordan Lee",
+        "quote": "我花了多年学习编码。现在我的非技术联合创始人使用 Vibe Coding 发布功能比我还快。这就是未来。",
+        "designation": "技术联合创始人"
+      },
+      {
+        "name": "Alice Johnson",
+        "quote": "从想法到每月 1 万美元收入只用了 2 个月。全靠感觉，无需编码。DolphinQuiz 让我能与有资金支持的创业公司竞争。",
+        "designation": "连续创业者"
+      },
+      {
+        "name": "Bob Smith",
+        "quote": "仅在本季度就构建并发布了 3 个不同的 AI SaaS 产品。使用 DolphinQuiz 进行 Vibe Coding 是我的秘密武器。",
+        "designation": "独立黑客"
+      },
+      {
+        "name": "Cathy Lee",
+        "quote": "我用普通英语向 Claude Code 描述功能。DolphinQuiz 处理其他一切。发布从未如此快速。",
+        "designation": "产品经理"
+      },
+      {
+        "name": "David Wright",
+        "quote": "身份验证、支付和部署都可以直接使用。我专注于独特的功能。我的 SaaS 第一周就盈利了。",
+        "designation": "独立创始人"
+      },
+      {
+        "name": "Eva Green",
+        "quote": "它带来的效率是无与伦比的。这是一个重要的工具，帮助我们削减成本并显著改善了最终产品。",
+        "designation": "运营总监"
+      },
+      {
+        "name": "Frank Moore",
+        "quote": "一个完美融入我们工作流程的强大解决方案。它增强了我们团队的能力，让我们能够处理更复杂的项目。",
+        "designation": "项目经理"
+      },
+      {
+        "name": "Grace Hall",
+        "quote": "它非常直观且易于使用。即使没有技术专业知识的人也可以利用它的强大功能来改善工作流程。",
+        "designation": "市场营销专家"
+      },
+      {
+        "name": "Henry Ford",
+        "quote": "它为我们节省了无数小时。强烈推荐给任何想要提高效率和生产力的人。",
+        "designation": "运营分析师"
+      },
+      {
+        "name": "Ivy Wilson",
+        "quote": "任何专业人士的必备工具。它彻底改变了我们解决问题和决策的方式。",
+        "designation": "商业顾问"
+      },
+      {
+        "name": "Jack Brown",
+        "quote": "结果总是令人印象深刻。这个 AI 不仅帮助我们达到了性能目标，还超越了预期。",
+        "designation": "绩效经理"
+      },
+      {
+        "name": "Kathy Adams",
+        "quote": "它帮助我们实现了曾经被认为不可能的事情。AI 的能力是突破性的，为我们开辟了新的道路。",
+        "designation": "创新负责人"
+      },
+      {
+        "name": "Leo Carter",
+        "quote": "具有真正影响力的变革性技术。它简化了我们的运营，为我们的流程带来了前所未有的效率。",
+        "designation": "技术策略师"
+      },
+      {
+        "name": "Mia Turner",
+        "quote": "简直是革命性的！它与我们现有系统的集成和增强方式简直是奇迹。",
+        "designation": "系统集成师"
+      }
+    ]
+  },
+  "companies": {
+    "title": "使用行业领先技术构建",
+    "subtitle": "基于现代技术栈构建，被全球顶尖团队信赖"
+  },
+  "gridFeatures": {
+    "auth": {
+      "title": "身份认证系统",
+      "description": "Better Auth 支持邮箱密码和 OAuth。会话管理和受保护路由已就绪。"
+    },
+    "deploy": {
+      "title": "一键部署",
+      "description": "即刻部署到 Vercel、Railway 或任何平台。从第一天起即可投入生产。"
+    },
+    "typescript": {
+      "title": "TypeScript + Tailwind",
+      "description": "现代技术栈包括 Next.js 14、TypeScript、Tailwind CSS 和 shadcn/ui 组件。"
+    },
+    "database": {
+      "title": "数据库 + ORM",
+      "description": "PostgreSQL 配合 Drizzle ORM。类型安全的查询和迁移已配置。"
+    },
+    "seo": {
+      "title": "SEO 和营销",
+      "description": "元标签、Open Graph、站点地图和分析。为有机增长准备的一切。"
+    },
+    "vibeCoding": {
+      "title": "Vibe Coding 就绪",
+      "description": "针对 Cursor、Windsurf 和 Claude Code 进行了优化。AI 能理解每个组件。"
+    }
+  },
+  "cta": {
+    "title": "准备好交付您的 AI SaaS 产品了吗？",
+    "description": "加入数百名开发者的行列，他们已经通过 DolphinQuiz 和 Vibe Coding 成功发布了自己的 SaaS 产品。",
+    "button": "获取代码"
+  },
+  "auth": {
+    "login": {
+      "title": "登录您的账户",
+      "emailLabel": "邮箱地址",
+      "emailPlaceholder": "hello@johndoe.com",
+      "passwordLabel": "密码",
+      "passwordPlaceholder": "••••••••",
+      "forgotPassword": "忘记密码？",
+      "noAccount": "还没有账户？",
+      "signUpLink": "注册",
+      "signInButton": "登录",
+      "signingIn": "登录中...",
+      "errors": {
+        "invalidEmail": "请输入有效的邮箱地址",
+        "emailRequired": "请输入邮箱地址",
+        "passwordRequired": "请输入密码",
+        "loginFailed": "登录失败，请重试。",
+        "googleLoginFailed": "Google 登录失败，请重试。"
+      }
+    },
+    "signup": {
+      "title": "注册一个新账户",
+      "nameLabel": "姓名",
+      "namePlaceholder": "张三",
+      "emailLabel": "邮箱地址",
+      "emailPlaceholder": "hello@example.com",
+      "passwordLabel": "密码",
+      "passwordPlaceholder": "••••••••",
+      "phoneLabel": "手机号",
+      "phonePlaceholder": "请输入手机号",
+      "phoneInvalid": "请输入有效的手机号",
+      "turnstileLabel": "人机验证",
+      "turnstileVerify": "请完成人机验证",
+      "hasAccount": "已经有账户了？",
+      "signInLink": "登录",
+      "signUpButton": "注册",
+      "signingUp": "注册中...",
+      "errors": {
+        "nameRequired": "请输入您的姓名",
+        "invalidEmail": "请输入有效的邮箱地址",
+        "emailRequired": "请输入邮箱地址",
+        "passwordRequired": "请输入密码",
+        "phoneRequired": "请输入手机号",
+        "phoneInvalid": "请输入有效的手机号",
+        "turnstileRequired": "请完成人机验证",
+        "signupFailed": "注册失败，请重试。",
+        "googleSignupFailed": "Google 注册失败，请重试。"
+      }
+    },
+    "social": {
+      "googleSignIn": "使用 Google 继续",
+      "or": "或者继续使用"
+    },
+    "checkEmail": {
+      "title": "请查收您的邮件",
+      "description": "我们已向您的邮箱发送了验证链接。请点击链接验证您的账户并开始使用。",
+      "notReceived": "没有收到邮件？",
+      "checkSpam": "检查垃圾邮件文件夹",
+      "checkEmailCorrect": "确认输入的邮箱地址是否正确",
+      "waitAndCheck": "等待几分钟后再次查看",
+      "resendButton": "重新发送验证邮件",
+      "resending": "发送中...",
+      "resendSuccess": "验证邮件发送成功！请查收您的邮箱。",
+      "resendError": "发送验证邮件失败，请重试。",
+      "backToLogin": "返回登录",
+      "securityNote": "为了您的安全，验证链接将在24小时后失效。"
+    },
+    "verifyEmail": {
+      "verifying": "正在验证邮箱",
+      "verifyingDescription": "请稍候，我们正在验证您的邮箱地址...",
+      "success": "邮箱验证成功！",
+      "successDescription": "您的邮箱已成功验证！正在跳转到登录页面...",
+      "alreadyVerified": "已验证",
+      "failed": "验证失败",
+      "goToLogin": "前往登录",
+      "backToSignUp": "返回注册",
+      "requestNew": "重新发送验证邮件",
+      "checkSpamNote": "如果没有收到邮件，请检查垃圾邮件文件夹"
+    },
+    "emailVerifiedGuard": {
+      "title": "需要验证邮箱",
+      "description": "请验证您的邮箱地址以访问此页面。请查收我们发送到以下邮箱的验证链接：",
+      "resendButton": "重新发送验证邮件",
+      "resending": "发送中...",
+      "resendSuccess": "验证邮件已发送！请查收您的邮箱。",
+      "resendError": "发送验证邮件失败，请重试。",
+      "signOutLink": "退出并使用其他账户"
+    }
+  },
+  "Admin": {
+    "sidebar": {
+      "title": "管理后台",
+      "subtitle": "系统管理",
+      "dashboard": "仪表板",
+      "users": "用户管理",
+      "backToDashboard": "返回用户面板"
+    },
+    "header": {
+      "welcome": "欢迎",
+      "adminBadge": "管理员"
+    },
+    "dashboard": {
+      "title": "管理员仪表板",
+      "totalUsers": "总用户数",
+      "activeUsers": "活跃用户",
+      "recentUsers": "最近注册用户",
+      "viewAllUsers": "查看所有用户",
+      "unknownUser": "未知用户"
+    },
+    "users": {
+      "title": "用户管理",
+      "searchPlaceholder": "搜索用户姓名或邮箱...",
+      "searchAction": "搜索",
+      "clearSearch": "清空",
+      "totalUsers": "共 {count} 个用户",
+      "matchingUsers": "\"{query}\" 匹配到 {count} 个用户",
+      "pageSummary": "显示第 {from}-{to} 条，共 {total} 条",
+      "emptyState": "暂无用户",
+      "emptySearchState": "没有匹配的用户",
+      "user": "用户",
+      "role": "角色",
+      "status": "状态",
+      "joined": "加入时间",
+      "actions": "操作",
+      "admin": "管理员",
+      "banned": "已禁用",
+      "active": "活跃",
+      "unverified": "未验证",
+      "edit": "编辑",
+      "ban": "禁用",
+      "unban": "解禁",
+      "viewDetails": "查看详情",
+      "banReason": "禁用原因",
+      "banExpires": "禁用到期",
+      "userDetails": "用户详情",
+      "name": "姓名",
+      "email": "邮箱",
+      "lastActive": "最后活跃",
+      "close": "关闭",
+      "roleUpdated": "角色已更新",
+      "roleUpdateFailed": "角色更新失败",
+      "userBanned": "用户已禁用",
+      "userUnbanned": "用户已解禁",
+      "banFailed": "禁用操作失败",
+      "manage": "管理",
+      "adjust": "调整",
+      "reason": "原因",
+      "manualAdjustment": "手动调整",
+      "cancel": "取消",
+      "pagination": {
+        "previous": "上一页",
+        "next": "下一页",
+        "page": "第 {{current}} / {{total}} 页"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "仪表盘",
+    "welcome": "欢迎回来",
+    "cards": {
+      "personalInfo": {
+        "title": "个人信息",
+        "labels": {
+          "name": "姓名",
+          "email": "邮箱",
+          "status": "状态",
+          "notSet": "未设置"
+        }
+      },
+      "quickActions": {
+        "title": "快捷操作",
+        "editProfile": "编辑个人资料",
+        "accountSettings": "账户设置",
+        "securitySettings": "安全设置"
+      },
+      "statistics": {
+        "title": "统计信息",
+        "labels": {
+          "loginCount": "登录次数",
+          "memberSince": "注册于",
+          "today": "今天"
+        }
+      }
+    }
+  },
+  "profile": {
+    "title": "个人资料",
+    "subtitle": "管理您的账户设置和偏好",
+    "sections": {
+      "basicInfo": {
+        "title": "基本信息",
+        "fullName": "姓名",
+        "email": "邮箱地址",
+        "verificationStatus": "验证状态",
+        "notSet": "未设置",
+        "nameNotSet": "姓名未设置",
+        "accountId": "账户 ID"
+      },
+      "accountSettings": {
+        "title": "账户详情",
+        "memberSince": "注册于",
+        "lastLogin": "最近登录",
+        "accountType": "账户类型"
+      }
+    },
+    "form": {
+      "nameLabel": "姓名",
+      "namePlaceholder": "请输入您的姓名",
+      "emailLabel": "邮箱",
+      "emailPlaceholder": "请输入您的邮箱地址",
+      "updateButton": "更新资料",
+      "updating": "更新中...",
+      "updateSuccess": "个人资料更新成功",
+      "updateError": "个人资料更新失败"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "在一个地方管理个人资料和账户安全。",
+    "sections": {
+      "profile": {
+        "title": "个人资料",
+        "description": "更新在工作区中展示的名称。",
+        "nameLabel": "显示名称",
+        "namePlaceholder": "输入您的名字",
+        "emailLabel": "邮箱地址",
+        "save": "保存更改",
+        "saving": "保存中...",
+        "saveSuccess": "个人资料已更新。",
+        "saveError": "更新个人资料失败。",
+        "validation": "名称至少需要 2 个字符。"
+      },
+      "security": {
+        "title": "安全",
+        "description": "查看账户状态并安全退出登录。",
+        "emailStatus": "邮箱状态",
+        "accountId": "账户 ID",
+        "memberSince": "注册时间",
+        "viewProfile": "查看个人资料",
+        "signOut": "退出登录"
+      }
+    }
+  },
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "我们很乐意倾听您的声音。给我们发送消息，我们会尽快回复。",
+    "description": "请联系我们，我们会以光速回复您。",
+    "testimonial": {
+      "title": "DolphinQuiz AI 被数千名用户使用",
+      "description": "在众多 AI 应用中，DolphinQuiz AI 以其顶级的 AI 能力脱颖而出。"
+    },
+    "form": {
+      "nameLabel": "姓名",
+      "namePlaceholder": "张三",
+      "emailLabel": "邮箱地址",
+      "emailPlaceholder": "hello@example.com",
+      "companyLabel": "公司",
+      "companyPlaceholder": "某某科技有限公司",
+      "messageLabel": "消息",
+      "messagePlaceholder": "请在此处输入您的消息",
+      "submitButton": "提交",
+      "submitting": "发送中...",
+      "submitSuccess": "消息发送成功！",
+      "submitError": "消息发送失败，请重试。"
+    }
+  },
+  "blog": {
+    "title": "博客",
+    "subtitle": "来自我们团队的最新见解与更新",
+    "readMore": "阅读更多",
+    "minRead": "分钟阅读"
+  },
+  "quiz": {
+    "title": "Quiz 问答",
+    "description": "通过 3 步快速问答,获取为您定制的试听课推荐方案。",
+    "register": {
+      "title": "注册后开始 Quiz",
+      "subtitle": "请填写以下信息完成注册,即可进入 Quiz 问答流程",
+      "nameLabel": "姓名",
+      "namePlaceholder": "张三",
+      "emailLabel": "邮箱地址",
+      "emailPlaceholder": "hello@example.com",
+      "passwordLabel": "密码",
+      "passwordPlaceholder": "••••••••",
+      "phoneLabel": "手机号",
+      "phonePlaceholder": "请输入手机号",
+      "turnstileLabel": "人机验证",
+      "hasAccount": "已经有账户了?",
+      "signInLink": "登录",
+      "signUpButton": "注册并开始 Quiz",
+      "signingUp": "注册中...",
+      "successTitle": "注册成功",
+      "successDescription": "即将进入 Quiz 问答流程...",
+      "errors": {
+        "signupFailed": "注册失败,请重试。",
+        "googleSignupFailed": "Google 注册失败,请重试。"
+      }
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "404 - 页面未找到",
+      "message": "您正在寻找的页面不存在。",
+      "backHome": "返回首页"
+    },
+    "500": {
+      "title": "出错了",
+      "message": "我们遇到了一些技术问题，请稍后重试。",
+      "backHome": "返回首页"
+    },
+    "general": {
+      "title": "发生错误",
+      "message": "发生了一些意外情况，请重试。",
+      "tryAgain": "重试"
+    }
+  },
+  "featuredTestimonials": {
+    "people": [
+      {
+        "name": "张伟",
+        "designation": "软件工程师"
+      },
+      {
+        "name": "王强",
+        "designation": "产品经理"
+      },
+      {
+        "name": "李娜",
+        "designation": "数据科学家"
+      },
+      {
+        "name": "陈婷",
+        "designation": "UX设计师"
+      },
+      {
+        "name": "赵明",
+        "designation": "全栈开发者"
+      },
+      {
+        "name": "朱悦",
+        "designation": "探索者"
+      }
+    ]
+  },
+  "footer": {
+    "tagline": "利用 AI 的力量，将您的 SaaS 创意转化为现实。",
+    "product": {
+      "title": "产品",
+      "features": "功能",
+      "pricing": "定价",
+      "documentation": "文档"
+    },
+    "company": {
+      "title": "公司",
+      "about": "关于我们",
+      "blog": "博客",
+      "careers": "招聘"
+    },
+    "legal": {
+      "title": "法律",
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "cookies": "Cookie 政策"
+    },
+    "social": {
+      "title": "社交",
+      "twitter": "Twitter",
+      "linkedin": "领英",
+      "github": "GitHub"
+    },
+    "newsletter": {
+      "title": "订阅邮件",
+      "description": "获取最新动态和资讯，直接发送到您的邮箱。",
+      "placeholder": "输入您的邮箱",
+      "subscribe": "订阅"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "plan_key" text DEFAULT 'free';

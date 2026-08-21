@@ -1,0 +1,62 @@
+---
+title: 认证提供商
+description: 配置应用的认证提供商。
+---
+
+## 邮箱 + 密码
+
+默认启用。用户使用邮箱、姓名和密码注册。
+
+### 邮箱验证
+
+默认要求邮箱验证。在 `lib/auth.ts` 中配置：
+
+```typescript
+emailAndPassword: {
+  enabled: true,
+  requireEmailVerification: true,
+}
+```
+
+### 密码重置
+
+密码重置流程：
+
+1. 用户在 `/forgot-password` 请求重置
+2. 系统生成 token（存储在 `passwordResetToken` 表，1 小时过期）
+3. 发送重置邮件
+4. 用户在 `/reset-password?token=...` 设置新密码
+
+## Google OAuth
+
+Google 登录是可选项。只有同时配置 `AUTH_GOOGLE_ID` 和 `AUTH_GOOGLE_SECRET` 时，starter 才会启用该提供商。
+
+### 设置
+
+1. 在 [Google Cloud Console](https://console.cloud.google.com/) 创建 OAuth 凭据
+2. 设置授权重定向 URI：`{YOUR_URL}/api/auth/callback/google`
+3. 添加到 `.env`：
+
+```ini
+AUTH_GOOGLE_ID="your-client-id"
+AUTH_GOOGLE_SECRET="your-client-secret"
+```
+
+### 添加更多提供商
+
+Better Auth 支持多种 OAuth 提供商。例如添加 GitHub：
+
+1. 安装提供商（如需要）
+2. 在 `lib/auth.ts` 的 `socialProviders` 中添加：
+
+```typescript
+socialProviders: {
+  google: { ... },
+  github: {
+    clientId: process.env.AUTH_GITHUB_ID!,
+    clientSecret: process.env.AUTH_GITHUB_SECRET!,
+  },
+}
+```
+
+3. 在 `features/auth/components/` 中添加登录按钮

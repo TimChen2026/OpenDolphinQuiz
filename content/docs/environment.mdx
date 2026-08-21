@@ -1,0 +1,94 @@
+---
+title: Environment Variables
+description: Complete reference for all environment variables.
+---
+
+## Required Variables
+
+These variables are **required** for the application to function:
+
+### Database
+
+```ini
+DATABASE_URL="postgresql://user:password@host/db?sslmode=require"
+```
+
+### Authentication
+
+```ini
+BETTER_AUTH_SECRET="at-least-32-characters-random-key"
+BETTER_AUTH_URL="http://localhost:3000"
+```
+
+### Application URL
+
+```ini
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+## Service Integrations
+
+### Volcano Engine (AI Features)
+
+Required for chat, image generation, and video generation:
+
+```ini
+VOLCANO_ENGINE_API_KEY="your-volcano-engine-api-key"
+VOLCANO_ENGINE_API_URL="https://ark.cn-beijing.volces.com/api/v3"
+```
+
+### Creem (Payments)
+
+Required for subscriptions and one-time purchases:
+
+```ini
+CREEM_API_KEY="your-creem-api-key"
+CREEM_WEBHOOK_SECRET="whsec_..."
+```
+
+For testing without real payments:
+
+```ini
+CREEM_SIMULATE="true"
+```
+
+### Resend (Email)
+
+Required for authentication emails and notifications:
+
+```ini
+RESEND_API_KEY="re_your_api_key"
+RESEND_FROM_EMAIL="Your App <noreply@yourdomain.com>"
+```
+
+### Google OAuth (Optional)
+
+```ini
+AUTH_GOOGLE_ID="your-google-client-id"
+AUTH_GOOGLE_SECRET="your-google-client-secret"
+```
+
+### Cron Jobs
+
+```ini
+CRON_SECRET="your-cron-secret"
+```
+
+## Optional Analytics
+
+```ini
+NEXT_PUBLIC_POSTHOG_KEY="phc_..."
+NEXT_PUBLIC_GOOGLE_ANALYTICS_ID="G-..."
+NEXT_PUBLIC_CLARITY_PROJECT_ID="..."
+```
+
+## Optional Storage (S3-Compatible)
+
+```ini
+STORAGE_ENDPOINT="https://..."
+STORAGE_BUCKET="your-bucket"
+STORAGE_REGION="auto"
+STORAGE_ACCESS_KEY_ID="..."
+STORAGE_SECRET_ACCESS_KEY="..."
+STORAGE_PUBLIC_URL="https://..."
+```

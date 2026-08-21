@@ -1,0 +1,63 @@
+---
+title: 故障排查
+description: 常见问题及解决方案。
+---
+
+## Webhook 未触发
+
+**症状**：支付成功但积分未发放。
+
+1. 检查 Creem Dashboard → Webhooks 的投递日志
+2. 验证 `CREEM_WEBHOOK_SECRET` 与 Creem 设置匹配
+3. 确保 webhook 端点可公开访问
+4. 检查服务器日志中的签名验证错误
+
+## 年付积分未自动发放
+
+**症状**：年付计划用户未收到月度积分。
+
+1. 验证定时任务是否正常运行（检查 `/api/cron/subscription-grants`）
+2. 查看 `subscriptionCreditSchedule` 表中的 `nextGrantAt` 时间
+3. 确保 `CRON_SECRET` 配置正确
+
+## 用户无法访问管理后台
+
+1. 确认数据库中 `user.role = 'admin'`
+2. 检查 `features/admin/components/admin-guard.tsx` 逻辑
+3. 确保用户会话有效（尝试退出重新登录）
+
+## 邮件发送失败
+
+1. 验证 `RESEND_API_KEY` 设置正确
+2. 查看 Resend 面板的投递日志
+3. 开发环境中可能使用 `onboarding@resend.dev` 作为发件人
+4. 生产环境需在 Resend 中验证发件域名
+
+## AI API 返回错误
+
+1. 检查 `VOLCANO_ENGINE_API_KEY` 是否有效
+2. 验证 `VOLCANO_ENGINE_API_URL` 端点
+3. 检查火山引擎配额/余额
+4. 查看服务器日志获取具体错误信息
+
+## 数据库连接问题
+
+1. 验证 `DATABASE_URL` 连接字符串
+2. 确保云数据库包含 `?sslmode=require`
+3. 检查 IP 是否在白名单中（如有 IP 限制）
+4. 尝试直接连接：`psql $DATABASE_URL`
+
+## 升级后构建报错
+
+如果升级依赖后遇到 TypeScript 错误：
+
+```bash
+# 清除 Next.js 缓存
+rm -rf .next
+
+# 重新安装依赖
+pnpm install
+
+# 重新构建
+pnpm build
+```

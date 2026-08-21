@@ -1,0 +1,68 @@
+---
+title: Customization
+description: How to customize pricing, AI settings, and more.
+---
+
+## Modify Pricing Plans
+
+Edit `constants/billing.ts`:
+
+```typescript
+starter_monthly: {
+  priceCents: 2900,        // Change price
+  creditsPerCycle: 1000,   // Change credit amount
+  creemPriceId: "prod_xxx" // Match your Creem product ID
+}
+```
+
+## Modify Credit Costs
+
+Edit the cost constants:
+
+| Feature | File | Variable |
+|---------|------|----------|
+| Chat | `lib/credits.ts` | `CHAT_CREDIT_COST` |
+| Image | `app/api/image/generate/route.ts` | Inline constant |
+| Video | `app/api/video/generate/route.ts` | Inline constant |
+
+## Replace AI Provider
+
+To switch from Volcano Engine to OpenAI:
+
+1. Install the OpenAI SDK: `pnpm add openai`
+2. Replace files in `lib/volcano-engine/` with OpenAI equivalents
+3. Update environment variables
+4. Keep the same credit deduction pattern in API routes
+
+## Add a New Language
+
+1. Copy `messages/en.json` to `messages/XX.json` (new locale)
+2. Translate all strings
+3. Add locale to `i18n.config.ts`:
+
+```typescript
+export const locales = ['en', 'zh', 'XX'] as const;
+```
+
+4. Update `proxy.ts` and `lib/i18n.ts`
+
+## Customize Theme
+
+Colors are defined in `app/globals.css` using CSS custom properties:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  /* ... */
+}
+```
+
+Dark mode variables are in the `.dark` class.
+
+## Add New Protected Pages
+
+1. Create a new page in `app/[locale]/(protected)/your-page/page.tsx`
+2. It's automatically protected by the layout's session check
+3. Add navigation in `features/navigation/config.ts`

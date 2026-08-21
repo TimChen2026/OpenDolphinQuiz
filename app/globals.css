@@ -1,0 +1,144 @@
+/*
+ * Copyright (C) 2026 DolphinQuiz
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ *
+ * This file is part of the DolphinQuiz project.
+ *
+ * DolphinQuiz is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DolphinQuiz is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+@import "./prism.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* DolphinQuiz Oxford Navy + Gold 配色方案 */
+
+    /* 主要背景和前景色 — cream #F8F6F0 / ink #1A2332 */
+    --background: 45 36% 96%;
+    --foreground: 218 32% 15%;
+
+    /* 卡片容器 — white #FFFFFF */
+    --card: 0 0% 100%;
+    --card-foreground: 218 32% 15%;
+
+    /* 弹出层 */
+    --popover: 0 0% 100%;
+    --popover-foreground: 218 32% 15%;
+
+    /* 主色调 — Oxford Navy #0A1F44 */
+    --primary: 218 74% 15%;
+    --primary-foreground: 0 0% 100%;
+
+    /* 次要色调 — warm grey #F0EDE5 */
+    --secondary: 44 27% 92%;
+    --secondary-foreground: 218 74% 15%;
+
+    /* 柔和/禁用状态 */
+    --muted: 44 27% 92%;
+    --muted-foreground: 217 14% 41%;
+
+    /* 强调色 — Gold #C5A55A */
+    --accent: 42 48% 56%;
+    --accent-foreground: 218 74% 15%;
+
+    /* 边框、输入框、焦点环 — #E2DDD3 */
+    --border: 40 21% 86%;
+    --input: 40 21% 86%;
+    --ring: 218 74% 15%;
+
+    /* 渐变色支持 */
+    --gradient-from: 44 27% 92%;
+    --gradient-to: 40 21% 86%;
+
+    /* 导航栏特定颜色 */
+    --navbar-bg: 0 0% 100%;
+    --navbar-bg-scrolled: 45 36% 96%;
+
+    /* 阴影颜色 */
+    --shadow-color: 40 21% 86%;
+
+    /* 悬停状态 */
+    --hover-bg: 44 27% 92%;
+    --hover-foreground: 218 74% 15%;
+  }
+
+  .dark {
+    --background: 218 32% 10%;
+    --foreground: 45 36% 90%;
+
+    --card: 218 32% 13%;
+    --card-foreground: 45 36% 90%;
+
+    --popover: 218 32% 13%;
+    --popover-foreground: 45 36% 90%;
+
+    --primary: 42 48% 56%;
+    --primary-foreground: 218 74% 15%;
+
+    --secondary: 218 20% 20%;
+    --secondary-foreground: 45 36% 90%;
+
+    --muted: 218 20% 20%;
+    --muted-foreground: 217 14% 65%;
+
+    --accent: 42 48% 56%;
+    --accent-foreground: 218 74% 15%;
+
+    --border: 218 20% 25%;
+    --input: 218 20% 25%;
+    --ring: 42 48% 56%;
+
+    --gradient-from: 218 32% 10%;
+    --gradient-to: 218 20% 20%;
+
+    --navbar-bg: 218 32% 8%;
+    --navbar-bg-scrolled: 218 32% 10%;
+
+    --shadow-color: 218 32% 5%;
+
+    --hover-bg: 218 20% 20%;
+    --hover-foreground: 45 36% 95%;
+  }
+}
+
+html {
+  scroll-padding-top: 80px;
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Fumadocs language popovers are translucent by default, which lets sidebar
+   labels show through the menu on the docs layout. Keep the menu opaque. */
+[data-radix-popper-content-wrapper] {
+  z-index: 100 !important;
+}
+
+[data-radix-popper-content-wrapper] [role="dialog"] {
+  background-color: var(--color-fd-popover) !important;
+  backdrop-filter: none !important;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
