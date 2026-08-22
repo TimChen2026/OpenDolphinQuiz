@@ -46,13 +46,21 @@
       "settings": "设置"
     },
     "footer": {
+      "product": {
+        "title": "产品",
+        "pricing": "定价",
+        "blog": "博客",
+        "contact": "联系我们"
+      },
       "legal": {
+        "title": "法律",
         "terms": "服务条款",
         "privacy": "隐私政策",
         "cookies": "Cookie 政策",
         "refund": "退款政策"
       },
       "social": {
+        "title": "社交",
         "twitter": "Twitter",
         "linkedin": "领英",
         "github": "GitHub"
@@ -375,8 +383,9 @@
     "sidebar": {
       "title": "管理后台",
       "subtitle": "系统管理",
-      "dashboard": "仪表板",
+      "dashboard": "管理仪表盘",
       "users": "用户管理",
+      "internal": "内部管理",
       "backToDashboard": "返回用户面板"
     },
     "header": {
@@ -384,7 +393,7 @@
       "adminBadge": "管理员"
     },
     "dashboard": {
-      "title": "管理员仪表板",
+      "title": "管理仪表盘",
       "totalUsers": "总用户数",
       "activeUsers": "活跃用户",
       "recentUsers": "最近注册用户",
@@ -426,6 +435,10 @@
       "userBanned": "用户已禁用",
       "userUnbanned": "用户已解禁",
       "banFailed": "禁用操作失败",
+      "deleteUser": "删除用户",
+      "deleteConfirm": "确定要删除用户 {name} 吗？此操作不可撤销。",
+      "userDeleted": "用户已删除",
+      "deleteFailed": "删除用户失败",
       "manage": "管理",
       "adjust": "调整",
       "reason": "原因",
@@ -434,7 +447,7 @@
       "pagination": {
         "previous": "上一页",
         "next": "下一页",
-        "page": "第 {{current}} / {{total}} 页"
+        "page": "第 {current} / {total} 页"
       }
     }
   },
@@ -521,7 +534,25 @@
         "accountId": "账户 ID",
         "memberSince": "注册时间",
         "viewProfile": "查看个人资料",
-        "signOut": "退出登录"
+        "signOut": "退出登录",
+        "password": {
+          "title": "修改密码",
+          "description": "定期更换密码可以提升账户安全性。",
+          "currentLabel": "当前密码",
+          "currentPlaceholder": "输入当前密码",
+          "currentRequired": "请输入当前密码",
+          "newLabel": "新密码",
+          "newPlaceholder": "输入新密码",
+          "newRequired": "请输入新密码",
+          "confirmLabel": "确认新密码",
+          "confirmPlaceholder": "再次输入新密码",
+          "passwordsDontMatch": "两次输入的密码不一致",
+          "sameAsOld": "新密码不能与当前密码相同",
+          "change": "修改密码",
+          "changing": "修改中...",
+          "changeSuccess": "密码修改成功",
+          "changeFailed": "密码修改失败"
+        }
       }
     }
   },

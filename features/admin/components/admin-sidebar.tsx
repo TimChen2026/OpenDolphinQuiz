@@ -25,7 +25,8 @@ import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import {
   Users,
-  Home
+  Home,
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,11 @@ const adminNavItems = [
     title: "users",
     href: "/admin/users",
     icon: Users,
+  },
+  {
+    title: "internal",
+    href: "/admin/internal",
+    icon: Settings,
   },
 ];
 

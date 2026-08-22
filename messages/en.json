@@ -46,13 +46,21 @@
       "settings": "Settings"
     },
     "footer": {
+      "product": {
+        "title": "Product",
+        "pricing": "Pricing",
+        "blog": "Blog",
+        "contact": "Contact"
+      },
       "legal": {
+        "title": "Legal",
         "terms": "Terms of Service",
         "privacy": "Privacy Policy",
         "cookies": "Cookie Policy",
         "refund": "Refund Policy"
       },
       "social": {
+        "title": "Social",
         "twitter": "Twitter",
         "linkedin": "LinkedIn",
         "github": "GitHub"
@@ -365,6 +373,7 @@
       "subtitle": "System Management",
       "dashboard": "Dashboard",
       "users": "User Management",
+      "internal": "Internal Management",
       "backToDashboard": "Back to User Dashboard"
     },
     "header": {
@@ -414,6 +423,10 @@
       "userBanned": "User has been banned",
       "userUnbanned": "User has been unbanned",
       "banFailed": "Failed to ban/unban user",
+      "deleteUser": "Delete User",
+      "deleteConfirm": "Are you sure you want to delete user {name}? This action cannot be undone.",
+      "userDeleted": "User deleted successfully",
+      "deleteFailed": "Failed to delete user",
       "manage": "Manage",
       "adjust": "Adjust",
       "reason": "Reason",
@@ -422,7 +435,7 @@
       "pagination": {
         "previous": "Previous",
         "next": "Next",
-        "page": "Page {{current}} of {{total}}"
+        "page": "Page {current} of {total}"
       }
     }
   },
@@ -509,7 +522,25 @@
         "accountId": "Account ID",
         "memberSince": "Member since",
         "viewProfile": "View profile",
-        "signOut": "Sign out"
+        "signOut": "Sign out",
+        "password": {
+          "title": "Change Password",
+          "description": "Regularly updating your password improves account security.",
+          "currentLabel": "Current Password",
+          "currentPlaceholder": "Enter your current password",
+          "currentRequired": "Please enter your current password",
+          "newLabel": "New Password",
+          "newPlaceholder": "Enter your new password",
+          "newRequired": "Please enter a new password",
+          "confirmLabel": "Confirm New Password",
+          "confirmPlaceholder": "Re-enter your new password",
+          "passwordsDontMatch": "Passwords do not match",
+          "sameAsOld": "New password cannot be the same as current password",
+          "change": "Change Password",
+          "changing": "Changing...",
+          "changeSuccess": "Password changed successfully",
+          "changeFailed": "Failed to change password"
+        }
       }
     }
   },

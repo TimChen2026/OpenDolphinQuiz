@@ -21,9 +21,10 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { user } from "@/lib/db/schema";
+import { user, USER_ROLES } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { isAdmin } from "@/lib/auth/admin";
+import { isAdmin, getCurrentUserWithRole } from "@/lib/auth/admin";
+import { hasRole } from "@/lib/rbac";
 import { revalidatePath } from "next/cache";
 
 export async function updateUserRole(userId: string, newRole: string) {
@@ -69,14 +70,38 @@ export async function banUser(userId: string, banned: boolean, reason?: string) 
 }
 
 export async function deleteUser(userId: string) {
-  // 检查权限
-  const hasAdminAccess = await isAdmin();
-  if (!hasAdminAccess) {
+  // 检查权限：仅管理员可删除用户
+  const currentUser = await getCurrentUserWithRole();
+  if (!currentUser || !hasRole(currentUser, USER_ROLES.ADMIN)) {
     throw new Error("Unauthorized");
   }
 
-  // 注意：由于外键约束，删除用户会级联删除相关数据
-  // 建议使用软删除（banned状态）而不是真正删除
+  // 不允许删除自己
+  if (currentUser.id === userId) {
+    throw new Error("不能删除自己的账号");
+  }
+
+  // 不允许删除其他管理员
+  const targetUser = await db
+    .select({ role: user.role, name: user.name })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+
+  if (!targetUser.length) {
+    throw new Error("用户不存在");
+  }
+
+  if (targetUser[0].role === USER_ROLES.ADMIN) {
+    throw new Error("不能删除管理员账号");
+  }
+
+  // 不允许删除销售总监（删除销售总监会影响项目数据）
+  if (targetUser[0].role === USER_ROLES.SALES_DIRECTOR) {
+    throw new Error("不能删除销售总监，请联系系统管理员");
+  }
+
+  // 执行删除（级联删除 session、account 等关联数据）
   await db
     .delete(user)
     .where(eq(user.id, userId));

@@ -31,8 +31,9 @@ import {
   Mail,
   Calendar,
   Search,
+  Trash2,
 } from "lucide-react";
-import { updateUserRole, banUser } from "@/features/admin/actions/user-actions";
+import { updateUserRole, banUser, deleteUser } from "@/features/admin/actions/user-actions";
 import { toast } from "sonner";
 import type { AdminUserListItem } from "@/lib/admin-user-directory";
 
@@ -153,6 +154,21 @@ export function UsersTable({
       toast.success(banned ? t("userBanned") : t("userUnbanned"));
     } catch {
       toast.error(t("banFailed"));
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    const confirmed = window.confirm(t("deleteConfirm", { name: userName }));
+    if (!confirmed) return;
+
+    try {
+      await deleteUser(userId);
+      setUsers((currentUsers) =>
+        currentUsers.filter((existingUser) => existingUser.id !== userId)
+      );
+      toast.success(t("userDeleted"));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("deleteFailed"));
     }
   };
 
@@ -298,6 +314,13 @@ export function UsersTable({
                         title={t("viewDetails")}
                       >
                         <MoreVertical className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteUser(user.id, user.name)}
+                        className="p-1.5 rounded hover:bg-hover text-red-500 hover:text-red-600"
+                        title={t("deleteUser")}
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </td>

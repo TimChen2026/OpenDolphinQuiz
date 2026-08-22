@@ -24,22 +24,11 @@
 // - 用户角色(RBAC)权限分配和控制(管理员专属)
 // - 询盘上限提醒邮件模板修改(严格按需求文档图 2.1.7.7-1/2)
 // - 说明提醒模板在程序中的位置
+//
+// 作为管理后台的子页面，(admin) 布局已经执行 requireAdmin 权限校验。
 
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { getActiveSessionUser } from "@/lib/auth/session";
-import { isAdmin } from "@/lib/rbac";
 import { InternalAdminView } from "@/features/admin/internal-admin-view";
 
-export default async function InternalAdminPage() {
-  // 仅管理员可访问内部管理页
-  const access = await getActiveSessionUser(await headers());
-  if (!access.ok) {
-    redirect("/login");
-  }
-  if (!isAdmin(access.user)) {
-    redirect("/dashboard");
-  }
-
+export default function AdminInternalPage() {
   return <InternalAdminView />;
 }

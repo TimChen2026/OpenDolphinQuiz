@@ -23,48 +23,32 @@ import React from "react";
 import { Logo } from "./Logo";
 import { useTranslations } from 'next-intl';
 import { LocaleLink } from './locale-link';
+import { IconBrandGithub } from '@tabler/icons-react';
+
+const GITHUB_REPO_URL = "https://github.com/TimChen2026/OpenDolphinQuiz";
 
 export const Footer = () => {
   const t = useTranslations();
-  
-  const links = [
-    {
-      name: t('navigation.main.pricing'),
-      href: "/pricing",
-    },
-    {
-      name: t('navigation.main.blog'),
-      href: "/blog",
-    },
-    {
-      name: t('navigation.main.contact'),
-      href: "/contact",
-    },
+
+  const productLinks = [
+    { name: t('navigation.footer.product.pricing'), href: "/pricing" },
+    { name: t('navigation.footer.product.blog'), href: "/blog" },
+    { name: t('navigation.footer.product.contact'), href: "/contact" },
   ];
-  const legal = [
-    {
-      name: t('navigation.footer.legal.terms'),
-      href: "/terms",
-    },
-    {
-      name: t('navigation.footer.legal.privacy'),
-      href: "/privacy",
-    },
-    {
-      name: t('navigation.footer.legal.cookies'),
-      href: "/cookies",
-    },
-    {
-      name: t('navigation.footer.legal.refund'),
-      href: "/refund",
-    },
+
+  const legalLinks = [
+    { name: t('navigation.footer.legal.terms'), href: "/terms" },
+    { name: t('navigation.footer.legal.privacy'), href: "/privacy" },
+    { name: t('navigation.footer.legal.cookies'), href: "/cookies" },
+    { name: t('navigation.footer.legal.refund'), href: "/refund" },
   ];
+
   return (
     <div className="relative">
       <div className="border-t border-border px-8 pt-20 pb-32 relative bg-background">
         <div className="max-w-7xl mx-auto">
-          {/* Footer Links Section */}
           <div className="text-sm text-muted-foreground flex sm:flex-row flex-col justify-between items-start">
+            {/* 左侧：品牌信息 */}
             <div>
               <div className="mr-4 md:flex mb-4">
                 <Logo imgClassName="h-16 w-auto object-contain" />
@@ -75,9 +59,15 @@ export const Footer = () => {
                 Support: DolphinQuiz.service@outlook.com
               </div>
             </div>
+
+            {/* 右侧：分类链接 */}
             <div className="grid grid-cols-2 gap-10 items-start mt-10 md:mt-0">
-              <div className="flex justify-center space-y-4 flex-col mt-4">
-                {links.map((link) => (
+              {/* 产品分类 */}
+              <div className="flex flex-col space-y-4 mt-4">
+                <h3 className="text-foreground font-semibold text-sm mb-2">
+                  {t('navigation.footer.product.title')}
+                </h3>
+                {productLinks.map((link) => (
                   <LocaleLink
                     key={link.name}
                     className="transition-colors hover:text-foreground text-muted-foreground text-xs sm:text-sm"
@@ -87,8 +77,13 @@ export const Footer = () => {
                   </LocaleLink>
                 ))}
               </div>
-              <div className="flex justify-center space-y-4 flex-col mt-4">
-                {legal.map((link) => (
+
+              {/* 法律分类 */}
+              <div className="flex flex-col space-y-4 mt-4">
+                <h3 className="text-foreground font-semibold text-sm mb-2">
+                  {t('navigation.footer.legal.title')}
+                </h3>
+                {legalLinks.map((link) => (
                   <LocaleLink
                     key={link.name}
                     className="transition-colors hover:text-foreground text-muted-foreground text-xs sm:text-sm"
@@ -99,6 +94,20 @@ export const Footer = () => {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* 底部：GitHub 链接 */}
+          <div className="flex justify-end mt-10">
+            <a
+              href={GITHUB_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="GitHub"
+            >
+              <IconBrandGithub className="w-5 h-5" />
+              <span className="text-sm">{t('navigation.footer.social.github')}</span>
+            </a>
           </div>
         </div>
       </div>

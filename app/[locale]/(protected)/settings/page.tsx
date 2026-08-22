@@ -29,6 +29,11 @@ import { Background } from "@/components/background";
 import { Button } from "@/components/button";
 import { Container } from "@/components/container";
 import { normalizeProfileName } from "@/lib/account-settings";
+import {
+  validatePassword,
+  getPasswordStrengthLabel,
+  getPasswordStrengthColor,
+} from "@/lib/password-validation";
 
 type UserProfile = {
   id: string;
@@ -59,6 +64,18 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>(null);
+
+  // 修改密码相关状态
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [changePasswordState, setChangePasswordState] = useState<SaveState>(null);
+
+  // 实时校验新密码强度
+  const passwordValidation = newPassword
+    ? validatePassword(newPassword)
+    : { isValid: false, errors: [], score: 0 };
 
   const fetchUserProfile = useCallback(async () => {
     try {
@@ -143,6 +160,93 @@ export default function SettingsPage() {
     await signOut();
     router.push("/");
     router.refresh();
+  };
+
+  const handleChangePassword = async () => {
+    setChangePasswordState(null);
+
+    // 前端校验
+    if (!currentPassword) {
+      setChangePasswordState({
+        type: "error",
+        message: t("sections.security.password.currentRequired"),
+      });
+      return;
+    }
+
+    if (!newPassword) {
+      setChangePasswordState({
+        type: "error",
+        message: t("sections.security.password.newRequired"),
+      });
+      return;
+    }
+
+    if (!passwordValidation.isValid) {
+      setChangePasswordState({
+        type: "error",
+        message: passwordValidation.errors[0],
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setChangePasswordState({
+        type: "error",
+        message: t("sections.security.password.passwordsDontMatch"),
+      });
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setChangePasswordState({
+        type: "error",
+        message: t("sections.security.password.sameAsOld"),
+      });
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    try {
+      const response = await fetch("/api/auth/change-password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || t("sections.security.password.changeFailed"));
+      }
+
+      setChangePasswordState({
+        type: "success",
+        message: t("sections.security.password.changeSuccess"),
+      });
+
+      // 清空表单
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      setChangePasswordState({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : t("sections.security.password.changeFailed"),
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const displayUser = userProfile ?? session.data?.user;
@@ -288,6 +392,122 @@ export default function SettingsPage() {
                   <p className="mt-1 break-all font-mono text-sm text-card-foreground">
                     {displayUser?.id}
                   </p>
+                </div>
+              </div>
+
+              {/* 修改密码区域 */}
+              <div className="mt-8 border-t border-border pt-6">
+                <h3 className="text-lg font-semibold text-card-foreground">
+                  {t("sections.security.password.title")}
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {t("sections.security.password.description")}
+                </p>
+
+                <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div>
+                    <label
+                      htmlFor="current-password"
+                      className="mb-2 block text-sm font-medium text-card-foreground"
+                    >
+                      {t("sections.security.password.currentLabel")}
+                    </label>
+                    <input
+                      id="current-password"
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary"
+                      placeholder={t("sections.security.password.currentPlaceholder")}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="new-password"
+                      className="mb-2 block text-sm font-medium text-card-foreground"
+                    >
+                      {t("sections.security.password.newLabel")}
+                    </label>
+                    <input
+                      id="new-password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary"
+                      placeholder={t("sections.security.password.newPlaceholder")}
+                    />
+                    {/* 密码强度指示器 */}
+                    {newPassword && (
+                      <div className="mt-2">
+                        <div className="flex items-center gap-2">
+                          <div className="h-1.5 flex-1 rounded-full bg-muted">
+                            <div
+                              className={`h-full rounded-full transition-all ${getPasswordStrengthColor(passwordValidation.score)}`}
+                              style={{ width: `${(passwordValidation.score / 5) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {getPasswordStrengthLabel(passwordValidation.score)}
+                          </span>
+                        </div>
+                        {/* 密码规则提示 */}
+                        {!passwordValidation.isValid && (
+                          <ul className="mt-2 space-y-0.5">
+                            {passwordValidation.errors.map((error, index) => (
+                              <li key={index} className="text-xs text-red-500">
+                                • {error}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="confirm-password"
+                      className="mb-2 block text-sm font-medium text-card-foreground"
+                    >
+                      {t("sections.security.password.confirmLabel")}
+                    </label>
+                    <input
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary"
+                      placeholder={t("sections.security.password.confirmPlaceholder")}
+                    />
+                    {confirmPassword && confirmPassword !== newPassword && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {t("sections.security.password.passwordsDontMatch")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* 修改密码状态提示 */}
+                {changePasswordState && (
+                  <div
+                    className={`mt-4 rounded-xl border px-4 py-3 text-sm ${
+                      changePasswordState.type === "success"
+                        ? "border-green-500/30 bg-green-500/10 text-green-600"
+                        : "border-destructive/30 bg-destructive/10 text-destructive"
+                    }`}
+                  >
+                    {changePasswordState.message}
+                  </div>
+                )}
+
+                <div className="mt-4">
+                  <Button
+                    onClick={handleChangePassword}
+                    disabled={isChangingPassword || !currentPassword || !newPassword || !confirmPassword}
+                  >
+                    {isChangingPassword
+                      ? t("sections.security.password.changing")
+                      : t("sections.security.password.change")}
+                  </Button>
                 </div>
               </div>
 

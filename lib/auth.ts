@@ -55,4 +55,4 @@ export const auth = betterAuth({
   trustedOrigins,
 });
 
-export { hashPassword } from "better-auth/crypto";
+export { hashPassword, verifyPassword } from "better-auth/crypto";

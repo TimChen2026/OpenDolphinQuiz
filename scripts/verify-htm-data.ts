@@ -229,7 +229,7 @@ async function main() {
     const mgrRows = Array.isArray(mgrResult) ? mgrResult : [];
     console.log("经理分布:");
     for (const r of mgrRows) {
-      const name = mgrNameById.get(r.manager_id) || "未知";
+      const name = mgrNameById.get(String(r.manager_id)) || "未知";
       console.log(`  ${name}: ${r.cnt} 条`);
     }
 
