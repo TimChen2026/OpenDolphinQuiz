@@ -37,6 +37,7 @@ export interface AdminUserListItem {
   email: string;
   emailVerified: boolean;
   role: string;
+  plan: string;
   banned: boolean;
   banReason: string | null;
   banExpires: Date | null;
@@ -106,6 +107,7 @@ export async function getAdminUsersDirectory(
           email: user.email,
           emailVerified: user.emailVerified,
           role: user.role,
+          plan: user.plan,
           banned: user.banned,
           banReason: user.banReason,
           banExpires: user.banExpires,
@@ -124,6 +126,7 @@ export async function getAdminUsersDirectory(
           email: user.email,
           emailVerified: user.emailVerified,
           role: user.role,
+          plan: user.plan,
           banned: user.banned,
           banReason: user.banReason,
           banExpires: user.banExpires,

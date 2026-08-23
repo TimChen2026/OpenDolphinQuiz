@@ -48,6 +48,8 @@ describe("auth session access", () => {
     expect(
       resolveSessionAccess({
         id: "user-1",
+        email: "user@example.com",
+        plan: "free",
         banned: true,
         banExpires: null,
         emailVerified: true,
@@ -65,6 +67,8 @@ describe("auth session access", () => {
     expect(
       resolveSessionAccess({
         id: "user-1",
+        email: "user@example.com",
+        plan: "free",
         banned: false,
         banExpires: null,
         emailVerified: true,
@@ -75,6 +79,8 @@ describe("auth session access", () => {
       ok: true,
       user: {
         id: "user-1",
+        email: "user@example.com",
+        plan: "free",
         banned: false,
         banExpires: null,
         emailVerified: true,

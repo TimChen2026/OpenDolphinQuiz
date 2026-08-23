@@ -33,7 +33,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { updateUserRole, banUser, deleteUser } from "@/features/admin/actions/user-actions";
+import { updateUserRole, updateUserPlan, banUser, deleteUser } from "@/features/admin/actions/user-actions";
 import { toast } from "sonner";
 import type { AdminUserListItem } from "@/lib/admin-user-directory";
 
@@ -141,6 +141,20 @@ export function UsersTable({
     }
   };
 
+  const handleUpdatePlan = async (userId: string, newPlan: string) => {
+    try {
+      await updateUserPlan(userId, newPlan);
+      setUsers((currentUsers) =>
+        currentUsers.map((existingUser) =>
+          existingUser.id === userId ? { ...existingUser, plan: newPlan } : existingUser
+        )
+      );
+      toast.success(t("planUpdated"));
+    } catch {
+      toast.error(t("planUpdateFailed"));
+    }
+  };
+
   const handleBanUser = async (userId: string, banned: boolean, reason?: string) => {
     try {
       await banUser(userId, banned, reason);
@@ -221,6 +235,9 @@ export function UsersTable({
                   {t("role")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  {t("plan")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   {t("status")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -260,6 +277,17 @@ export function UsersTable({
                     >
                       <option value="user">User</option>
                       <option value="admin">Admin</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4">
+                    <select
+                      value={user.plan}
+                      onChange={(e) => handleUpdatePlan(user.id, e.target.value)}
+                      className="px-3 py-1 text-sm rounded-lg border border-border bg-background text-foreground"
+                    >
+                      <option value="free">{t("planFree")}</option>
+                      <option value="pro">{t("planPro")}</option>
+                      <option value="max">{t("planMax")}</option>
                     </select>
                   </td>
                   <td className="px-6 py-4">
@@ -328,7 +356,7 @@ export function UsersTable({
               ))}
               {!hasResults ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-muted-foreground">
                     {query ? t("emptySearchState") : t("emptyState")}
                   </td>
                 </tr>
@@ -452,6 +480,18 @@ function UserDetailModal({
                 {t("role")}
               </label>
               <p className="mt-1 text-foreground">{user.role}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground">
+                {t("plan")}
+              </label>
+              <p className="mt-1 text-foreground">
+                {user.plan === "max"
+                  ? t("planMax")
+                  : user.plan === "pro"
+                    ? t("planPro")
+                    : t("planFree")}
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-muted-foreground">

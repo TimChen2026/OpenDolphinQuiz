@@ -61,6 +61,13 @@ export const USER_ROLES = {
   USER: "user",
 } as const;
 
+// 用户套餐常量(定价方案:free/pro/max)
+export const USER_PLANS = {
+  FREE: "free",
+  PRO: "pro",
+  MAX: "max",
+} as const;
+
 // 通行证状态常量
 export const PASSPORT_STATUS = {
   UNVERIFIED: "unverified",

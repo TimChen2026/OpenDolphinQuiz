@@ -21,10 +21,10 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { user, USER_ROLES } from "@/lib/db/schema";
+import { user, USER_ROLES, USER_PLANS } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { isAdmin, getCurrentUserWithRole } from "@/lib/auth/admin";
-import { hasRole } from "@/lib/rbac";
+import { isAdmin as hasAdminPermission, hasRole } from "@/lib/rbac";
 import { revalidatePath } from "next/cache";
 
 export async function updateUserRole(userId: string, newRole: string) {
@@ -37,8 +37,34 @@ export async function updateUserRole(userId: string, newRole: string) {
   // 更新用户角色
   await db
     .update(user)
-    .set({ 
+    .set({
       role: newRole,
+      updatedAt: new Date()
+    })
+    .where(eq(user.id, userId));
+
+  revalidatePath("/admin/users");
+  return { success: true };
+}
+
+// 合法套餐列表
+const VALID_PLANS = [USER_PLANS.FREE, USER_PLANS.PRO, USER_PLANS.MAX];
+
+export async function updateUserPlan(userId: string, newPlan: string) {
+  // 检查权限:管理员或超级管理员均可设置用户套餐
+  const hasAdminAccess = await isAdmin();
+  if (!hasAdminAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  if (!VALID_PLANS.includes(newPlan as (typeof VALID_PLANS)[number])) {
+    throw new Error("套餐不合法,仅支持 free/pro/max");
+  }
+
+  await db
+    .update(user)
+    .set({
+      plan: newPlan,
       updatedAt: new Date()
     })
     .where(eq(user.id, userId));
@@ -70,9 +96,9 @@ export async function banUser(userId: string, banned: boolean, reason?: string) 
 }
 
 export async function deleteUser(userId: string) {
-  // 检查权限：仅管理员可删除用户
+  // 检查权限：仅管理员(含超级管理员)可删除用户
   const currentUser = await getCurrentUserWithRole();
-  if (!currentUser || !hasRole(currentUser, USER_ROLES.ADMIN)) {
+  if (!currentUser || !hasAdminPermission(currentUser)) {
     throw new Error("Unauthorized");
   }
 

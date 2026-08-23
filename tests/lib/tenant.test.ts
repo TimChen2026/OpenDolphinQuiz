@@ -38,7 +38,7 @@ describe("tenant", () => {
     const { getActiveSessionUser } = await import("@/lib/auth/session");
     vi.mocked(getActiveSessionUser).mockResolvedValue({
       ok: true,
-      user: { id: "user-123", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
+      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
     });
     const tenantId = await getCurrentTenantId();
     expect(tenantId).toBe("user-123");
@@ -58,7 +58,7 @@ describe("tenant", () => {
     const { getActiveSessionUser } = await import("@/lib/auth/session");
     vi.mocked(getActiveSessionUser).mockResolvedValue({
       ok: true,
-      user: { id: "user-123", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
+      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
     });
     await expect(assertTenantOwnership("user-123")).resolves.toBeUndefined();
   });
@@ -67,7 +67,7 @@ describe("tenant", () => {
     const { getActiveSessionUser } = await import("@/lib/auth/session");
     vi.mocked(getActiveSessionUser).mockResolvedValue({
       ok: true,
-      user: { id: "user-123", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
+      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
     });
     await expect(assertTenantOwnership("other-user")).rejects.toThrow("无权访问");
   });
@@ -76,7 +76,7 @@ describe("tenant", () => {
     const { getActiveSessionUser } = await import("@/lib/auth/session");
     vi.mocked(getActiveSessionUser).mockResolvedValue({
       ok: true,
-      user: { id: "user-456", role: "admin", banned: false, emailVerified: true, banExpires: null, isDirector: false },
+      user: { id: "user-456", email: "admin@example.com", plan: "free", role: "admin", banned: false, emailVerified: true, banExpires: null, isDirector: false },
     });
     const tenantId = await getCurrentTenantIdOrNull();
     expect(tenantId).toBe("user-456");

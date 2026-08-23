@@ -18,8 +18,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { hasRole, isAdmin, isSalesDirector, isSalesManager } from "@/lib/rbac";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  hasRole,
+  isAdmin,
+  isSuperAdminEmail,
+  isSalesDirector,
+  isSalesManager,
+} from "@/lib/rbac";
 
 vi.mock("@/lib/auth/session", () => ({
   getActiveSessionUser: vi.fn(),
@@ -28,10 +34,17 @@ vi.mock("@/lib/auth/session", () => ({
 describe("rbac", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    delete process.env.SUPER_ADMIN_EMAIL;
   });
 
-  const mockUser = (role: string) => ({
+  afterEach(() => {
+    delete process.env.SUPER_ADMIN_EMAIL;
+  });
+
+  const mockUser = (role: string, email = "normal-user@example.com") => ({
     id: "user-1",
+    email,
+    plan: "free",
     role,
     banned: false,
     emailVerified: true,
@@ -61,5 +74,73 @@ describe("rbac", () => {
 
   it("isSalesManager sales_manager角色返回true", () => {
     expect(isSalesManager(mockUser("sales_manager"))).toBe(true);
+  });
+});
+
+describe("isSuperAdminEmail 超级管理员识别", () => {
+  const SUPER_ADMIN = "huiting.chen@outlook.com";
+
+  beforeEach(() => {
+    process.env.SUPER_ADMIN_EMAIL = SUPER_ADMIN;
+  });
+
+  afterEach(() => {
+    delete process.env.SUPER_ADMIN_EMAIL;
+  });
+
+  it("邮箱与环境变量一致时返回true", () => {
+    expect(isSuperAdminEmail(SUPER_ADMIN)).toBe(true);
+  });
+
+  it("邮箱大小写不一致时仍返回true(大小写不敏感)", () => {
+    expect(isSuperAdminEmail("Huiting.Chen@Outlook.com")).toBe(true);
+  });
+
+  it("邮箱前后带空格时仍返回true", () => {
+    expect(isSuperAdminEmail(`  ${SUPER_ADMIN}  `)).toBe(true);
+  });
+
+  it("其他邮箱返回false", () => {
+    expect(isSuperAdminEmail("someone-else@example.com")).toBe(false);
+  });
+
+  it("未配置环境变量时一律返回false", () => {
+    delete process.env.SUPER_ADMIN_EMAIL;
+    expect(isSuperAdminEmail(SUPER_ADMIN)).toBe(false);
+  });
+
+  it("空邮箱返回false", () => {
+    expect(isSuperAdminEmail("")).toBe(false);
+    expect(isSuperAdminEmail(null)).toBe(false);
+    expect(isSuperAdminEmail(undefined)).toBe(false);
+  });
+
+  it("isAdmin 对超级管理员邮箱返回true(即使角色为普通 user)", () => {
+    const superAdminUser = {
+      id: "user-1",
+      email: SUPER_ADMIN,
+      plan: "free",
+      role: "user",
+      banned: false,
+      emailVerified: true,
+      banExpires: null,
+      isDirector: false,
+    };
+    expect(isAdmin(superAdminUser)).toBe(true);
+  });
+
+  it("isAdmin 对未配置的邮箱即使同名也不放行", () => {
+    delete process.env.SUPER_ADMIN_EMAIL;
+    const fakeSuperAdmin = {
+      id: "user-1",
+      email: SUPER_ADMIN,
+      plan: "free",
+      role: "user",
+      banned: false,
+      emailVerified: true,
+      banExpires: null,
+      isDirector: false,
+    };
+    expect(isAdmin(fakeSuperAdmin)).toBe(false);
   });
 });

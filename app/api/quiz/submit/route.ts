@@ -41,6 +41,7 @@ import {
   getInquiryLimitStatusForTenant,
   maybeSendInquiryLimitEmails,
 } from "@/lib/dashboard/inquiry-limit";
+import { getPotentialCustomerLimitStatusForTenant } from "@/lib/plan-limits";
 import { getEmailTemplatesByTenant } from "@/lib/dashboard/email-templates";
 import { EMAIL_TEMPLATE_TYPES } from "@/lib/db/schema";
 
@@ -129,9 +130,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. 查询客户信息(姓名/邮箱/加密手机号)
+    // 3. 查询客户信息(姓名/邮箱/加密手机号/套餐)
     const userRows = await db
-      .select({ name: user.name, email: user.email, phone: user.phone })
+      .select({
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        plan: user.plan,
+      })
       .from(user)
       .where(eq(user.id, session.user.id))
       .limit(1);
@@ -145,6 +151,22 @@ export async function POST(request: NextRequest) {
     if (limitStatus.isLimited) {
       return NextResponse.json(
         { error: "今日询盘次数已达上限,请明日再试" },
+        { status: 403 }
+      );
+    }
+
+    // 3.2 潜在客户配额检查(套餐限制:Free 30个/月,Pro 10000个/年,Max 30000个/年)
+    const customerLimit = await getPotentialCustomerLimitStatusForTenant(
+      session.user.id,
+      targetUser.plan
+    );
+    if (customerLimit.isLimited) {
+      const periodLabel =
+        customerLimit.period === "year" ? "今年" : "本月";
+      return NextResponse.json(
+        {
+          error: `当前套餐潜在客户数量已达上限(${periodLabel}最多 ${customerLimit.limit} 个),请联系服务商升级套餐`,
+        },
         { status: 403 }
       );
     }

@@ -28,6 +28,9 @@ export type AccessUser = {
   banned: boolean;
   emailVerified: boolean;
   id: string;
+  email: string;
+  /** 套餐:free | pro | max */
+  plan: string;
   role: string;
   /** 是否兼任销售总监(is_director 标记,验收修订 2.1.7.5) */
   isDirector: boolean;
@@ -109,9 +112,11 @@ export async function getActiveSessionUser(
   const dbUsers = await db
     .select({
       id: user.id,
+      email: user.email,
       emailVerified: user.emailVerified,
       banned: user.banned,
       banExpires: user.banExpires,
+      plan: user.plan,
       role: user.role,
       isDirector: user.isDirector,
     })

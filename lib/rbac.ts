@@ -31,10 +31,23 @@ export function hasRole(user: AccessUser, role: string): boolean {
 }
 
 /**
- * 判断用户是否为管理员
+ * 判断邮箱是否为环境变量中配置的超级管理员
+ * 超级管理员为项目开发者本人(唯一),通过 SUPER_ADMIN_EMAIL 环境变量指定,
+ * 拥有最高权限,不受数据库 role 字段限制
+ */
+export function isSuperAdminEmail(email: string | null | undefined): boolean {
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
+  if (!superAdminEmail || !email) {
+    return false;
+  }
+  return email.trim().toLowerCase() === superAdminEmail;
+}
+
+/**
+ * 判断用户是否为管理员(admin 角色或环境变量指定的超级管理员)
  */
 export function isAdmin(user: AccessUser): boolean {
-  return hasRole(user, USER_ROLES.ADMIN);
+  return hasRole(user, USER_ROLES.ADMIN) || isSuperAdminEmail(user.email);
 }
 
 /**
@@ -70,9 +83,19 @@ export async function requireRole(...roles: string[]): Promise<AccessUser> {
 
 /**
  * 要求管理员权限,否则重定向
+ * 管理员包括:admin 角色 + 环境变量指定的超级管理员(邮箱识别)
  */
 export async function requireAdmin(): Promise<AccessUser> {
-  return requireRole(USER_ROLES.ADMIN);
+  const access = await getActiveSessionUser(await headers());
+  if (!access.ok) {
+    redirect("/login");
+  }
+
+  if (!isAdmin(access.user)) {
+    redirect("/dashboard");
+  }
+
+  return access.user;
 }
 
 /**

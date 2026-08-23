@@ -21,6 +21,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { getActiveSessionUser } from "@/lib/auth/session";
+import { isAdmin } from "@/lib/rbac";
 
 export async function GET() {
   try {
@@ -29,7 +30,8 @@ export async function GET() {
       return NextResponse.json({ isAdmin: false });
     }
 
-    return NextResponse.json({ isAdmin: access.user.role === "admin" });
+    // admin 角色 或 环境变量指定的超级管理员(SUPER_ADMIN_EMAIL)
+    return NextResponse.json({ isAdmin: isAdmin(access.user) });
   } catch (error) {
     console.error("Error checking admin status:", error);
     return NextResponse.json({ isAdmin: false });

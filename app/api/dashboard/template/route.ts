@@ -31,6 +31,7 @@ import { createDefaultQuizTemplate } from "@/lib/quiz/template-init";
 import { getEditableTemplate } from "@/lib/dashboard/quiz-editor";
 import { getProjectsByTenant } from "@/lib/dashboard/project-status";
 import { getInquiryLimitStatusForTenant } from "@/lib/dashboard/inquiry-limit";
+import { getQuizLimitStatusForTenant } from "@/lib/plan-limits";
 
 export async function GET() {
   try {
@@ -41,6 +42,19 @@ export async function GET() {
     if (!clientTemplate) {
       // 新注册用户(含免费客户)首次进入仪表盘时没有模板:
       // 自动创建默认模板并直接置为激活,保证三个视图(项目看板/交互界面/逻辑界面)可正常加载
+      // 创建前校验套餐 Quiz 数量配额(Free 1 / Pro 6 / Max 12)
+      const quizLimit = await getQuizLimitStatusForTenant(
+        user.id,
+        user.plan
+      );
+      if (quizLimit.isLimited) {
+        return NextResponse.json(
+          {
+            error: `当前套餐最多创建 ${quizLimit.limit} 个 Quiz 问卷,已达上限,请升级套餐`,
+          },
+          { status: 403 }
+        );
+      }
       await createDefaultQuizTemplate(user.id, { status: "active" });
       clientTemplate = await getActiveClientTemplate(user.id);
     }
