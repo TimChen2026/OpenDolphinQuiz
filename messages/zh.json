@@ -41,6 +41,7 @@
       "contact": "联系我们",
       "docs": "文档",
       "dashboard": "仪表盘",
+      "plan": "套餐",
       "credits": "积分",
       "profile": "个人资料",
       "settings": "设置"
@@ -559,7 +560,7 @@
   "contact": {
     "title": "联系我们",
     "subtitle": "我们很乐意倾听您的声音。给我们发送消息，我们会尽快回复。",
-    "description": "请联系我们，我们会以光速回复您。",
+    "description": "请联系我们，我们会尽快回复您。",
     "testimonial": {
       "title": "DolphinQuiz AI 被数千名用户使用",
       "description": "在众多 AI 应用中，DolphinQuiz AI 以其顶级的 AI 能力脱颖而出。"

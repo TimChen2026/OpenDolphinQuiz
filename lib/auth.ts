@@ -44,6 +44,17 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  user: {
+    additionalFields: {
+      // 用户套餐(免费/付费),已存在于 user.plan 列,仅随会话输出
+      plan: {
+        type: "string",
+        required: false,
+        defaultValue: "free",
+        input: false,
+      },
+    },
+  },
   ...(googleAuthProvider
     ? {
         socialProviders: {

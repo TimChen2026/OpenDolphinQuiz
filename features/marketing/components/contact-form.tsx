@@ -33,17 +33,9 @@ import {
 import { ContactInput, contactSchema } from "@/features/marketing/schemas";
 import {
   IconBrandGithub,
-  IconBrandX,
 } from "@tabler/icons-react";
 
 const socials = [
-  {
-    title: "twitter",
-    href: "https://x.com/bourneliu66",
-    icon: (
-      <IconBrandX className="h-5 w-5 text-muted-foreground transition-colors hover:text-foreground" />
-    ),
-  },
   {
     title: "github",
     href: "https://github.com/Idea-To-Business/dolphinquiz",
