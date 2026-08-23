@@ -102,9 +102,10 @@ describe("marketing pricing", () => {
     expect(screen.getByRole("heading", { name: "Free" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Pro" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Max" })).toBeInTheDocument();
-    // Free 套餐的 price 也是 "Free"，Pro 和 Max 套餐的 price 是 "TBA"
+    // Free 套餐的 price 也是 "Free"；Pro/Max 已定价为 $10/$20 每月（components/pricing.tsx MONTHLY_PRICE）
     expect(screen.getAllByText("Free")).toHaveLength(2);
-    expect(screen.getAllByText("TBA")).toHaveLength(2);
+    expect(screen.getAllByText("$10 / month")).toHaveLength(1);
+    expect(screen.getAllByText("$20 / month")).toHaveLength(1);
     expect(screen.queryByText("Enterprise")).not.toBeInTheDocument();
     expect(screen.queryByText("Professional")).not.toBeInTheDocument();
   });

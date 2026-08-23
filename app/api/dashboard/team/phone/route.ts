@@ -25,8 +25,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { updateUserPhone } from "@/lib/dashboard/team";
+import { assertTeamStaff } from "@/lib/teams";
 
 const updatePhoneSchema = z.object({
   userId: z.string().min(1, "缺少用户 ID"),
@@ -35,7 +36,7 @@ const updatePhoneSchema = z.object({
 
 export async function PUT(request: NextRequest) {
   try {
-    await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -50,6 +51,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // 仅可更新本团队成员的电话(团队隔离)
+    await assertTeamStaff(parsed.data.userId, teamId);
     await updateUserPhone(parsed.data.userId, parsed.data.phone);
     return NextResponse.json({ success: true });
   } catch (error) {

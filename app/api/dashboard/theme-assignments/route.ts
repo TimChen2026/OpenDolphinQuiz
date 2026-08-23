@@ -26,7 +26,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { getActiveClientTemplate } from "@/lib/quiz/queries";
 import {
   getThemeAssignments,
@@ -41,9 +41,9 @@ const putAssignmentSchema = z.object({
 
 export async function GET() {
   try {
-    const user = await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
-    const template = await getActiveClientTemplate(user.id);
+    const template = await getActiveClientTemplate(teamId);
     if (!template) {
       return NextResponse.json(
         { error: "当前没有激活的 Quiz 模板" },
@@ -53,7 +53,7 @@ export async function GET() {
 
     const [assignments, managers] = await Promise.all([
       getThemeAssignments(template.id),
-      listSalesManagers(),
+      listSalesManagers(teamId),
     ]);
 
     return NextResponse.json({ assignments, managers, templateId: template.id });
@@ -68,7 +68,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -83,7 +83,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const template = await getActiveClientTemplate(user.id);
+    const template = await getActiveClientTemplate(teamId);
     if (!template) {
       return NextResponse.json(
         { error: "当前没有激活的 Quiz 模板" },

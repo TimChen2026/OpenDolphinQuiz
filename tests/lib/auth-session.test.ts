@@ -55,6 +55,8 @@ describe("auth session access", () => {
         emailVerified: true,
         role: "user",
         isDirector: false,
+        accountType: "member",
+        teamId: null,
       })
     ).toEqual({
       ok: false,
@@ -74,6 +76,8 @@ describe("auth session access", () => {
         emailVerified: true,
         role: "user",
         isDirector: false,
+        accountType: "member",
+        teamId: null,
       })
     ).toEqual({
       ok: true,
@@ -86,6 +90,8 @@ describe("auth session access", () => {
         emailVerified: true,
         role: "user",
         isDirector: false,
+        accountType: "member",
+        teamId: null,
       },
     });
   });

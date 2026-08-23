@@ -23,7 +23,7 @@
 // 测试10个纯聚合函数的正确性
 // 数据获取与聚合分离(AC-10):聚合函数不依赖数据库,纯函数可测试
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import type { DashboardProject } from "@/features/dashboard/types";
 import {
   computeWeeklyVisits,
@@ -74,7 +74,18 @@ function dt(year: number, month: number, day: number, hour = 0, minute = 0): str
 }
 
 // 当前测试基准日期: 2026-08-14
+// 聚合函数内部依赖 new Date() 计算"过去一周/一月"等窗口,
+// 必须冻结系统时间,否则测试数据会随真实日期漂移而失效
 const NOW = new Date("2026-08-14T12:00:00.000Z");
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(NOW);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 // ==================== 1.1 每周访问量分布 ====================
 

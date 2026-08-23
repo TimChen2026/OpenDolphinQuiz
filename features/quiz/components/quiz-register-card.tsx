@@ -34,11 +34,13 @@ import Password from "@/components/password";
 import { FormTextField } from "@/features/forms/components/form-text-field";
 import { SocialAuthButtons } from "@/features/auth/components/social-auth-buttons";
 import { TurnstileWidget } from "@/features/auth/components/turnstile";
-import { SignupInput, signupSchema } from "@/features/auth/schemas";
+import { QuizRegisterInput, quizRegisterSchema } from "@/features/auth/schemas";
 
 type QuizRegisterCardProps = {
   /** 注册成功后回调,父组件据此进入 Quiz 流程 */
   onRegistered: () => void;
+  /** 当前问卷模板 ID,客户注册后自动归属该模板所属团队 */
+  templateId?: string;
 };
 
 /**
@@ -52,7 +54,7 @@ type QuizRegisterCardProps = {
  *
  * 复用SignupForm的核心逻辑:zod 校验、Better Auth signUp、Turnstile 人机验证、增强端点
  */
-export function QuizRegisterCard({ onRegistered }: QuizRegisterCardProps) {
+export function QuizRegisterCard({ onRegistered, templateId }: QuizRegisterCardProps) {
   const locale = useLocale();
   const t = useTranslations("quiz.register");
   const tSocial = useTranslations("auth.social");
@@ -60,8 +62,8 @@ export function QuizRegisterCard({ onRegistered }: QuizRegisterCardProps) {
   const [error, setError] = React.useState<string | null>(null);
   const [isSuccess, setIsSuccess] = React.useState(false);
 
-  const form = useForm<SignupInput>({
-    resolver: zodResolver(signupSchema),
+  const form = useForm<QuizRegisterInput>({
+    resolver: zodResolver(quizRegisterSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -71,7 +73,7 @@ export function QuizRegisterCard({ onRegistered }: QuizRegisterCardProps) {
     },
   });
 
-  async function onSubmit(values: SignupInput) {
+  async function onSubmit(values: QuizRegisterInput) {
     try {
       setIsLoading(true);
       setError(null);
@@ -98,6 +100,7 @@ export function QuizRegisterCard({ onRegistered }: QuizRegisterCardProps) {
           body: JSON.stringify({
             phone: values.phone,
             turnstileToken: values.turnstileToken,
+            templateId,
           }),
         });
 

@@ -24,14 +24,14 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { projects } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { computeDuration } from "@/lib/dashboard/warning";
 
 export async function POST() {
   try {
-    const user = await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
-    // 获取该租户下所有项目
+    // 获取该租户(团队)下所有项目
     const allProjects = await db
       .select({
         id: projects.id,
@@ -40,7 +40,7 @@ export async function POST() {
         over3Days: projects.over3Days,
       })
       .from(projects)
-      .where(eq(projects.tenantId, user.id));
+      .where(eq(projects.tenantId, teamId));
 
     let fixedCount = 0;
     const now = new Date();
@@ -56,7 +56,7 @@ export async function POST() {
         await db
           .update(projects)
           .set({ durationHours: newDuration, over3Days })
-          .where(and(eq(projects.id, p.id), eq(projects.tenantId, user.id)));
+          .where(and(eq(projects.id, p.id), eq(projects.tenantId, teamId)));
         fixedCount++;
       }
     }

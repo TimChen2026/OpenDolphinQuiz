@@ -312,9 +312,11 @@
       }
     },
     "signup": {
-      "title": "注册一个新账户",
+      "title": "尊贵的用户，欢迎注册一个新账户",
       "nameLabel": "姓名",
       "namePlaceholder": "张三",
+      "companyNameLabel": "团队/公司名称",
+      "companyNamePlaceholder": "请输入您所在的团队或公司名称",
       "emailLabel": "邮箱地址",
       "emailPlaceholder": "hello@example.com",
       "passwordLabel": "密码",

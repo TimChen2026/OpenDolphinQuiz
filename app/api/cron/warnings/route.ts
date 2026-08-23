@@ -33,7 +33,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { user } from "@/lib/db/schema";
+import { team } from "@/lib/db/schema";
 import { processTenantWarnings } from "@/lib/dashboard/warning";
 
 export async function POST(request: NextRequest) {
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // 遍历所有租户(每个 user 即一个租户)
-    const tenants = await db.select({ id: user.id }).from(user);
+    // 遍历所有租户(团队模型:每个团队即一个租户,tenant_id = team.id)
+    const tenants = await db.select({ id: team.id }).from(team);
 
     const allTriggered: {
       projectId: string;

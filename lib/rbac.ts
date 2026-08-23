@@ -21,7 +21,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getActiveSessionUser, type AccessUser } from "./auth/session";
-import { USER_ROLES } from "./db/schema";
+import { USER_ROLES, ACCOUNT_TYPES } from "./db/schema";
 
 /**
  * 判断用户是否具有指定角色
@@ -44,10 +44,13 @@ export function isSuperAdminEmail(email: string | null | undefined): boolean {
 }
 
 /**
- * 判断用户是否为管理员(admin 角色或环境变量指定的超级管理员)
+ * 判断用户是否为管理员(管理后台准入)
+ *
+ * 仅环境变量 SUPER_ADMIN_EMAIL 指定的超级管理员可访问管理后台;
+ * 数据库 admin 角色仅表示团队管理员,不再授予管理后台权限
  */
 export function isAdmin(user: AccessUser): boolean {
-  return hasRole(user, USER_ROLES.ADMIN) || isSuperAdminEmail(user.email);
+  return isSuperAdminEmail(user.email);
 }
 
 /**
@@ -83,7 +86,7 @@ export async function requireRole(...roles: string[]): Promise<AccessUser> {
 
 /**
  * 要求管理员权限,否则重定向
- * 管理员包括:admin 角色 + 环境变量指定的超级管理员(邮箱识别)
+ * 管理后台仅环境变量指定的超级管理员可访问
  */
 export async function requireAdmin(): Promise<AccessUser> {
   const access = await getActiveSessionUser(await headers());
@@ -99,13 +102,20 @@ export async function requireAdmin(): Promise<AccessUser> {
 }
 
 /**
- * 要求Dashboard访问权限(admin/sales_director/sales_manager/普通注册用户/销售总监标记),否则重定向
- * 免费客户(普通 user 角色)也应可进入仪表盘查看与使用
+ * 要求Dashboard访问权限(团队成员),否则重定向
+ *
+ * 客户(accountType=customer)仅可访问问卷,禁止进入仪表盘;
+ * 团队成员(admin/sales_director/sales_manager/user 及销售总监标记)均可访问
  */
 export async function requireDashboardAccess(): Promise<AccessUser> {
   const access = await getActiveSessionUser(await headers());
   if (!access.ok) {
     redirect("/login");
+  }
+
+  // 客户只可访问问卷,不可访问仪表盘
+  if (access.user.accountType === ACCOUNT_TYPES.CUSTOMER) {
+    redirect("/quiz");
   }
 
   const allowedRoles = [
@@ -120,4 +130,36 @@ export async function requireDashboardAccess(): Promise<AccessUser> {
   }
 
   return access.user;
+}
+
+/**
+ * 团队上下文(团队成员访问租户数据时的统一入口)
+ *
+ * - teamId:数据隔离键(tenant_id = team.id = 团队管理员 userId)
+ * - teamPlan:团队套餐 = 团队管理员的 plan,团队成员共享团队配额
+ */
+export type TeamContext = {
+  user: AccessUser;
+  teamId: string;
+  teamPlan: string;
+};
+
+/**
+ * 要求团队成员身份并返回团队上下文
+ *
+ * 在 requireDashboardAccess 基础上进一步保证 teamId 非空
+ * (客户已在 requireDashboardAccess 拦截,此处为类型收窄)
+ */
+export async function requireTeamAccess(): Promise<TeamContext> {
+  const accessUser = await requireDashboardAccess();
+  if (!accessUser.teamId) {
+    redirect("/quiz");
+  }
+  // 团队管理员(teamId = 自身 userId)直接用自身套餐,避免多余查询
+  if (accessUser.teamId === accessUser.id) {
+    return { user: accessUser, teamId: accessUser.teamId, teamPlan: accessUser.plan };
+  }
+  const { getTeamPlan } = await import("@/lib/teams");
+  const teamPlan = await getTeamPlan(accessUser.teamId);
+  return { user: accessUser, teamId: accessUser.teamId, teamPlan };
 }

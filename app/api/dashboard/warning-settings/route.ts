@@ -26,7 +26,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import {
   getWarningSettingsByTenant,
   updateWarningSettingsByTenant,
@@ -39,8 +39,8 @@ const putSettingsSchema = z.object({
 
 export async function GET() {
   try {
-    const user = await requireDashboardAccess();
-    const settings = await getWarningSettingsByTenant(user.id);
+    const { teamId } = await requireTeamAccess();
+    const settings = await getWarningSettingsByTenant(teamId);
     return NextResponse.json({ settings });
   } catch (error) {
     console.error("warning-settings GET 错误:", error);
@@ -53,7 +53,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -69,7 +69,7 @@ export async function PUT(request: NextRequest) {
     }
 
     await updateWarningSettingsByTenant(
-      user.id,
+      teamId,
       parsed.data.yellowHours,
       parsed.data.redHours
     );

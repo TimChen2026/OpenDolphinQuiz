@@ -25,21 +25,21 @@
 // 审计:操作成功后记录审计日志
 
 import { NextRequest, NextResponse } from "next/server";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { getProjectsByTenant } from "@/lib/dashboard/project-status";
 import { logAudit } from "@/lib/dashboard/audit-log";
 import { AUDIT_ACTION_TYPES } from "@/lib/db/schema";
 import ExcelJS from "exceljs";
 
 export async function GET(request: NextRequest) {
-  // 1. 校验登录 + Dashboard 权限
-  // 注:requireDashboardAccess 在未登录时调用 redirect("/login") 抛出 NEXT_REDIRECT,
+  // 1. 校验登录 + 团队权限(项目数据按团队隔离)
+  // 注:requireTeamAccess 在未登录时调用 redirect("/login") 抛出 NEXT_REDIRECT,
   //    因此必须放在 try-catch 外部,确保重定向正常生效
-  const user = await requireDashboardAccess();
+  const { user, teamId } = await requireTeamAccess();
 
   try {
     // 2. 获取项目数据
-    const projects = await getProjectsByTenant(user.id);
+    const projects = await getProjectsByTenant(teamId);
 
     // 3. 创建 Excel 工作簿
     const workbook = new ExcelJS.Workbook();

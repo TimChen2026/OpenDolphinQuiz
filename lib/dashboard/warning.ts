@@ -202,7 +202,7 @@ export async function processTenantWarnings(
           .where(eq(user.id, project.managerId))
           .limit(1)
       : [];
-    const director = await getSalesDirector();
+    const director = await getSalesDirector(tenantId);
 
     // 无销售经理时跳过(预警必须有明确负责人)
     if (manager.length === 0) {

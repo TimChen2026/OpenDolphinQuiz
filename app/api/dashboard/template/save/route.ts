@@ -25,7 +25,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
+import { getTemplateTenantId } from "@/lib/quiz/queries";
 import { saveTemplateEdits } from "@/lib/dashboard/quiz-editor";
 
 // 请求体校验
@@ -50,7 +51,7 @@ const saveTemplateSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -66,6 +67,16 @@ export async function POST(request: NextRequest) {
     }
 
     const { templateId, nodes, options } = parsed.data;
+
+    // 模板归属校验:仅可保存本团队(租户)的模板,防止跨团队越权修改
+    const templateTenantId = await getTemplateTenantId(templateId);
+    if (templateTenantId !== teamId) {
+      return NextResponse.json(
+        { error: "无权修改该模板" },
+        { status: 403 }
+      );
+    }
+
     await saveTemplateEdits(templateId, nodes, options);
 
     return NextResponse.json({ success: true, message: "模板已保存" });

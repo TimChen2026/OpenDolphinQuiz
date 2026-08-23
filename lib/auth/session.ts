@@ -34,6 +34,10 @@ export type AccessUser = {
   role: string;
   /** 是否兼任销售总监(is_director 标记,验收修订 2.1.7.5) */
   isDirector: boolean;
+  /** 账号类型:member(团队成员,单团队) | customer(客户,可多团队,仅问卷) */
+  accountType: string;
+  /** 所属团队 ID(= 团队管理员 userId);客户无单一团队上下文,为 null */
+  teamId: string | null;
 };
 
 type ActiveSessionResult =
@@ -113,16 +117,53 @@ export async function getActiveSessionUser(
     .select({
       id: user.id,
       email: user.email,
+      name: user.name,
       emailVerified: user.emailVerified,
       banned: user.banned,
       banExpires: user.banExpires,
       plan: user.plan,
       role: user.role,
       isDirector: user.isDirector,
+      accountType: user.accountType,
     })
     .from(user)
     .where(eq(user.id, userId))
     .limit(1);
 
-  return resolveSessionAccess(dbUsers[0] ?? null, options);
+  const dbUser = dbUsers[0] ?? null;
+  if (!dbUser) {
+    return resolveSessionAccess(null, options);
+  }
+
+  const resolved = resolveSessionAccess(
+    {
+      id: dbUser.id,
+      email: dbUser.email,
+      emailVerified: dbUser.emailVerified,
+      banned: dbUser.banned,
+      banExpires: dbUser.banExpires,
+      plan: dbUser.plan,
+      role: dbUser.role,
+      isDirector: dbUser.isDirector,
+      accountType: dbUser.accountType,
+      // 团队归属在下方解析(客户为 null)
+      teamId: null,
+    },
+    options
+  );
+
+  if (!resolved.ok) {
+    return resolved;
+  }
+
+  // 解析团队归属:客户返回 null;存量用户惰性迁移创建团队
+  const { resolveUserTeamId } = await import("@/lib/teams");
+  const teamId = await resolveUserTeamId({
+    id: dbUser.id,
+    name: dbUser.name,
+    email: dbUser.email,
+    accountType: dbUser.accountType,
+  });
+
+  return { ...resolved, user: { ...resolved.user, teamId } };
 }

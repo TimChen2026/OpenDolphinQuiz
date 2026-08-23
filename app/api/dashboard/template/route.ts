@@ -25,7 +25,7 @@
 // 权限:管理员/销售总监/销售经理/普通注册用户均可访问 Dashboard
 
 import { NextResponse } from "next/server";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { getActiveClientTemplate } from "@/lib/quiz/queries";
 import { createDefaultQuizTemplate } from "@/lib/quiz/template-init";
 import { getEditableTemplate } from "@/lib/dashboard/quiz-editor";
@@ -35,17 +35,18 @@ import { getQuizLimitStatusForTenant } from "@/lib/plan-limits";
 
 export async function GET() {
   try {
-    const user = await requireDashboardAccess();
+    // 团队隔离:租户数据按团队(teamId)而非个人 userId 查询
+    const { teamId, teamPlan } = await requireTeamAccess();
 
     // 获取租户激活模板
-    let clientTemplate = await getActiveClientTemplate(user.id);
+    let clientTemplate = await getActiveClientTemplate(teamId);
     if (!clientTemplate) {
       // 新注册用户(含免费客户)首次进入仪表盘时没有模板:
       // 自动创建默认模板并直接置为激活,保证三个视图(项目看板/交互界面/逻辑界面)可正常加载
-      // 创建前校验套餐 Quiz 数量配额(Free 1 / Pro 6 / Max 12)
+      // 创建前校验团队套餐 Quiz 数量配额(Free 1 / Pro 6 / Max 12)
       const quizLimit = await getQuizLimitStatusForTenant(
-        user.id,
-        user.plan
+        teamId,
+        teamPlan
       );
       if (quizLimit.isLimited) {
         return NextResponse.json(
@@ -55,8 +56,8 @@ export async function GET() {
           { status: 403 }
         );
       }
-      await createDefaultQuizTemplate(user.id, { status: "active" });
-      clientTemplate = await getActiveClientTemplate(user.id);
+      await createDefaultQuizTemplate(teamId, { status: "active" });
+      clientTemplate = await getActiveClientTemplate(teamId);
     }
     if (!clientTemplate) {
       return NextResponse.json(
@@ -69,10 +70,10 @@ export async function GET() {
     const editableTemplate = await getEditableTemplate(clientTemplate.id);
 
     // 获取项目列表(交互界面)
-    const projects = await getProjectsByTenant(user.id);
+    const projects = await getProjectsByTenant(teamId);
 
     // 获取询盘限制状态(升级提示横幅)
-    const limitStatus = await getInquiryLimitStatusForTenant(user.id);
+    const limitStatus = await getInquiryLimitStatusForTenant(teamId);
 
     return NextResponse.json({
       template: {

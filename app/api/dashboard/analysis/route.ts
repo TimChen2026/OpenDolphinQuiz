@@ -25,12 +25,12 @@
 // 访控:需登录 + Dashboard 权限
 
 import { NextRequest, NextResponse } from "next/server";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { getProjectsByTenant } from "@/lib/dashboard/project-status";
 import { computeChartData } from "@/lib/dashboard/analysis";
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import type { DashboardProject } from "@/features/dashboard/types";
 
 /** 将 Drizzle 行数据转换为 DashboardProject 类型(日期转字符串) */
@@ -89,23 +89,15 @@ function resolveManagerNames(data: unknown, nameMap: Map<string, string>): unkno
 
 export async function GET(request: NextRequest) {
   try {
-    // 1. 校验登录 + Dashboard 权限
-    const accessUser = await requireDashboardAccess();
+    // 1. 校验登录 + 团队权限(项目数据与套餐按团队隔离)
+    const { teamId, teamPlan } = await requireTeamAccess();
 
     const { searchParams } = new URL(request.url);
     const chartParam = searchParams.get("chart");
     const chartNumber = chartParam ? parseInt(chartParam, 10) : 1;
 
-    // 2. 从数据库读取用户套餐计划
-    const [userRow] = await db
-      .select({ plan: user.plan })
-      .from(user)
-      .where(eq(user.id, accessUser.id))
-      .limit(1);
-
-    const userPlan = userRow?.plan ?? "free";
-    // pro/max 套餐可查看全部图表,免费套餐仅 chart 1
-    const isPro = userPlan === "pro" || userPlan === "max";
+    // 2. 图表权限:pro/max 团队套餐可查看全部图表,免费套餐仅 chart 1
+    const isPro = teamPlan === "pro" || teamPlan === "max";
     if (!isPro && chartNumber > 1) {
       return NextResponse.json(
         {
@@ -116,8 +108,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 3. 获取项目数据并转换类型
-    const rawProjects = await getProjectsByTenant(accessUser.id);
+    // 3. 获取项目数据并转换类型(按团队过滤)
+    const rawProjects = await getProjectsByTenant(teamId);
     const projects: DashboardProject[] = rawProjects.map(toDashboardProject);
 
     // 4. 调用聚合函数(AC-10:数据获取与聚合分离)

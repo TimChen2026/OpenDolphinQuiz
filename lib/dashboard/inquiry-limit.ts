@@ -179,8 +179,8 @@ async function sendInquiryLimitEmail(
     return;
   }
 
-  // 查询销售负责人(销售总监)用于抄送
-  const director = await getSalesDirector();
+  // 查询销售负责人(销售总监)用于抄送(按团队隔离)
+  const director = await getSalesDirector(tenantId);
 
   const variables = {
     今日询盘次数: count,

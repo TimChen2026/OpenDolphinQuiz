@@ -26,10 +26,16 @@ import { eq } from "drizzle-orm";
 import { encrypt, isEncryptionEnabled } from "@/lib/crypto";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { issuePassport } from "@/lib/passport";
+import { joinTeamByName, joinTeamAsCustomer, markUserAsCustomer } from "@/lib/teams";
+import { getTemplateTenantId } from "@/lib/quiz/queries";
 
 /**
  * 增强注册端点:在Better Auth注册成功后,加密存储phone并发放通行证
  * 前端在signUp.email()成功后调用此端点
+ *
+ * 团队归属(二选一):
+ * - companyName(用户注册页):按团队名加入已有团队或创建新团队(首个用户为管理员)
+ * - templateId(客户问卷注册):标记为客户账号并自动归属问卷所属团队
  */
 export async function POST(request: NextRequest) {
   try {
@@ -49,9 +55,11 @@ export async function POST(request: NextRequest) {
 
     // 2. 解析请求体
     const body = await request.json();
-    const { phone, turnstileToken } = body as {
+    const { phone, turnstileToken, companyName, templateId } = body as {
       phone?: string;
       turnstileToken?: string;
+      companyName?: string;
+      templateId?: string;
     };
 
     if (!phone || !turnstileToken) {
@@ -84,7 +92,24 @@ export async function POST(request: NextRequest) {
       .set({ phone: encryptedPhone })
       .where(eq(user.id, userId));
 
-    // 5. 发放通行证(24小时有效期)
+    // 5. 团队归属处理(失败不阻塞注册,可后续补偿)
+    try {
+      if (templateId) {
+        // 客户问卷注册:标记为客户并归属问卷所属团队
+        const teamId = await getTemplateTenantId(templateId);
+        if (teamId) {
+          await markUserAsCustomer(userId);
+          await joinTeamAsCustomer(userId, teamId);
+        }
+      } else if (companyName?.trim()) {
+        // 用户注册:按团队名加入或创建团队
+        await joinTeamByName(userId, companyName);
+      }
+    } catch (teamError) {
+      console.error("团队归属处理失败:", teamError);
+    }
+
+    // 6. 发放通行证(24小时有效期)
     await issuePassport(userId);
 
     return NextResponse.json(

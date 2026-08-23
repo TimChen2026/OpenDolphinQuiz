@@ -28,13 +28,15 @@ import { QuizPhoneSupplementCard } from "./quiz-phone-supplement-card";
 type QuizRegisterGuardProps = {
   /** 已登录(或注册成功)后渲染的内容,通常是 QuizFlowContainer */
   children: React.ReactNode;
+  /** 当前问卷模板 ID,客户注册后自动归属该模板所属团队 */
+  templateId?: string;
 };
 
 /**
  * Quiz 前置注册守卫
  *
  * 职责:
- * - 未登录:渲染 QuizRegisterCard,引导完成注册(手机+邮箱)
+ * - 未登录:渲染 QuizRegisterCard,引导完成注册(手机+邮箱),注册后自动归属问卷所属团队
  * - 已登录但无手机号(如 Google 登录用户):渲染 QuizPhoneSupplementCard(非强制补充)
  * - 已登录且有手机号:直接渲染 children(QuizFlowContainer),进入 Quiz 流程
  * - 注册成功:QuizRegisterCard 调用 onRegistered,触发重新渲染
@@ -42,7 +44,7 @@ type QuizRegisterGuardProps = {
  * 注意:Better Auth 的 session.user 不含 phone 字段,须通过
  * /api/auth/phone-status 查询 DB 判断手机号是否已填写
  */
-export function QuizRegisterGuard({ children }: QuizRegisterGuardProps) {
+export function QuizRegisterGuard({ children, templateId }: QuizRegisterGuardProps) {
   const session = useSession();
   const [forceRefresh, setForceRefresh] = React.useState(false);
   const [hasPhone, setHasPhone] = React.useState<boolean | null>(null);
@@ -93,6 +95,6 @@ export function QuizRegisterGuard({ children }: QuizRegisterGuardProps) {
     return <>{children}</>;
   }
 
-  // 未登录:渲染注册卡片
-  return <QuizRegisterCard onRegistered={handleRegistered} />;
+  // 未登录:渲染注册卡片(透传 templateId,注册后自动归属问卷所属团队)
+  return <QuizRegisterCard onRegistered={handleRegistered} templateId={templateId} />;
 }

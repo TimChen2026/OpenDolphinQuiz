@@ -24,15 +24,15 @@
 // 权限:管理员/销售总监/销售经理可访问 Dashboard
 
 import { NextResponse } from "next/server";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { getActiveClientTemplate } from "@/lib/quiz/queries";
 import { checkTemplateReadiness } from "@/lib/dashboard/link-check";
 
 export async function GET() {
   try {
-    const user = await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
-    const clientTemplate = await getActiveClientTemplate(user.id);
+    const clientTemplate = await getActiveClientTemplate(teamId);
     if (!clientTemplate) {
       return NextResponse.json(
         { ok: false, issues: [{ nodeId: "", level: "-", message: "当前没有激活的 Quiz 模板" }] },

@@ -53,6 +53,7 @@ export function SignupForm({ showGoogleAuth = true }: SignupFormProps) {
       email: "",
       password: "",
       phone: "",
+      companyName: "",
       turnstileToken: "",
     },
   });
@@ -83,6 +84,7 @@ export function SignupForm({ showGoogleAuth = true }: SignupFormProps) {
           body: JSON.stringify({
             phone: values.phone,
             turnstileToken: values.turnstileToken,
+            companyName: values.companyName,
           }),
         });
 
@@ -169,6 +171,13 @@ export function SignupForm({ showGoogleAuth = true }: SignupFormProps) {
         label={t('emailLabel')}
         placeholder={t('emailPlaceholder')}
         autoComplete="email"
+      />
+      <FormTextField
+        control={form.control}
+        name="companyName"
+        label={t('companyNameLabel')}
+        placeholder={t('companyNamePlaceholder')}
+        autoComplete="organization"
       />
       <FormTextField
         control={form.control}

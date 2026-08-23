@@ -26,7 +26,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import {
   getEmailTemplatesByTenant,
   upsertEmailTemplate,
@@ -41,8 +41,8 @@ const putTemplateSchema = z.object({
 
 export async function GET() {
   try {
-    const user = await requireDashboardAccess();
-    const templates = await getEmailTemplatesByTenant(user.id);
+    const { teamId } = await requireTeamAccess();
+    const templates = await getEmailTemplatesByTenant(teamId);
     return NextResponse.json({ templates });
   } catch (error) {
     console.error("email-templates GET 错误:", error);
@@ -55,7 +55,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -71,7 +71,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const defaultTemplate = getDefaultTemplate(parsed.data.templateType);
-    await upsertEmailTemplate(user.id, {
+    await upsertEmailTemplate(teamId, {
       templateType: parsed.data.templateType,
       name: defaultTemplate?.name ?? parsed.data.templateType,
       subject: parsed.data.subject,

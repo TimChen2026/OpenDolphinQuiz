@@ -27,7 +27,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { getActiveClientTemplate } from "@/lib/quiz/queries";
 import {
   listSalesManagers,
@@ -44,13 +44,13 @@ const addManagerSchema = z.object({
 
 export async function GET() {
   try {
-    const user = await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
-    const managers = await listSalesManagers();
-    const director = await getSalesDirector();
+    const managers = await listSalesManagers(teamId);
+    const director = await getSalesDirector(teamId);
 
     // 获取激活模板,用于主题关联数据
-    const clientTemplate = await getActiveClientTemplate(user.id);
+    const clientTemplate = await getActiveClientTemplate(teamId);
     let themes: string[] = [];
     let managerThemes: Record<string, string[]> = {};
     if (clientTemplate) {
@@ -78,7 +78,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const manager = await addSalesManager(parsed.data.email);
+    const manager = await addSalesManager(parsed.data.email, teamId);
     return NextResponse.json({ success: true, manager });
   } catch (error) {
     console.error("team POST 错误:", error);
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const userId = request.nextUrl.searchParams.get("userId");
     if (!userId) {
@@ -116,7 +116,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await removeSalesManager(userId);
+    await removeSalesManager(userId, teamId);
     return NextResponse.json({ success: true, message: "销售经理已移除" });
   } catch (error) {
     console.error("team DELETE 错误:", error);

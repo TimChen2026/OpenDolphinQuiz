@@ -25,7 +25,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { setSalesDirector } from "@/lib/dashboard/team";
 
 const setDirectorSchema = z.object({
@@ -34,7 +34,7 @@ const setDirectorSchema = z.object({
 
 export async function PUT(request: NextRequest) {
   try {
-    await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -49,7 +49,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const director = await setSalesDirector(parsed.data.userId);
+    const director = await setSalesDirector(parsed.data.userId, teamId);
     return NextResponse.json({ success: true, director });
   } catch (error) {
     console.error("director PUT 错误:", error);

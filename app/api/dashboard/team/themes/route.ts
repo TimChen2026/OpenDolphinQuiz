@@ -25,7 +25,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireDashboardAccess } from "@/lib/rbac";
+import { requireTeamAccess } from "@/lib/rbac";
 import { getActiveClientTemplate } from "@/lib/quiz/queries";
 import { updateManagerThemes } from "@/lib/dashboard/team";
 
@@ -36,7 +36,7 @@ const updateThemesSchema = z.object({
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await requireDashboardAccess();
+    const { teamId } = await requireTeamAccess();
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -51,8 +51,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // 获取当前租户激活模板(主题关联基于模板 P3 选项)
-    const clientTemplate = await getActiveClientTemplate(user.id);
+    // 获取当前租户(团队)激活模板(主题关联基于模板 P3 选项)
+    const clientTemplate = await getActiveClientTemplate(teamId);
     if (!clientTemplate) {
       return NextResponse.json(
         { error: "当前没有激活的 Quiz 模板" },

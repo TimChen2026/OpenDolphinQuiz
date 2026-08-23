@@ -26,6 +26,9 @@
 // - 销售总监设置(role = sales_director,询盘/预警邮件抄送对象)
 // - 主题-销售经理关联(经理可负责多个主题,一个主题一个负责人)
 //
+// 团队隔离:所有查询以 teamId(= tenant_id = 团队管理员 userId)过滤,
+// 仅统计/操作本团队成员,跨团队数据不可见
+//
 // MVP 说明:销售经理/总监为独立用户记录(role 区分),
 // 项目通过 manager_id 关联到经理;主题-经理关联存储于 quiz_edges/quiz_nodes
 
@@ -33,6 +36,7 @@ import { eq, and, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user, quizEdges, quizNodes, USER_ROLES } from "@/lib/db/schema";
 import { decrypt, encrypt, isEncryptionEnabled } from "@/lib/crypto";
+import { getTeamStaffUserIds, assertTeamStaff } from "@/lib/teams";
 
 // 销售经理信息
 export type SalesManagerInfo = {
@@ -75,9 +79,13 @@ function safeDecryptPhone(encryptedPhone: string | null): string | null {
 }
 
 /**
- * 获取全部销售经理列表(role = sales_manager,含电话)
+ * 获取团队销售经理列表(团队内 role = sales_manager 的成员,含电话)
  */
-export async function listSalesManagers(): Promise<SalesManagerInfo[]> {
+export async function listSalesManagers(teamId: string): Promise<SalesManagerInfo[]> {
+  const staffIds = await getTeamStaffUserIds(teamId);
+  if (staffIds.length === 0) {
+    return [];
+  }
   const rows = await db
     .select({
       id: user.id,
@@ -86,7 +94,7 @@ export async function listSalesManagers(): Promise<SalesManagerInfo[]> {
       phone: user.phone,
     })
     .from(user)
-    .where(eq(user.role, USER_ROLES.SALES_MANAGER))
+    .where(and(eq(user.role, USER_ROLES.SALES_MANAGER), inArray(user.id, staffIds)))
     .orderBy(user.name);
 
   return rows.map((r) => ({
@@ -98,12 +106,16 @@ export async function listSalesManagers(): Promise<SalesManagerInfo[]> {
 }
 
 /**
- * 添加销售经理:将指定邮箱的已注册用户提升为销售经理
+ * 添加销售经理:将指定邮箱的团队成员提升为销售经理
  *
- * @param email 用户邮箱
- * @throws 用户不存在时抛出错误
+ * @param email 用户邮箱(必须是本团队成员)
+ * @param teamId 团队 ID
+ * @throws 用户不存在或不是本团队成员时抛出错误
  */
-export async function addSalesManager(email: string): Promise<SalesManagerInfo> {
+export async function addSalesManager(
+  email: string,
+  teamId: string
+): Promise<SalesManagerInfo> {
   const trimmed = email.trim().toLowerCase();
   const rows = await db
     .select({ id: user.id, name: user.name, email: user.email, phone: user.phone })
@@ -115,10 +127,8 @@ export async function addSalesManager(email: string): Promise<SalesManagerInfo> 
     throw new Error(`用户不存在: ${trimmed},请先让该用户注册`);
   }
 
-  if (rows[0].email === "user") {
-    // 安全兜底(实际不会发生,email 必填)
-    throw new Error("无法将系统用户设为销售经理");
-  }
+  // 仅可添加本团队成员为销售经理(团队隔离)
+  await assertTeamStaff(rows[0].id, teamId);
 
   await db
     .update(user)
@@ -134,11 +144,17 @@ export async function addSalesManager(email: string): Promise<SalesManagerInfo> 
 }
 
 /**
- * 删除销售经理:将角色恢复为普通用户
+ * 删除销售经理:将角色恢复为普通用户(仅限本团队成员)
  *
  * @param userId 用户 ID
+ * @param teamId 团队 ID
  */
-export async function removeSalesManager(userId: string): Promise<void> {
+export async function removeSalesManager(
+  userId: string,
+  teamId: string
+): Promise<void> {
+  // 仅可移除本团队的销售经理(团队隔离)
+  await assertTeamStaff(userId, teamId);
   await db
     .update(user)
     .set({ role: USER_ROLES.USER })
@@ -262,11 +278,18 @@ export async function updateThemeManager(
 // ==================== 销售总监(验收修订 2.1.7.5/2.1.8.1) ====================
 
 /**
- * 获取销售总监(is_director = true 或 role = sales_director,仅一位)
+ * 获取团队销售总监(is_director = true 或 role = sales_director,每团队仅一位)
  *
  * 说明:销售总监与销售经理可为同一人(is_director 标记与 role 不互斥)
+ *
+ * @param teamId 团队 ID(= tenant_id)
  */
-export async function getSalesDirector(): Promise<SalesDirectorInfo> {
+export async function getSalesDirector(teamId: string): Promise<SalesDirectorInfo> {
+  const staffIds = await getTeamStaffUserIds(teamId);
+  if (staffIds.length === 0) {
+    return null;
+  }
+
   const rows = await db
     .select({
       id: user.id,
@@ -275,11 +298,11 @@ export async function getSalesDirector(): Promise<SalesDirectorInfo> {
       phone: user.phone,
     })
     .from(user)
-    .where(eq(user.isDirector, true))
+    .where(and(eq(user.isDirector, true), inArray(user.id, staffIds)))
     .limit(1);
 
   if (rows.length === 0) {
-    // 兼容旧数据:role = sales_director 的用户视为总监
+    // 兼容旧数据:团队内 role = sales_director 的用户视为总监
     const legacy = await db
       .select({
         id: user.id,
@@ -288,7 +311,7 @@ export async function getSalesDirector(): Promise<SalesDirectorInfo> {
         phone: user.phone,
       })
       .from(user)
-      .where(eq(user.role, USER_ROLES.SALES_DIRECTOR))
+      .where(and(eq(user.role, USER_ROLES.SALES_DIRECTOR), inArray(user.id, staffIds)))
       .limit(1);
     if (legacy.length === 0) {
       return null;
@@ -310,14 +333,19 @@ export async function getSalesDirector(): Promise<SalesDirectorInfo> {
 }
 
 /**
- * 设置销售总监:将指定用户标记为总监(is_director = true)
+ * 设置团队销售总监:将指定团队成员标记为总监(is_director = true)
  *
  * 与销售经理角色不互斥:用户可同时是销售经理与销售总监(验收修订 2.1.7.5)
+ * 仅清除本团队其他成员的总监标记,不影响其他团队
  *
- * @param userId 用户 ID
- * @throws 用户不存在时抛出错误
+ * @param userId 用户 ID(必须是本团队成员)
+ * @param teamId 团队 ID
+ * @throws 用户不存在或不是本团队成员时抛出错误
  */
-export async function setSalesDirector(userId: string): Promise<SalesManagerInfo> {
+export async function setSalesDirector(
+  userId: string,
+  teamId: string
+): Promise<SalesManagerInfo> {
   const rows = await db
     .select({ id: user.id, name: user.name, email: user.email, phone: user.phone })
     .from(user)
@@ -328,9 +356,17 @@ export async function setSalesDirector(userId: string): Promise<SalesManagerInfo
     throw new Error("用户不存在");
   }
 
+  // 仅可指定本团队成员为总监(团队隔离)
+  await assertTeamStaff(userId, teamId);
+
+  const staffIds = await getTeamStaffUserIds(teamId);
+
   await db.transaction(async (tx) => {
-    // 清除其他用户的总监标记
-    await tx.update(user).set({ isDirector: false }).where(eq(user.isDirector, true));
+    // 清除本团队其他成员的总监标记(不影响其他团队)
+    await tx
+      .update(user)
+      .set({ isDirector: false })
+      .where(and(eq(user.isDirector, true), inArray(user.id, staffIds)));
     // 标记目标用户为总监
     await tx
       .update(user)

@@ -34,14 +34,15 @@ describe("tenant", () => {
     vi.clearAllMocks();
   });
 
-  it("getCurrentTenantId 在已登录时返回用户ID", async () => {
+  // 团队模型下,团队成员的租户 ID = 其所属团队的 ID
+  it("getCurrentTenantId 在已登录时返回团队ID", async () => {
     const { getActiveSessionUser } = await import("@/lib/auth/session");
     vi.mocked(getActiveSessionUser).mockResolvedValue({
       ok: true,
-      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
+      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false, accountType: "member", teamId: "team-001" },
     });
     const tenantId = await getCurrentTenantId();
-    expect(tenantId).toBe("user-123");
+    expect(tenantId).toBe("team-001");
   });
 
   it("getCurrentTenantId 在未登录时抛出异常", async () => {
@@ -54,32 +55,51 @@ describe("tenant", () => {
     await expect(getCurrentTenantId()).rejects.toThrow("Unauthorized");
   });
 
+  it("getCurrentTenantId 客户账号(无团队)时抛出异常", async () => {
+    const { getActiveSessionUser } = await import("@/lib/auth/session");
+    vi.mocked(getActiveSessionUser).mockResolvedValue({
+      ok: true,
+      user: { id: "user-789", email: "customer@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false, accountType: "customer", teamId: null },
+    });
+    await expect(getCurrentTenantId()).rejects.toThrow("客户账号无团队租户权限");
+  });
+
   it("assertTenantOwnership 归属正确时不抛异常", async () => {
     const { getActiveSessionUser } = await import("@/lib/auth/session");
     vi.mocked(getActiveSessionUser).mockResolvedValue({
       ok: true,
-      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
+      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false, accountType: "member", teamId: "team-001" },
     });
-    await expect(assertTenantOwnership("user-123")).resolves.toBeUndefined();
+    await expect(assertTenantOwnership("team-001")).resolves.toBeUndefined();
   });
 
   it("assertTenantOwnership 归属错误时抛出异常", async () => {
     const { getActiveSessionUser } = await import("@/lib/auth/session");
     vi.mocked(getActiveSessionUser).mockResolvedValue({
       ok: true,
-      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false },
+      user: { id: "user-123", email: "user@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false, accountType: "member", teamId: "team-001" },
     });
-    await expect(assertTenantOwnership("other-user")).rejects.toThrow("无权访问");
+    await expect(assertTenantOwnership("other-team")).rejects.toThrow("无权访问");
   });
 
-  it("getCurrentTenantIdOrNull 在已登录时返回用户ID", async () => {
+  it("getCurrentTenantIdOrNull 在已登录时返回团队ID", async () => {
     const { getActiveSessionUser } = await import("@/lib/auth/session");
     vi.mocked(getActiveSessionUser).mockResolvedValue({
       ok: true,
-      user: { id: "user-456", email: "admin@example.com", plan: "free", role: "admin", banned: false, emailVerified: true, banExpires: null, isDirector: false },
+      user: { id: "user-456", email: "admin@example.com", plan: "free", role: "admin", banned: false, emailVerified: true, banExpires: null, isDirector: false, accountType: "member", teamId: "team-002" },
     });
     const tenantId = await getCurrentTenantIdOrNull();
-    expect(tenantId).toBe("user-456");
+    expect(tenantId).toBe("team-002");
+  });
+
+  it("getCurrentTenantIdOrNull 客户账号时返回null", async () => {
+    const { getActiveSessionUser } = await import("@/lib/auth/session");
+    vi.mocked(getActiveSessionUser).mockResolvedValue({
+      ok: true,
+      user: { id: "user-789", email: "customer@example.com", plan: "free", role: "user", banned: false, emailVerified: true, banExpires: null, isDirector: false, accountType: "customer", teamId: null },
+    });
+    const tenantId = await getCurrentTenantIdOrNull();
+    expect(tenantId).toBeNull();
   });
 
   it("getCurrentTenantIdOrNull 在未登录时返回null", async () => {

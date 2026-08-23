@@ -18,7 +18,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { pgTable, text, timestamp, boolean, varchar, integer, date, time, numeric } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, varchar, integer, date, time, numeric, unique } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -42,6 +42,8 @@ export const user = pgTable("user", {
   timezone: text("timezone"),
   // 套餐计划:free | pro | max(Phase 6 支付接入后使用)
   plan: text("plan").default("free").notNull(),
+  // 账号类型:member(团队成员,属于一个团队) | customer(客户,可属于多个团队)
+  accountType: text("account_type").default("member").notNull(),
   // 封禁状态
   banned: boolean("banned").default(false).notNull(),
   banReason: text("ban_reason"),
@@ -66,6 +68,19 @@ export const USER_PLANS = {
   FREE: "free",
   PRO: "pro",
   MAX: "max",
+} as const;
+
+// 账号类型常量:团队成员(单团队) / 客户(可多团队,仅访问问卷)
+export const ACCOUNT_TYPES = {
+  MEMBER: "member",
+  CUSTOMER: "customer",
+} as const;
+
+// 团队成员角色常量:admin(团队管理员,第一个加入者) / member(普通成员) / customer(客户)
+export const TEAM_MEMBER_ROLES = {
+  ADMIN: "admin",
+  MEMBER: "member",
+  CUSTOMER: "customer",
 } as const;
 
 // 通行证状态常量
@@ -142,6 +157,41 @@ export const newsletterSubscription = pgTable("newsletter_subscription", {
   unsubscribedAt: timestamp("unsubscribed_at"),
   updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
 });
+
+// ==================== 团队(Team)管理 ====================
+
+// 团队表:id 复用创建者(团队管理员)的 userId,
+// 使既有 tenant_id 数据(模板/项目/邮件模板/预警设置)无需迁移即归属团队
+export const team = pgTable("team", {
+  id: text("id")
+    .primaryKey()
+    .references(() => user.id, { onDelete: "cascade" }),
+  // 团队/公司名称(注册时输入,重名时加入已有团队)
+  name: text("name").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// 团队成员表:用户与团队的多对多关联
+// 团队成员(member)仅属于一个团队;客户(customer)可属于多个团队
+export const teamMember = pgTable(
+  "team_member",
+  {
+    id: text("id").primaryKey(),
+    teamId: text("team_id")
+      .notNull()
+      .references(() => team.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    // 团队内角色:admin(管理员) | member(普通成员) | customer(客户)
+    role: text("role").notNull(),
+    joinedAt: timestamp("joined_at").defaultNow().notNull(),
+  },
+  (table) => [
+    // 同一用户在同一团队仅一条记录(客户跨团队时各团队一条)
+    unique("team_member_team_user_unique").on(table.teamId, table.userId),
+  ]
+);
 
 // ==================== Quiz 决策树模块 ====================
 

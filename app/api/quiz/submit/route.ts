@@ -31,7 +31,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { user } from "@/lib/db/schema";
+import { user, ACCOUNT_TYPES } from "@/lib/db/schema";
 import { decrypt, isEncryptionEnabled } from "@/lib/crypto";
 import {
   submitQuizInquiry,
@@ -44,6 +44,12 @@ import {
 import { getPotentialCustomerLimitStatusForTenant } from "@/lib/plan-limits";
 import { getEmailTemplatesByTenant } from "@/lib/dashboard/email-templates";
 import { EMAIL_TEMPLATE_TYPES } from "@/lib/db/schema";
+import { getTemplateTenantId } from "@/lib/quiz/queries";
+import {
+  joinTeamAsCustomer,
+  getTeamPlan,
+  getTeamAdminEmail,
+} from "@/lib/teams";
 
 // ==================== 请求体校验 ====================
 
@@ -77,10 +83,10 @@ async function findUserById(userId: string): Promise<QuizRecipient | null> {
   return rows[0] ?? null;
 }
 
-// 查询系统内销售总监(用于抄送,is_director 标记,兼容 role = sales_director)
-async function findSalesDirector(): Promise<QuizRecipient | null> {
+// 查询团队销售总监(用于抄送,is_director 标记,兼容 role = sales_director)
+async function findSalesDirector(teamId: string): Promise<QuizRecipient | null> {
   const { getSalesDirector } = await import("@/lib/dashboard/team");
-  const director = await getSalesDirector();
+  const director = await getSalesDirector(teamId);
   return director ? { name: director.name, email: director.email } : null;
 }
 
@@ -130,13 +136,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. 查询客户信息(姓名/邮箱/加密手机号/套餐)
+    // 3. 查询客户信息(姓名/邮箱/加密手机号/账号类型)
     const userRows = await db
       .select({
         name: user.name,
         email: user.email,
         phone: user.phone,
-        plan: user.plan,
+        accountType: user.accountType,
       })
       .from(user)
       .where(eq(user.id, session.user.id))
@@ -146,8 +152,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "用户不存在" }, { status: 401 });
     }
 
-    // 3.1 询盘次数限制检查(AC-06:免费套餐 5 次/天硬上限)
-    const limitStatus = await getInquiryLimitStatusForTenant(session.user.id);
+    // 3.1 询盘归属团队:按问卷模板所属团队(tenant_id = team.id)归属,
+    // 而非提交者本人,保证团队仪表盘可见全部客户询盘
+    const teamId = await getTemplateTenantId(parsed.data.templateId);
+    if (!teamId) {
+      return NextResponse.json({ error: "问卷模板不存在" }, { status: 404 });
+    }
+
+    // 3.2 客户自动归属该团队(客户可属于多个团队;团队成员自测问卷不受影响)
+    if (targetUser.accountType === ACCOUNT_TYPES.CUSTOMER) {
+      await joinTeamAsCustomer(session.user.id, teamId);
+    }
+
+    // 3.3 询盘次数限制检查(按团队计算,AC-06:免费套餐 5 次/天硬上限)
+    const limitStatus = await getInquiryLimitStatusForTenant(teamId);
     if (limitStatus.isLimited) {
       return NextResponse.json(
         { error: "今日询盘次数已达上限,请明日再试" },
@@ -155,10 +173,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3.2 潜在客户配额检查(套餐限制:Free 30个/月,Pro 10000个/年,Max 30000个/年)
+    // 3.4 潜在客户配额检查(按团队套餐计算:Free 30个/月,Pro 10000个/年,Max 30000个/年)
+    const teamPlan = await getTeamPlan(teamId);
     const customerLimit = await getPotentialCustomerLimitStatusForTenant(
-      session.user.id,
-      targetUser.plan
+      teamId,
+      teamPlan
     );
     if (customerLimit.isLimited) {
       const periodLabel =
@@ -171,20 +190,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. 解析销售经理与销售总监
+    // 4. 解析销售经理与销售总监(均在问卷所属团队内)
     const manager = parsed.data.result.managerId
       ? await findUserById(parsed.data.result.managerId)
       : null;
-    const director = await findSalesDirector();
+    const director = await findSalesDirector(teamId);
 
-    // 4.1 读取内部告知邮件模板(实际发送邮件与其一一对应,验收 2.1.7.4)
-    const tenantTemplates = await getEmailTemplatesByTenant(session.user.id);
+    // 4.1 读取团队内部告知邮件模板(实际发送邮件与其一一对应,验收 2.1.7.4)
+    const tenantTemplates = await getEmailTemplatesByTenant(teamId);
     const internalTemplate = tenantTemplates[EMAIL_TEMPLATE_TYPES.INTERNAL];
 
-    // 5. 提交询盘(生成编号 + 入库 + 发邮件)
+    // 5. 提交询盘(生成编号 + 入库 + 发邮件,归属团队)
     const outcome = await submitQuizInquiry({
       templateId: parsed.data.templateId,
-      tenantId: session.user.id,
+      tenantId: teamId,
       customer: {
         id: session.user.id,
         name: targetUser.name,
@@ -201,8 +220,11 @@ export async function POST(request: NextRequest) {
         : null,
     });
 
-    // 5.1 提交后检查询盘次数,触发提示邮件(>=3 次提示,>=5 次再提示)
-    await maybeSendInquiryLimitEmails(session.user.id, targetUser.email);
+    // 5.1 提交后按团队检查询盘次数,触发提示邮件(发给团队管理员,>=3 次提示,>=5 次再提示)
+    const teamAdminEmail = await getTeamAdminEmail(teamId);
+    if (teamAdminEmail) {
+      await maybeSendInquiryLimitEmails(teamId, teamAdminEmail);
+    }
 
     return NextResponse.json({ success: true, ...outcome });
   } catch (error) {

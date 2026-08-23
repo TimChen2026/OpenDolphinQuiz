@@ -79,7 +79,7 @@ export default async function QuizPage({
 
   return (
     <Container className="py-8 sm:py-12">
-      <QuizRegisterGuard>
+      <QuizRegisterGuard templateId={template.id}>
         <QuizFlowContainer
           template={template}
           summaryTemplate={summaryTemplate}

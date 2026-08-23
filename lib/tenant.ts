@@ -22,20 +22,24 @@ import { headers } from "next/headers";
 import { getActiveSessionUser } from "./auth/session";
 
 /**
- * 获取当前租户ID(即当前登录用户ID)
- * 多租户方案:user本身就是租户,tenant_id = user.id
+ * 获取当前租户 ID(即当前用户所属团队的 ID)
+ * 团队模型:tenant_id = team.id(= 团队管理员的 user.id)
+ * 客户(accountType=customer)无租户上下文,调用视为未授权
  */
 export async function getCurrentTenantId(): Promise<string> {
   const access = await getActiveSessionUser(await headers());
   if (!access.ok) {
     throw new Error(access.error || "未登录");
   }
-  return access.user.id;
+  if (!access.user.teamId) {
+    throw new Error("客户账号无团队租户权限");
+  }
+  return access.user.teamId;
 }
 
 /**
  * 校验当前用户对指定租户资源的归属权
- * 用于防止跨租户访问
+ * 用于防止跨租户/跨团队访问
  */
 export async function assertTenantOwnership(tenantId: string): Promise<void> {
   const currentTenantId = await getCurrentTenantId();
@@ -45,8 +49,8 @@ export async function assertTenantOwnership(tenantId: string): Promise<void> {
 }
 
 /**
- * 获取当前租户ID(可为null,用于可选场景)
- * 不会抛出异常,未登录时返回null
+ * 获取当前租户 ID(可为 null,用于可选场景)
+ * 不会抛出异常,未登录或客户时返回 null
  */
 export async function getCurrentTenantIdOrNull(): Promise<string | null> {
   try {

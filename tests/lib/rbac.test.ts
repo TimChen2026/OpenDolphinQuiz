@@ -50,6 +50,8 @@ describe("rbac", () => {
     emailVerified: true,
     banExpires: null,
     isDirector: false,
+    accountType: "member",
+    teamId: "user-1",
   });
 
   it("hasRole 角色匹配时返回true", () => {
@@ -60,8 +62,9 @@ describe("rbac", () => {
     expect(hasRole(mockUser("user"), "admin")).toBe(false);
   });
 
-  it("isAdmin admin角色返回true", () => {
-    expect(isAdmin(mockUser("admin"))).toBe(true);
+  it("isAdmin admin角色但非超级管理员邮箱返回false(管理后台仅超管可访问)", () => {
+    process.env.SUPER_ADMIN_EMAIL = "super@example.com";
+    expect(isAdmin(mockUser("admin", "team-admin@example.com"))).toBe(false);
   });
 
   it("isAdmin 非admin角色返回false", () => {
@@ -125,6 +128,8 @@ describe("isSuperAdminEmail 超级管理员识别", () => {
       emailVerified: true,
       banExpires: null,
       isDirector: false,
+      accountType: "member",
+      teamId: "team-1",
     };
     expect(isAdmin(superAdminUser)).toBe(true);
   });
@@ -140,6 +145,8 @@ describe("isSuperAdminEmail 超级管理员识别", () => {
       emailVerified: true,
       banExpires: null,
       isDirector: false,
+      accountType: "member",
+      teamId: "team-1",
     };
     expect(isAdmin(fakeSuperAdmin)).toBe(false);
   });

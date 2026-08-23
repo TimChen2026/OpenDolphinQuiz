@@ -36,7 +36,8 @@ export const loginSchema = z.object({
   password,
 });
 
-export const signupSchema = z.object({
+// 基础注册字段(用户注册与客户问卷注册共用)
+const baseSignupFields = {
   name: z
     .string({ error: "Please enter your name" })
     .trim()
@@ -52,7 +53,20 @@ export const signupSchema = z.object({
   turnstileToken: z
     .string({ error: "Please complete turnstile" })
     .min(1, "Please complete turnstile"),
+};
+
+// 用户注册:必须输入团队/公司名称(第一个输入该名称的用户成为团队管理员)
+export const signupSchema = z.object({
+  ...baseSignupFields,
+  companyName: z
+    .string({ error: "Please enter team or company name" })
+    .trim()
+    .min(1, "Please enter team or company name"),
 });
+
+// 客户问卷注册:不输入团队信息,自动归属问卷所属团队
+export const quizRegisterSchema = z.object(baseSignupFields);
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
+export type QuizRegisterInput = z.infer<typeof quizRegisterSchema>;

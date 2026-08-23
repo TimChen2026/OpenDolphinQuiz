@@ -303,6 +303,8 @@
       "title": "Sign up for an account",
       "nameLabel": "Full name",
       "namePlaceholder": "Alex Johnson",
+      "companyNameLabel": "Team / Company name",
+      "companyNamePlaceholder": "Enter your team or company name",
       "emailLabel": "Email address",
       "emailPlaceholder": "hello@johndoe.com",
       "passwordLabel": "Password",
