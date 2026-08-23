@@ -31,6 +31,7 @@
 // - 窗口 resize 时自动调整
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import * as echarts from "echarts";
 import type { EChartsOption } from "echarts";
 
@@ -232,12 +233,11 @@ function ChartCard({ config }: { config: ChartConfig }) {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<unknown>(null);
 
-  // 获取数据
+  // 获取数据。
+  // 父组件以 key={config.id} 保证图表切换时重建本组件,state 已随挂载重置,
+  // 此处无需再手动 setState 清空,避免在 effect 中同步触发重渲染。
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
-    setData(null);
 
     fetch(`/api/dashboard/analysis?chart=${config.id}`)
       .then(async (res) => {
@@ -332,12 +332,12 @@ function LockedChartCard({ config }: { config: ChartConfig }) {
           <p className="mt-1 text-xs text-muted-foreground/70">
             升级套餐解锁全部分析图表
           </p>
-          <a
+          <Link
             href="/pricing"
             className="mt-3 inline-block rounded-lg bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
           >
             升级套餐
-          </a>
+          </Link>
         </div>
       </div>
     </div>
@@ -391,12 +391,12 @@ export function AnalysisView() {
                 获取更全面的销售数据分析。
               </p>
             </div>
-            <a
+            <Link
               href="/pricing"
               className="flex-shrink-0 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-amber-700"
             >
               查看套餐
-            </a>
+            </Link>
           </div>
         </div>
       )}

@@ -541,6 +541,8 @@ function useSystemDark(): boolean {
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    // 挂载时同步一次系统主题初始值,事件监听仅负责后续变化,一次性同步豁免校验
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsDark(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
     mq.addEventListener("change", handler);

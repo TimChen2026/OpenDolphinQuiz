@@ -74,6 +74,8 @@ export function DashboardShell() {
     const t = window.sessionStorage.getItem("dolphin_active_tab");
     if (t === "logic") {
       window.sessionStorage.removeItem("dolphin_active_tab");
+      // 仅在挂载时一次性从会话还原焦点标签,非循环级联渲染,豁免校验
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab("logic");
     }
   }, []);
