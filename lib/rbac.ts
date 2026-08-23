@@ -76,7 +76,8 @@ export async function requireAdmin(): Promise<AccessUser> {
 }
 
 /**
- * 要求Dashboard访问权限(admin/sales_director/sales_manager/销售总监标记),否则重定向
+ * 要求Dashboard访问权限(admin/sales_director/sales_manager/普通注册用户/销售总监标记),否则重定向
+ * 免费客户(普通 user 角色)也应可进入仪表盘查看与使用
  */
 export async function requireDashboardAccess(): Promise<AccessUser> {
   const access = await getActiveSessionUser(await headers());
@@ -88,6 +89,7 @@ export async function requireDashboardAccess(): Promise<AccessUser> {
     USER_ROLES.ADMIN,
     USER_ROLES.SALES_DIRECTOR,
     USER_ROLES.SALES_MANAGER,
+    USER_ROLES.USER,
   ];
   // 销售总监标记(is_director)用户同样可访问 Dashboard(验收修订 2.1.7.5)
   if (!(allowedRoles as string[]).includes(access.user.role) && !access.user.isDirector) {

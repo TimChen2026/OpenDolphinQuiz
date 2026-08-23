@@ -38,7 +38,7 @@ import {
 const socials = [
   {
     title: "github",
-    href: "https://github.com/Idea-To-Business/dolphinquiz",
+    href: "https://github.com/TimChen2026/OpenDolphinQuiz",
     icon: (
       <IconBrandGithub className="h-5 w-5 text-muted-foreground transition-colors hover:text-foreground" />
     ),
