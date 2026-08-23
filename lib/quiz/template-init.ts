@@ -84,12 +84,12 @@ export type DefaultQuizTemplateData = {
  *
  * @param templateId 模板 ID
  * @param tenantId 租户 ID(= user.id)
- * @param options 可选:模板名称与描述
+ * @param options 可选:模板名称、描述与状态
  */
 export function buildDefaultQuizTemplateData(
   templateId: string,
   tenantId: string,
-  options?: { name?: string; description?: string }
+  options?: { name?: string; description?: string; status?: string }
 ): DefaultQuizTemplateData {
   const name = options?.name ?? "默认 Quiz 模板";
   const description =
@@ -210,7 +210,7 @@ export function buildDefaultQuizTemplateData(
       name,
       description,
       tenantId,
-      status: "draft",
+      status: options?.status ?? "draft",
     },
     nodes,
     edges,
@@ -226,12 +226,12 @@ export function buildDefaultQuizTemplateData(
  * 3. 在事务中插入模板、节点、边
  *
  * @param tenantId 租户 ID(= user.id)
- * @param options 可选:模板名称与描述
+ * @param options 可选:模板名称、描述与状态(默认 draft)
  * @returns 新创建的模板 ID
  */
 export async function createDefaultQuizTemplate(
   tenantId: string,
-  options?: { name?: string; description?: string }
+  options?: { name?: string; description?: string; status?: string }
 ): Promise<string> {
   const templateId = crypto.randomUUID();
   const data = buildDefaultQuizTemplateData(templateId, tenantId, options);
