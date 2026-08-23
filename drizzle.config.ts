@@ -21,9 +21,9 @@
 import type { Config } from "drizzle-kit";
 import * as dotenv from "dotenv";
 
-// 加载环境变量：优先读取环境专属配置(.env.development/.env.production)，随后以 .env.local 覆盖(密钥项)
+// 统一只读取 .env.local（数据库、生产共用同一套配置）
 dotenv.config({
-  path: [`.env.${process.env.NODE_ENV || "development"}`, ".env.local"],
+  path: ".env.local",
 });
 
 export default {

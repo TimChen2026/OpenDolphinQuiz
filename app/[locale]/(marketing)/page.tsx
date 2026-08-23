@@ -25,8 +25,6 @@ import { Metadata } from "next";
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from "@/i18n.config";
 import { generatePageMetadata } from "@/lib/metadata";
-import { readFile, readdir } from "node:fs/promises";
-import path from "node:path";
 import {
   getActiveClientTemplate,
   getUserTenantIdByEmail,
@@ -69,98 +67,14 @@ export async function generateMetadata(
 }
 
 /**
- * 读取"附图1 图表3.jpg"(目录:项目需求文档)并转为 Base64 Data URI(内联图片,避免依赖 public/ 外部文件)
- * - 仅在开发/本地构建时需要该文件存在;读取失败时返回 null,页面跳过痛点区渲染
+ * 主页各区域插图的静态资源路径(存放于 public/home/ 目录,随部署分发)
+ * 此前从"项目需求文档/"目录读取本地文件,该目录被 .gitignore 忽略,
+ * 导致线上部署后插图缺失;改为静态资源后本地与线上统一。
  */
-async function loadPainPointImageDataUri(): Promise<string | null> {
-  try {
-    const docsDir = path.join(process.cwd(), '项目需求文档');
-    const files = await readdir(docsDir);
-    const imageFile = files.find((f) => f.startsWith('附图1 图表3') && f.endsWith('.jpg'));
-    if (!imageFile) {
-      console.error('未找到以"附图1 图表3"开头的 jpg 图片');
-      return null;
-    }
-    const file = await readFile(path.join(docsDir, imageFile));
-    const base64 = file.toString('base64');
-    return `data:image/jpeg;base64,${base64}`;
-  } catch (error) {
-    console.error('加载痛点区域图片失败:', error);
-    return null;
-  }
-}
-
-/**
- * 读取"附图2 服务.jpg"并转为 Base64 Data URI(内联图片,避免依赖 public/ 外部文件)
- * 仅在开发/本地构建时需要该文件存在;读取失败时返回 null,页面跳过功能区域渲染
- */
-async function loadServiceImageDataUri(): Promise<string | null> {
-  try {
-    const docsDir = path.join(process.cwd(), '项目需求文档');
-    const files = await readdir(docsDir);
-    const imageFile = files.find(
-      (f) => f.startsWith('附图2') && f.endsWith('.jpg')
-    );
-    if (!imageFile) {
-      console.error('未找到以"附图2"开头的 jpg 图片');
-      return null;
-    }
-    const file = await readFile(path.join(docsDir, imageFile));
-    const base64 = file.toString('base64');
-    return `data:image/jpeg;base64,${base64}`;
-  } catch (error) {
-    console.error('加载功能区域图片失败:', error);
-    return null;
-  }
-}
-
-/**
- * 读取"附图3 开源.jpg"(目录:项目需求文档)并转为 Base64 Data URI(内联图片,避免依赖 public/ 外部文件)
- * 仅在开发/本地构建时需要该文件存在;读取失败时返回 null,页面跳过开源社区区域渲染
- */
-async function loadOpenSourceImageDataUri(): Promise<string | null> {
-  try {
-    const docsDir = path.join(process.cwd(), '项目需求文档');
-    const files = await readdir(docsDir);
-    const imageFile = files.find(
-      (f) => f.startsWith('附图3') && f.endsWith('.jpg')
-    );
-    if (!imageFile) {
-      console.error('未找到以"附图3"开头的 jpg 图片');
-      return null;
-    }
-    const file = await readFile(path.join(docsDir, imageFile));
-    const base64 = file.toString('base64');
-    return `data:image/jpeg;base64,${base64}`;
-  } catch (error) {
-    console.error('加载开源社区区域图片失败:', error);
-    return null;
-  }
-}
-
-/**
- * 读取"附图4 桥梁.jpg"(目录:项目需求文档)并转为 Base64 Data URI(内联图片,避免依赖 public/ 外部文件)
- * 仅在开发/本地构建时需要该文件存在;读取失败时返回 null,页面跳过数据分析区域渲染
- */
-async function loadAnalyticsImageDataUri(): Promise<string | null> {
-  try {
-    const docsDir = path.join(process.cwd(), '项目需求文档');
-    const files = await readdir(docsDir);
-    const imageFile = files.find(
-      (f) => f.startsWith('附图4') && f.endsWith('.jpg')
-    );
-    if (!imageFile) {
-      console.error('未找到以"附图4"开头的 jpg 图片');
-      return null;
-    }
-    const file = await readFile(path.join(docsDir, imageFile));
-    const base64 = file.toString('base64');
-    return `data:image/jpeg;base64,${base64}`;
-  } catch (error) {
-    console.error('加载数据分析区域图片失败:', error);
-    return null;
-  }
-}
+const PAIN_POINT_IMAGE = "/home/painpoint.jpg";
+const SERVICE_IMAGE = "/home/service.jpg";
+const OPEN_SOURCE_IMAGE = "/home/opensource.jpg";
+const ANALYTICS_IMAGE = "/home/analytics.jpg";
 
 /**
  * 加载主页演示用的 Quiz 模板与 Summary 摘要模板
@@ -197,10 +111,6 @@ async function loadQuizDemoData() {
 
 export default async function Home() {
   const demoData = await loadQuizDemoData();
-  const painPointImageDataUri = await loadPainPointImageDataUri();
-  const serviceImageDataUri = await loadServiceImageDataUri();
-  const openSourceImageDataUri = await loadOpenSourceImageDataUri();
-  const analyticsImageDataUri = await loadAnalyticsImageDataUri();
 
   return (
     <div className="relative">
@@ -276,16 +186,14 @@ export default async function Home() {
             </p>
           </div>
           {/* 痛点区域：用图表图片替换原三张卡片，图片四周柔化过渡与网页自然融合 */}
-          {painPointImageDataUri ? (
-            <div className="relative overflow-hidden rounded-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={painPointImageDataUri}
-                alt="教育机构经营痛点图表"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : null}
+          <div className="relative overflow-hidden rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={PAIN_POINT_IMAGE}
+              alt="教育机构经营痛点图表"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </Container>
       </section>
 
@@ -300,16 +208,14 @@ export default async function Home() {
               DolphinQuiz大大减轻客户服务团队的压力，而且不间断
             </p>
           </div>
-          {serviceImageDataUri ? (
-            <div className="relative overflow-hidden rounded-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={serviceImageDataUri}
-                alt="双闭环管理服务流程图"
-                className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
-              />
-            </div>
-          ) : null}
+          <div className="relative overflow-hidden rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={SERVICE_IMAGE}
+              alt="双闭环管理服务流程图"
+              className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
+            />
+          </div>
         </Container>
       </section>
 
@@ -322,16 +228,14 @@ export default async function Home() {
             </h2>
           </div>
           {/* 开源社区区域：用图片替换原三步卡片，四周柔化过渡与网页自然融合 */}
-          {openSourceImageDataUri ? (
-            <div className="relative overflow-hidden rounded-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={openSourceImageDataUri}
-                alt="开源与社区共建"
-                className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
-              />
-            </div>
-          ) : null}
+          <div className="relative overflow-hidden rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={OPEN_SOURCE_IMAGE}
+              alt="开源与社区共建"
+              className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
+            />
+          </div>
         </Container>
       </section>
 
@@ -347,16 +251,14 @@ export default async function Home() {
             </p>
           </div>
           {/* 数据分析区域：用图表图片替换原四卡片，四周柔化过渡与网页自然融合 */}
-          {analyticsImageDataUri ? (
-            <div className="relative overflow-hidden rounded-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={analyticsImageDataUri}
-                alt="数据分析优化经营工作"
-                className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
-              />
-            </div>
-          ) : null}
+          <div className="relative overflow-hidden rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={ANALYTICS_IMAGE}
+              alt="数据分析优化经营工作"
+              className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
+            />
+          </div>
         </Container>
       </section>
 
