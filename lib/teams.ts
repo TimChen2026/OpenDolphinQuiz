@@ -344,6 +344,25 @@ export async function getTeamName(teamId: string): Promise<string | null> {
 }
 
 /**
+ * 获取用户最早加入的团队名称
+ *
+ * 客户(accountType=customer)可属于多个团队、无单一团队上下文(teamId 为 null),
+ * 此处按加入时间取最早加入的团队,与后台用户管理(admin-user-directory)展示口径一致。
+ */
+export async function getUserFirstTeamName(userId: string): Promise<string | null> {
+  const memberships = await db
+    .select({ teamId: teamMember.teamId })
+    .from(teamMember)
+    .where(eq(teamMember.userId, userId))
+    .orderBy(teamMember.joinedAt)
+    .limit(1);
+  if (memberships.length === 0) {
+    return null;
+  }
+  return getTeamName(memberships[0].teamId);
+}
+
+/**
  * 团队成员信息(用于团队成员面板展示)
  */
 export type TeamMemberInfo = {

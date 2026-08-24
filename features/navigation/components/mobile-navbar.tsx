@@ -20,7 +20,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { useMotionValueEvent, useScroll, motion, AnimatePresence } from "framer-motion";
 import { IoIosClose, IoIosMenu } from "react-icons/io";
@@ -36,6 +36,7 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from 'next-intl';
 import { cn } from "@/lib/utils";
 import { marketingNavigationKeys } from "@/features/navigation/config";
+import { UpgradeDialog } from "./upgrade-dialog";
 
 const iconMap = {
   MessageSquare: MessageSquare,
@@ -51,6 +52,10 @@ export const MobileNavbar = () => {
   const locale = useLocale();
   const t = useTranslations('navigation.main');
   const tCommon = useTranslations('common.actions');
+  const tUpgrade = useTranslations('auth.upgrade');
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  // 账号类型:customer = 客户(Guest),点击"仪表盘"时触发升级而非跳转
+  const [accountType, setAccountType] = useState<string | null>(null);
 
   const { scrollY } = useScroll();
 
@@ -63,6 +68,36 @@ export const MobileNavbar = () => {
       setShowBackground(false);
     }
   });
+
+  // 已登录时获取账号类型(客户需拦截"仪表盘"跳转为升级引导)
+  useEffect(() => {
+    if (!session.data?.user?.id) {
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/user/profile")
+      .then((res) => (res.ok ? res.json() : { user: null }))
+      .then((data) => {
+        if (!cancelled) {
+          setAccountType(data.user?.accountType ?? null);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAccountType(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session.data?.user?.id]);
+
+  const isCustomer = session.data?.user && accountType === "customer";
+  // 客户点击"仪表盘":弹出升级对话框,而非跳转到仪表盘(避免被重定向到问卷)
+  const handleDashboardClick = () => {
+    setOpen(false);
+    setIsUpgradeOpen(true);
+  };
 
   return (
     <div
@@ -162,6 +197,16 @@ export const MobileNavbar = () => {
                       )}
                     </AnimatePresence>
                   </>
+                ) : navItem.key === "dashboard" && isCustomer ? (
+                  // 客户点击"仪表盘":弹出升级对话框,而非跳转到仪表盘
+                  <button
+                    onClick={handleDashboardClick}
+                    className="relative block w-full py-2 text-left hover:opacity-70 transition-opacity"
+                  >
+                    <span className="block text-xl text-foreground font-semibold">
+                      {t(navItem.key)}
+                    </span>
+                  </button>
                 ) : (
                   <Link
                     href={`/${locale}${navItem.href}`}
@@ -195,27 +240,48 @@ export const MobileNavbar = () => {
                       </p>
                     )}
                   </div>
-                  <Link
-                    href={`/${locale}/dashboard`}
-                    onClick={() => setOpen(false)}
-                    className="text-[15px] font-medium text-muted-foreground py-2 hover:text-foreground transition-colors"
-                  >
-                    {t('dashboard')}
-                  </Link>
-                  <Link
-                    href={`/${locale}/settings`}
-                    onClick={() => setOpen(false)}
-                    className="text-[15px] font-medium text-muted-foreground py-2 hover:text-foreground transition-colors"
-                  >
-                    {t('settings')}
-                  </Link>
-                  <Link
-                    href={`/${locale}/profile`}
-                    onClick={() => setOpen(false)}
-                    className="text-[15px] font-medium text-muted-foreground py-2 hover:text-foreground transition-colors"
-                  >
-                    {t('profile')}
-                  </Link>
+                  {isCustomer ? (
+                    // 客户(Guest):仅可访问问卷,可升级为正式用户
+                    <>
+                      <Link
+                        href={`/${locale}/quiz`}
+                        onClick={() => setOpen(false)}
+                        className="text-[15px] font-medium text-muted-foreground py-2 hover:text-foreground transition-colors"
+                      >
+                        {t('quiz')}
+                      </Link>
+                      <button
+                        onClick={handleDashboardClick}
+                        className="text-[15px] font-medium text-muted-foreground py-2 text-left hover:text-foreground transition-colors"
+                      >
+                        {tUpgrade('upgradeLink')}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href={`/${locale}/dashboard`}
+                        onClick={() => setOpen(false)}
+                        className="text-[15px] font-medium text-muted-foreground py-2 hover:text-foreground transition-colors"
+                      >
+                        {t('dashboard')}
+                      </Link>
+                      <Link
+                        href={`/${locale}/settings`}
+                        onClick={() => setOpen(false)}
+                        className="text-[15px] font-medium text-muted-foreground py-2 hover:text-foreground transition-colors"
+                      >
+                        {t('settings')}
+                      </Link>
+                      <Link
+                        href={`/${locale}/profile`}
+                        onClick={() => setOpen(false)}
+                        className="text-[15px] font-medium text-muted-foreground py-2 hover:text-foreground transition-colors"
+                      >
+                        {t('profile')}
+                      </Link>
+                    </>
+                  )}
                   <button
                     onClick={async () => {
                       await signOut();
@@ -253,6 +319,12 @@ export const MobileNavbar = () => {
           </div>
         </div>
       )}
+
+      {/* 客户点击"仪表盘"触发的升级对话框 */}
+      <UpgradeDialog
+        open={isUpgradeOpen}
+        onClose={() => setIsUpgradeOpen(false)}
+      />
     </div>
   );
 };

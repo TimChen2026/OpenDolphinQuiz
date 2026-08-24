@@ -31,6 +31,8 @@ type Props = {
   active?: boolean;
   className?: string;
   target?: "_blank";
+  /** 提供 onClick 时渲染为按钮(不跳转),用于客户点击"仪表盘"触发升级 */
+  onClick?: () => void;
 };
 
 export function NavBarItem({
@@ -39,18 +41,29 @@ export function NavBarItem({
   active,
   target,
   className,
+  onClick,
 }: Props) {
   const pathname = usePathname();
+
+  const itemClassName = cn(
+    "flex items-center justify-center text-sm leading-[110%] px-4 py-2 rounded-md hover:bg-hover text-muted-foreground",
+    (active || pathname?.includes(href)) &&
+      "bg-accent text-foreground",
+    className
+  );
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={itemClassName}>
+        {children}
+      </button>
+    );
+  }
 
   return (
     <LocaleLink
       href={href}
-      className={cn(
-        "flex items-center justify-center text-sm leading-[110%] px-4 py-2 rounded-md hover:bg-hover text-muted-foreground",
-        (active || pathname?.includes(href)) &&
-          "bg-accent text-foreground",
-        className
-      )}
+      className={itemClassName}
       target={target}
       rel={target === "_blank" ? "noopener noreferrer" : undefined}
     >

@@ -27,7 +27,7 @@ import {
   normalizeProfileName,
   updateProfileSchema,
 } from "@/lib/account-settings";
-import { getTeamName } from "@/lib/teams";
+import { getTeamName, getUserFirstTeamName } from "@/lib/teams";
 
 export async function GET(req: NextRequest) {
   try {
@@ -59,10 +59,11 @@ export async function GET(req: NextRequest) {
 
     const user = users[0];
 
-    // 附加所属团队名称(客户无单一团队,返回 null)
+    // 附加所属团队名称
+    // 正式用户:取自身团队;客户(可属多团队、teamId 为 null):取最早加入的团队(与后台展示一致)
     const teamName = access.user.teamId
       ? await getTeamName(access.user.teamId)
-      : null;
+      : await getUserFirstTeamName(userId);
 
     return NextResponse.json({ user, teamName });
   } catch (error) {

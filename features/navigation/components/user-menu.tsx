@@ -33,6 +33,7 @@ import {
   IconShield,
   IconSettings,
 } from "@tabler/icons-react";
+import { UpgradeDialog } from "./upgrade-dialog";
 
 export function UserMenu() {
   const session = useSession();
@@ -46,9 +47,6 @@ export function UserMenu() {
   const [accountType, setAccountType] = useState<string | null>(null);
   // 客户升级对话框状态
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
-  const [upgradeTeamName, setUpgradeTeamName] = useState("");
-  const [upgradeError, setUpgradeError] = useState<string | null>(null);
-  const [upgrading, setUpgrading] = useState(false);
 
   useEffect(() => {
     // 检查用户是否是管理员
@@ -89,37 +87,7 @@ export function UserMenu() {
     fetchTeamName();
   }, [session.data?.user?.id]);
 
-  // 客户升级为正式用户:输入团队名后调用升级 API
-  const handleUpgrade = async () => {
-    const trimmed = upgradeTeamName.trim();
-    if (!trimmed) {
-      setUpgradeError(t('auth.upgrade.errors.teamNameRequired'));
-      return;
-    }
-    setUpgradeError(null);
-    setUpgrading(true);
-    try {
-      const response = await fetch('/api/auth/customer-upgrade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ teamName: trimmed }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        setUpgradeError(data.error || t('auth.upgrade.errors.upgradeFailed'));
-        return;
-      }
-      // 升级成功后关闭对话框并刷新页面
-      setIsUpgradeOpen(false);
-      setUpgradeTeamName("");
-      router.refresh();
-    } catch {
-      setUpgradeError(t('auth.upgrade.errors.upgradeFailed'));
-    } finally {
-      setUpgrading(false);
-    }
-  };
-
+  // 客户升级为正式用户:输入团队名后调用升级 API(逻辑封装在 UpgradeDialog)
   if (session.isPending) {
     return (
       <div className="h-6 w-6 rounded-full bg-muted animate-pulse" />
@@ -279,57 +247,11 @@ export function UserMenu() {
         </>
       )}
 
-      {/* 客户升级为正式用户对话框 */}
-      {isUpgradeOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-background p-6 rounded-lg shadow-lg max-w-md w-full mx-4 border border-border">
-            <h3 className="text-lg font-semibold mb-2">
-              {t('auth.upgrade.title')}
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {t('auth.upgrade.description')}
-            </p>
-            <input
-              type="text"
-              value={upgradeTeamName}
-              onChange={(e) => {
-                setUpgradeTeamName(e.target.value);
-                if (e.target.value.trim()) {
-                  setUpgradeError(null);
-                }
-              }}
-              placeholder={t('auth.upgrade.teamNamePlaceholder')}
-              autoComplete="organization"
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            {upgradeError && (
-              <p className="text-sm text-destructive mt-2">{upgradeError}</p>
-            )}
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setIsUpgradeOpen(false);
-                  setUpgradeTeamName("");
-                  setUpgradeError(null);
-                }}
-                disabled={upgrading}
-                className="px-4 py-2 rounded-md border border-border text-sm text-muted-foreground hover:bg-hover transition-colors disabled:opacity-40"
-              >
-                {t('common.actions.cancel')}
-              </button>
-              <button
-                onClick={handleUpgrade}
-                disabled={upgrading}
-                className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
-              >
-                {upgrading
-                  ? t('auth.upgrade.upgrading')
-                  : t('auth.upgrade.confirm')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 客户升级为正式用户对话框(与导航栏"仪表盘"入口共用) */}
+      <UpgradeDialog
+        open={isUpgradeOpen}
+        onClose={() => setIsUpgradeOpen(false)}
+      />
     </div>
   );
 }

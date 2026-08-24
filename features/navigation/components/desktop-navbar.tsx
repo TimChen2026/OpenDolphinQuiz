@@ -20,7 +20,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -30,16 +30,22 @@ import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/mode-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { marketingNavigationKeys } from "@/features/navigation/config";
+import { useSession } from "@/lib/auth-client";
 
 import { NavBarItem } from "./navbar-item";
 import { NavBarItemWithDropdown } from "./navbar-item-with-dropdown";
 import {
   UserMenu,
 } from "./user-menu";
+import { UpgradeDialog } from "./upgrade-dialog";
 
 export const DesktopNavbar = () => {
   const t = useTranslations('navigation.main');
   const { scrollY } = useScroll();
+  const session = useSession();
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  // 账号类型:customer = 客户(Guest),点击"仪表盘"时触发升级而非跳转
+  const [accountType, setAccountType] = useState<string | null>(null);
 
   const [showBackground, setShowBackground] = useState(false);
 
@@ -50,6 +56,37 @@ export const DesktopNavbar = () => {
       setShowBackground(false);
     }
   });
+
+  // 已登录时获取账号类型(客户需拦截"仪表盘"跳转为升级引导)
+  useEffect(() => {
+    if (!session.data?.user?.id) {
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/user/profile")
+      .then((res) => (res.ok ? res.json() : { user: null }))
+      .then((data) => {
+        if (!cancelled) {
+          setAccountType(data.user?.accountType ?? null);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAccountType(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session.data?.user?.id]);
+
+  const isCustomer = session.data?.user && accountType === "customer";
+  // 客户点击"仪表盘":弹出升级对话框,而非跳转到仪表盘(避免被重定向到问卷)
+  const handleDashboardClick = () => {
+    if (isCustomer) {
+      setIsUpgradeOpen(true);
+    }
+  };
   return (
     <div
       className={cn(
@@ -85,7 +122,12 @@ export const DesktopNavbar = () => {
                 {t(item.key)}
               </NavBarItemWithDropdown>
             ) : (
-              <NavBarItem href={item.href} key={item.key} target={item.target}>
+              <NavBarItem
+                href={item.href}
+                key={item.key}
+                target={item.target}
+                onClick={item.key === "dashboard" && isCustomer ? handleDashboardClick : undefined}
+              >
                 {t(item.key)}
               </NavBarItem>
             )
@@ -97,6 +139,12 @@ export const DesktopNavbar = () => {
         <ModeToggle />
         <UserMenu />
       </div>
+
+      {/* 客户点击"仪表盘"触发的升级对话框 */}
+      <UpgradeDialog
+        open={isUpgradeOpen}
+        onClose={() => setIsUpgradeOpen(false)}
+      />
     </div>
   );
 };
