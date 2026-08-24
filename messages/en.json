@@ -490,19 +490,22 @@
     },
     "usage": {
       "title": "Usage Summary",
-      "description": "Per-team plan quota usage (Quiz / potential customers) with limits, aligned with the key metrics on the pricing page.",
+      "description": "Per-team plan quota usage (Quiz / potential customers / daily inquiries / monthly alerts) with limits, aligned with the key metrics on the pricing page.",
       "columns": {
         "team": "Team",
         "admin": "Admin",
         "plan": "Plan",
         "quizUsage": "Quizzes used / limit",
         "customerUsage": "Customers used / limit",
+        "dailyInquiryUsage": "Daily inquiries used / limit",
+        "monthlyWarningUsage": "Monthly alerts used / limit",
         "status": "Status"
       },
       "period": {
         "month": "this month",
         "year": "this year"
       },
+      "unlimited": "Unlimited",
       "limited": "At limit",
       "normal": "Normal",
       "emptyState": "No team data yet"

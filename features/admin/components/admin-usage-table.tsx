@@ -49,6 +49,8 @@ export function AdminUsageTable({ items }: AdminUsageTableProps) {
                 "plan",
                 "quizUsage",
                 "customerUsage",
+                "dailyInquiryUsage",
+                "monthlyWarningUsage",
                 "status",
               ].map((key) => (
                 <th
@@ -64,7 +66,7 @@ export function AdminUsageTable({ items }: AdminUsageTableProps) {
             {items.length === 0 ? (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={8}
                   className="px-6 py-8 text-center text-sm text-muted-foreground"
                 >
                   {t("emptyState")}
@@ -109,7 +111,30 @@ export function AdminUsageTable({ items }: AdminUsageTableProps) {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {item.isQuizLimited || item.isPotentialCustomerLimited ? (
+                    <span className={cn(
+                      "text-sm",
+                      item.isDailyInquiryLimited
+                        ? "text-red-600 font-medium"
+                        : "text-foreground"
+                    )}>
+                      {item.dailyInquiryCount} / {item.dailyInquiryLimit ?? t("unlimited")}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={cn(
+                      "text-sm",
+                      item.isMonthlyWarningLimited
+                        ? "text-red-600 font-medium"
+                        : "text-foreground"
+                    )}>
+                      {item.monthlyWarningCount} / {item.monthlyWarningLimit ?? t("unlimited")}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    {item.isQuizLimited ||
+                    item.isPotentialCustomerLimited ||
+                    item.isDailyInquiryLimited ||
+                    item.isMonthlyWarningLimited ? (
                       <span className="px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
                         {t("limited")}
                       </span>

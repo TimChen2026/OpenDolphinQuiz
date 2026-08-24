@@ -60,8 +60,18 @@ export type AdminUsageSummaryItem = {
   potentialCustomerLimit: number;
   /** 潜在客户统计周期:month | year */
   potentialCustomerPeriod: PotentialCustomerPeriod;
+  /** 今日客户询盘数(已用) */
+  dailyInquiryCount: number;
+  /** 每日客户询盘上限(null = 无硬上限,Pro/Max) */
+  dailyInquiryLimit: number | null;
+  /** 本月预警提醒数(已用,黄 + 红) */
+  monthlyWarningCount: number;
+  /** 每月预警提醒上限(null = 无硬上限,Pro/Max) */
+  monthlyWarningLimit: number | null;
   isQuizLimited: boolean;
   isPotentialCustomerLimited: boolean;
+  isDailyInquiryLimited: boolean;
+  isMonthlyWarningLimited: boolean;
 };
 
 /**
@@ -119,12 +129,39 @@ export async function getAdminUsageSummary(): Promise<AdminUsageSummaryItem[]> {
   await fillCustomerCounts(customerCountMap, monthTeamIds, POTENTIAL_CUSTOMER_PERIODS.MONTH, now);
   await fillCustomerCounts(customerCountMap, yearTeamIds, POTENTIAL_CUSTOMER_PERIODS.YEAR, now);
 
+  // 今日客户询盘计数(定价页:Free 最多 5 次/天)
+  const todayStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  );
+  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+  const dailyInquiryCountMap = new Map<string, number>();
+  await fillDateCounts(
+    dailyInquiryCountMap,
+    teamIds,
+    projects.inquiryDatetime,
+    todayStart,
+    todayEnd
+  );
+
+  // 本月预警提醒计数(定价页:Free 最多 6 次/月,黄 + 红各记一次)
+  const monthStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
+  );
+  const monthEnd = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)
+  );
+  const warningCountMap = new Map<string, number>();
+  await fillDateCounts(warningCountMap, teamIds, projects.warningYellowAt, monthStart, monthEnd);
+  await fillDateCounts(warningCountMap, teamIds, projects.warningRedAt, monthStart, monthEnd);
+
   return teams.map((t) => {
     const admin = adminMap.get(t.id);
     const plan = admin?.plan ?? "free";
     const limits = getPlanLimits(plan);
     const quizCount = quizCountMap.get(t.id) ?? 0;
     const potentialCustomerCount = customerCountMap.get(t.id) ?? 0;
+    const dailyInquiryCount = dailyInquiryCountMap.get(t.id) ?? 0;
+    const monthlyWarningCount = warningCountMap.get(t.id) ?? 0;
     return {
       teamId: t.id,
       teamName: t.name,
@@ -136,9 +173,19 @@ export async function getAdminUsageSummary(): Promise<AdminUsageSummaryItem[]> {
       potentialCustomerCount,
       potentialCustomerLimit: limits.maxPotentialCustomers,
       potentialCustomerPeriod: limits.potentialCustomerPeriod,
+      dailyInquiryCount,
+      dailyInquiryLimit: limits.dailyInquiryLimit,
+      monthlyWarningCount,
+      monthlyWarningLimit: limits.monthlyWarningLimit,
       isQuizLimited: quizCount >= limits.maxQuizTemplates,
       isPotentialCustomerLimited:
         potentialCustomerCount >= limits.maxPotentialCustomers,
+      isDailyInquiryLimited:
+        limits.dailyInquiryLimit !== null &&
+        dailyInquiryCount >= limits.dailyInquiryLimit,
+      isMonthlyWarningLimited:
+        limits.monthlyWarningLimit !== null &&
+        monthlyWarningCount >= limits.monthlyWarningLimit,
     };
   });
 }
@@ -154,18 +201,46 @@ async function fillCustomerCounts(
     return;
   }
   const { start, end } = getPeriodRange(period, now);
+  await fillDateCounts(
+    customerCountMap,
+    teamIds,
+    projects.inquiryDatetime,
+    start,
+    end
+  );
+}
+
+/**
+ * 按日期区间批量统计指定团队的记录数(写入 countMap)
+ *
+ * 支持复用:潜在客户(询盘时间)、今日询盘(询盘时间)、本月预警(黄色/红色预警时间)。
+ * 同列多次调用时计数累加(如黄 + 红预警合计)。
+ */
+async function fillDateCounts(
+  countMap: Map<string, number>,
+  teamIds: string[],
+  dateColumn:
+    | typeof projects.inquiryDatetime
+    | typeof projects.warningYellowAt
+    | typeof projects.warningRedAt,
+  start: Date,
+  end: Date
+): Promise<void> {
+  if (teamIds.length === 0) {
+    return;
+  }
   const rows = await db
     .select({ tenantId: projects.tenantId, total: count() })
     .from(projects)
     .where(
       and(
         inArray(projects.tenantId, teamIds),
-        gte(projects.inquiryDatetime, start),
-        lt(projects.inquiryDatetime, end)
+        gte(dateColumn, start),
+        lt(dateColumn, end)
       )
     )
     .groupBy(projects.tenantId);
   for (const row of rows) {
-    customerCountMap.set(row.tenantId, Number(row.total));
+    countMap.set(row.tenantId, (countMap.get(row.tenantId) ?? 0) + Number(row.total));
   }
 }

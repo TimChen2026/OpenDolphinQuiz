@@ -56,12 +56,15 @@ describe("getAdminUsageSummary", () => {
   });
 
   it("按团队汇总套餐配额使用(年周期套餐)", async () => {
-    // select 调用顺序:teams → admins → quiz 计数 → 潜在客户(年)计数
+    // select 调用顺序:teams → admins → quiz 计数 → 潜在客户(年) → 今日询盘 → 预警黄 → 预警红
     vi.mocked(db).select = makeSelectMock([
       [{ id: "team-1", name: "Acme" }],
       [{ id: "team-1", name: "Alice", email: "alice@example.com", plan: "pro" }],
       [{ tenantId: "team-1", total: 3 }],
       [{ tenantId: "team-1", total: 1200 }],
+      [{ tenantId: "team-1", total: 2 }],
+      [{ tenantId: "team-1", total: 1 }],
+      [{ tenantId: "team-1", total: 0 }],
     ]) as never;
 
     const summary = await getAdminUsageSummary();
@@ -78,17 +81,26 @@ describe("getAdminUsageSummary", () => {
       potentialCustomerCount: 1200,
       potentialCustomerLimit: 10000,
       potentialCustomerPeriod: "year",
+      dailyInquiryCount: 2,
+      dailyInquiryLimit: null,
+      monthlyWarningCount: 1,
+      monthlyWarningLimit: null,
       isQuizLimited: false,
       isPotentialCustomerLimited: false,
+      isDailyInquiryLimited: false,
+      isMonthlyWarningLimited: false,
     });
   });
 
-  it("套餐达到上限时标记超限(free:1 个 Quiz 已满)", async () => {
+  it("套餐达到上限时标记超限(free:Quiz 满/潜在客户满/每日询盘满/每月预警满)", async () => {
     vi.mocked(db).select = makeSelectMock([
       [{ id: "team-2", name: "Beta" }],
       [{ id: "team-2", name: "Bob", email: "bob@example.com", plan: "free" }],
       [{ tenantId: "team-2", total: 1 }],
       [{ tenantId: "team-2", total: 30 }],
+      [{ tenantId: "team-2", total: 5 }],
+      [{ tenantId: "team-2", total: 4 }],
+      [{ tenantId: "team-2", total: 2 }],
     ]) as never;
 
     const summary = await getAdminUsageSummary();
@@ -100,8 +112,14 @@ describe("getAdminUsageSummary", () => {
       potentialCustomerCount: 30,
       potentialCustomerLimit: 30,
       potentialCustomerPeriod: "month",
+      dailyInquiryCount: 5,
+      dailyInquiryLimit: 5,
+      monthlyWarningCount: 6,
+      monthlyWarningLimit: 6,
       isQuizLimited: true,
       isPotentialCustomerLimited: true,
+      isDailyInquiryLimited: true,
+      isMonthlyWarningLimited: true,
     });
   });
 });

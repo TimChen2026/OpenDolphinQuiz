@@ -49,22 +49,32 @@ export const PLAN_LIMITS: Record<
     maxQuizTemplates: number;
     maxPotentialCustomers: number;
     potentialCustomerPeriod: PotentialCustomerPeriod;
+    /** 每天客户询盘上限(定价页:Free 最多 5 次/天;Pro/Max 无硬上限) */
+    dailyInquiryLimit: number | null;
+    /** 每月预警提醒上限(定价页:Free 最多 6 次/月;Pro/Max 无硬上限) */
+    monthlyWarningLimit: number | null;
   }
 > = {
   [USER_PLANS.FREE]: {
     maxQuizTemplates: 1,
     maxPotentialCustomers: 30,
     potentialCustomerPeriod: POTENTIAL_CUSTOMER_PERIODS.MONTH,
+    dailyInquiryLimit: 5,
+    monthlyWarningLimit: 6,
   },
   [USER_PLANS.PRO]: {
     maxQuizTemplates: 6,
     maxPotentialCustomers: 10000,
     potentialCustomerPeriod: POTENTIAL_CUSTOMER_PERIODS.YEAR,
+    dailyInquiryLimit: null,
+    monthlyWarningLimit: null,
   },
   [USER_PLANS.MAX]: {
     maxQuizTemplates: 12,
     maxPotentialCustomers: 30000,
     potentialCustomerPeriod: POTENTIAL_CUSTOMER_PERIODS.YEAR,
+    dailyInquiryLimit: null,
+    monthlyWarningLimit: null,
   },
 };
 

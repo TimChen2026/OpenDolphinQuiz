@@ -20,7 +20,15 @@
 
 import { and, count, desc, eq, ilike, inArray, or, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { user, teamMember, team, USER_ROLES, USER_PLANS, ACCOUNT_TYPES } from "@/lib/db/schema";
+import {
+  user,
+  teamMember,
+  team,
+  USER_ROLES,
+  USER_PLANS,
+  ACCOUNT_TYPES,
+  TEAM_MEMBER_ROLES,
+} from "@/lib/db/schema";
 import { isSuperAdminEmail } from "@/lib/rbac";
 
 export const ADMIN_USERS_PAGE_SIZE = 20;
@@ -62,6 +70,8 @@ export interface AdminUserListItem {
   teamId: string | null;
   /** 是否为超级管理员(SUPER_ADMIN_EMAIL 指定的唯一平台管理员) */
   isSuperAdmin: boolean;
+  /** 是否为团队管理员(最早加入的团队中 teamMember.role = admin,与仪表盘团队界面口径一致) */
+  isTeamAdmin: boolean;
 }
 
 /**
@@ -69,7 +79,7 @@ export interface AdminUserListItem {
  * 团队成员(member/admin)通常仅一个团队;客户(customer)可属多团队,这里展示最早加入的团队
  */
 async function attachTeamInfo(
-  users: Omit<AdminUserListItem, "teamName" | "teamId" | "isSuperAdmin">[]
+  users: Omit<AdminUserListItem, "teamName" | "teamId" | "isSuperAdmin" | "isTeamAdmin">[]
 ): Promise<Omit<AdminUserListItem, "isSuperAdmin">[]> {
   if (users.length === 0) {
     return [];
@@ -77,21 +87,31 @@ async function attachTeamInfo(
 
   const userIds = users.map((u) => u.id);
 
-  // 按用户取最早加入的团队关联(同用户多团队时取第一条)
+  // 按用户取最早加入的团队关联(同用户多团队时取第一条,同时记录团队内角色)
   const memberships = await db
-    .select({ userId: teamMember.userId, teamId: teamMember.teamId })
+    .select({
+      userId: teamMember.userId,
+      teamId: teamMember.teamId,
+      role: teamMember.role,
+    })
     .from(teamMember)
     .where(inArray(teamMember.userId, userIds))
     .orderBy(teamMember.joinedAt);
 
-  const firstTeamByUser = new Map<string, string>();
+  // 记录每个用户最早加入团队的 ID 与团队内角色
+  const firstTeamByUser = new Map<string, { teamId: string; role: string }>();
   for (const membership of memberships) {
     if (!firstTeamByUser.has(membership.userId)) {
-      firstTeamByUser.set(membership.userId, membership.teamId);
+      firstTeamByUser.set(membership.userId, {
+        teamId: membership.teamId,
+        role: membership.role,
+      });
     }
   }
 
-  const teamIds = Array.from(new Set(firstTeamByUser.values()));
+  const teamIds = Array.from(
+    new Set(Array.from(firstTeamByUser.values()).map((m) => m.teamId))
+  );
   const teams = teamIds.length > 0
     ? await db
         .select({ id: team.id, name: team.name })
@@ -101,11 +121,14 @@ async function attachTeamInfo(
   const teamNameById = new Map(teams.map((t) => [t.id, t.name]));
 
   return users.map((existing) => {
-    const teamId = firstTeamByUser.get(existing.id) ?? null;
+    const membership = firstTeamByUser.get(existing.id);
+    const teamId = membership?.teamId ?? null;
     return {
       ...existing,
       teamName: teamId ? (teamNameById.get(teamId) ?? null) : null,
       teamId,
+      // 团队管理员 = teamMember.role = admin(创建团队/首个加入者),与仪表盘团队界面一致
+      isTeamAdmin: membership?.role === TEAM_MEMBER_ROLES.ADMIN,
     };
   });
 }

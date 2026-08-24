@@ -113,6 +113,7 @@ const users = [
     teamName: "Acme",
     teamId: "team_1",
     isSuperAdmin: false,
+    isTeamAdmin: false,
     createdAt: new Date("2025-01-01T00:00:00.000Z"),
     updatedAt: new Date("2025-01-01T00:00:00.000Z"),
   },
@@ -132,6 +133,7 @@ const users = [
     teamName: null,
     teamId: null,
     isSuperAdmin: false,
+    isTeamAdmin: true,
     createdAt: new Date("2025-01-02T00:00:00.000Z"),
     updatedAt: new Date("2025-01-02T00:00:00.000Z"),
   },
@@ -151,6 +153,7 @@ const users = [
     teamName: "Acme",
     teamId: "team_1",
     isSuperAdmin: false,
+    isTeamAdmin: false,
     createdAt: new Date("2025-01-03T00:00:00.000Z"),
     updatedAt: new Date("2025-01-03T00:00:00.000Z"),
   },
@@ -272,14 +275,14 @@ describe("UsersTable", () => {
       await Promise.resolve();
     });
 
-    // 客户账号(customer)显示 Guest 徽章,而非 User 下拉框(限定在表格内,排除筛选栏选项)
+    // 客户账号(customer)显示 Guest 徽章,而非角色下拉(限定在表格内,排除筛选栏选项)
     const table = screen.getByRole("table");
     expect(within(table).getByText("Guest")).toBeInTheDocument();
-    // 客户不显示角色下拉框:3 个用户中仅 2 个成员有角色下拉
+    // 角色列为只读徽章:表格内不再存在角色下拉(user/admin),仅保留套餐下拉
     const roleSelects = within(table)
       .getAllByRole("combobox")
       .filter((el) => (el as HTMLSelectElement).value === "user" || (el as HTMLSelectElement).value === "admin");
-    expect(roleSelects).toHaveLength(2);
+    expect(roleSelects).toHaveLength(0);
   });
 
   it("filters by team and resets all filters with the Show all button", async () => {
@@ -317,6 +320,7 @@ describe("UsersTable", () => {
       email: "dana@example.com",
       role: "admin",
       isSuperAdmin: true,
+      isTeamAdmin: false,
       teamName: "Acme",
       teamId: "team_1",
     };
@@ -335,20 +339,9 @@ describe("UsersTable", () => {
       await Promise.resolve();
     });
 
-    // 角色列下拉的当前选中值:普通用户 User、团队管理员 T-Admin、超级管理员 S-Admin
+    // 角色徽章:超级管理员 S-Admin、团队管理员 T-Admin(基于 teamMember 判定,与仪表盘一致)
     const table = screen.getByRole("table");
-    const roleSelects = within(table)
-      .getAllByRole("combobox")
-      .filter((el) => {
-        const select = el as HTMLSelectElement;
-        return select.value === "user" || select.value === "admin";
-      });
-    const selectedLabels = roleSelects.map((el) => {
-      const select = el as HTMLSelectElement;
-      return select.options[select.selectedIndex].text;
-    });
-    expect(selectedLabels).toContain("User");
-    expect(selectedLabels).toContain("T-Admin");
-    expect(selectedLabels).toContain("S-Admin");
+    expect(within(table).getByText("S-Admin")).toBeInTheDocument();
+    expect(within(table).getByText("T-Admin")).toBeInTheDocument();
   });
 });

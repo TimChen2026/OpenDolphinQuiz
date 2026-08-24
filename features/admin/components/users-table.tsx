@@ -36,7 +36,6 @@ import {
   ArrowRightLeft,
 } from "lucide-react";
 import {
-  updateUserRole,
   updateUserPlan,
   updateUserTeamName,
   updateUserTeamMembership,
@@ -226,20 +225,6 @@ export function UsersTable({
     }
 
     router.push(createUsersUrl(query, pageNumber), { scroll: false });
-  };
-
-  const handleUpdateRole = async (userId: string, newRole: string) => {
-    try {
-      await updateUserRole(userId, newRole);
-      setUsers((currentUsers) =>
-        currentUsers.map((existingUser) =>
-          existingUser.id === userId ? { ...existingUser, role: newRole } : existingUser
-        )
-      );
-      toast.success(t("roleUpdated"));
-    } catch {
-      toast.error(t("roleUpdateFailed"));
-    }
   };
 
   const handleUpdatePlan = async (userId: string, newPlan: string) => {
@@ -510,24 +495,7 @@ export function UsersTable({
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    {user.accountType === "customer" ? (
-                      // 客户(Guest):角色固定为 Guest,不可修改为 user/admin
-                      <span className="px-2 py-1 text-xs rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
-                        Guest
-                      </span>
-                    ) : (
-                      <select
-                        value={user.role}
-                        onChange={(e) => handleUpdateRole(user.id, e.target.value)}
-                        className="px-3 py-1 text-sm rounded-lg border border-border bg-background text-foreground"
-                      >
-                        <option value="user">User</option>
-                        {/* 超级管理员显示 S-Admin,团队管理员显示 T-Admin */}
-                        <option value="admin">
-                          {user.isSuperAdmin ? "S-Admin" : "T-Admin"}
-                        </option>
-                      </select>
-                    )}
+                    <RoleBadge user={user} />
                   </td>
                   <td className="px-6 py-4">
                     <select
@@ -716,6 +684,58 @@ export function UsersTable({
   );
 }
 
+/**
+ * 角色徽章(只读展示)
+ *
+ * 角色口径与仪表盘团队界面一致(团队管理员由 teamMember 判定),
+ * 优先级:客户 Guest > 超级管理员 S-Admin > 团队管理员 T-Admin > 销售角色 > User。
+ * 团队管理员身份由注册/加入团队时的第一个成员自动确定,不可在管理后台手动指定。
+ */
+function RoleBadge({ user }: { user: User }) {
+  const t = useTranslations("Admin.users");
+
+  if (user.accountType === "customer") {
+    return (
+      <span className="px-2 py-1 text-xs rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+        Guest
+      </span>
+    );
+  }
+  if (user.isSuperAdmin) {
+    return (
+      <span className="px-2 py-1 text-xs rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
+        S-Admin
+      </span>
+    );
+  }
+  if (user.isTeamAdmin) {
+    return (
+      <span className="px-2 py-1 text-xs rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+        T-Admin
+      </span>
+    );
+  }
+  if (user.role === "sales_director") {
+    return (
+      <span className="px-2 py-1 text-xs rounded-full bg-accent text-accent-foreground">
+        {t("filters.salesDirector")}
+      </span>
+    );
+  }
+  if (user.role === "sales_manager") {
+    return (
+      <span className="px-2 py-1 text-xs rounded-full bg-accent text-accent-foreground">
+        {t("filters.salesManager")}
+      </span>
+    );
+  }
+  return (
+    <span className="px-2 py-1 text-xs rounded-full bg-secondary text-secondary-foreground">
+      User
+    </span>
+  );
+}
+
 function UserDetailModal({
   user,
   onClose,
@@ -755,9 +775,13 @@ function UserDetailModal({
                   ? "Guest"
                   : user.isSuperAdmin
                     ? "S-Admin"
-                    : user.role === "admin"
+                    : user.isTeamAdmin
                       ? "T-Admin"
-                      : user.role}
+                      : user.role === "sales_director"
+                        ? t("filters.salesDirector")
+                        : user.role === "sales_manager"
+                          ? t("filters.salesManager")
+                          : "User"}
               </p>
             </div>
             <div>
