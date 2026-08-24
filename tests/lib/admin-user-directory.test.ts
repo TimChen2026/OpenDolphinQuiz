@@ -55,4 +55,42 @@ describe("admin user directory helpers", () => {
     expect(getAdminUsersTotalPages(0)).toBe(1);
     expect(getAdminUsersTotalPages(41)).toBe(3);
   });
+
+  it("normalizes filter params and ignores invalid values", () => {
+    expect(
+      normalizeAdminUsersDirectoryFilters({
+        role: "admin",
+        plan: "pro",
+        accountType: "customer",
+        emailVerified: "true",
+      })
+    ).toEqual({
+      currentPage: 1,
+      pageSize: ADMIN_USERS_PAGE_SIZE,
+      query: "",
+      role: "admin",
+      plan: "pro",
+      accountType: "customer",
+      emailVerified: "true",
+    });
+  });
+
+  it("ignores non-whitelisted filter values to prevent arbitrary conditions", () => {
+    expect(
+      normalizeAdminUsersDirectoryFilters({
+        role: "superuser",
+        plan: "enterprise",
+        accountType: "stranger",
+        emailVerified: "yes",
+      })
+    ).toEqual({
+      currentPage: 1,
+      pageSize: ADMIN_USERS_PAGE_SIZE,
+      query: "",
+      role: undefined,
+      plan: undefined,
+      accountType: undefined,
+      emailVerified: undefined,
+    });
+  });
 });

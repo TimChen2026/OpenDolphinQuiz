@@ -26,7 +26,8 @@ import { useLocale, useTranslations } from "next-intl";
 import {
   Users,
   Home,
-  Settings
+  Settings,
+  BarChart3
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +41,11 @@ const adminNavItems = [
     title: "users",
     href: "/admin/users",
     icon: Users,
+  },
+  {
+    title: "usage",
+    href: "/admin/usage",
+    icon: BarChart3,
   },
   {
     title: "internal",

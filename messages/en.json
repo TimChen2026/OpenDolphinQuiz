@@ -391,6 +391,7 @@
       "subtitle": "System Management",
       "dashboard": "Dashboard",
       "users": "User Management",
+      "usage": "Usage",
       "internal": "Internal Management",
       "backToDashboard": "Back to User Dashboard"
     },
@@ -466,11 +467,44 @@
       "reason": "Reason",
       "manualAdjustment": "Manual Adjustment",
       "cancel": "Cancel",
+      "filters": {
+        "allRoles": "All roles",
+        "allPlans": "All plans",
+        "allTypes": "All types",
+        "allStatus": "All statuses",
+        "member": "Member",
+        "guest": "Guest",
+        "user": "User",
+        "verified": "Verified",
+        "unverified": "Unverified",
+        "salesDirector": "Sales Director",
+        "salesManager": "Sales Manager",
+        "clear": "Clear filters"
+      },
       "pagination": {
         "previous": "Previous",
         "next": "Next",
         "page": "Page {current} of {total}"
       }
+    },
+    "usage": {
+      "title": "Usage Summary",
+      "description": "Per-team plan quota usage (Quiz / potential customers) with limits, aligned with the key metrics on the pricing page.",
+      "columns": {
+        "team": "Team",
+        "admin": "Admin",
+        "plan": "Plan",
+        "quizUsage": "Quizzes used / limit",
+        "customerUsage": "Customers used / limit",
+        "status": "Status"
+      },
+      "period": {
+        "month": "this month",
+        "year": "this year"
+      },
+      "limited": "At limit",
+      "normal": "Normal",
+      "emptyState": "No team data yet"
     }
   },
   "dashboard": {

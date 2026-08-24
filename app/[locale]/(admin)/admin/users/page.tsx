@@ -66,6 +66,10 @@ export default async function AdminUsersPage(props: AdminUsersPageProps) {
         currentPage={directory.currentPage}
         pageSize={directory.pageSize}
         query={directory.query}
+        role={directory.role}
+        plan={directory.plan}
+        accountType={directory.accountType}
+        emailVerified={directory.emailVerified}
         totalPages={directory.totalPages}
         totalUsers={directory.totalUsers}
         users={directory.users}

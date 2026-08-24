@@ -18,9 +18,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { count, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, inArray, or, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { user, teamMember, team } from "@/lib/db/schema";
+import { user, teamMember, team, USER_ROLES, USER_PLANS, ACCOUNT_TYPES } from "@/lib/db/schema";
 
 export const ADMIN_USERS_PAGE_SIZE = 20;
 
@@ -29,6 +29,14 @@ type SearchParamValue = string | string[] | undefined;
 export interface AdminUsersDirectorySearchParams {
   page?: SearchParamValue;
   query?: SearchParamValue;
+  /** 角色筛选:admin | sales_director | sales_manager | user */
+  role?: SearchParamValue;
+  /** 套餐筛选:free | pro | max */
+  plan?: SearchParamValue;
+  /** 账号类型筛选:member(成员) | customer(客户/Guest) */
+  accountType?: SearchParamValue;
+  /** 邮箱验证状态筛选:true | false */
+  emailVerified?: SearchParamValue;
 }
 
 export interface AdminUserListItem {
@@ -101,6 +109,10 @@ export interface AdminUsersDirectoryFilters {
   currentPage: number;
   pageSize: number;
   query: string;
+  role?: string;
+  plan?: string;
+  accountType?: string;
+  emailVerified?: string;
 }
 
 export interface AdminUsersDirectoryResult extends AdminUsersDirectoryFilters {
@@ -113,6 +125,12 @@ function getSingleSearchParam(value?: SearchParamValue) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+// 筛选参数白名单:非法值一律忽略,防止注入任意 SQL 条件
+const VALID_ROLE_FILTERS = new Set<string>(Object.values(USER_ROLES));
+const VALID_PLAN_FILTERS = new Set<string>(Object.values(USER_PLANS));
+const VALID_ACCOUNT_TYPE_FILTERS = new Set<string>(Object.values(ACCOUNT_TYPES));
+const VALID_EMAIL_VERIFIED_FILTERS = new Set(["true", "false"]);
+
 export function normalizeAdminUsersDirectoryFilters(
   searchParams?: AdminUsersDirectorySearchParams
 ): AdminUsersDirectoryFilters {
@@ -122,10 +140,23 @@ export function normalizeAdminUsersDirectoryFilters(
   const rawPage = getSingleSearchParam(searchParams?.page) ?? "1";
   const parsedPage = Number.parseInt(rawPage, 10);
 
+  const rawRole = getSingleSearchParam(searchParams?.role) ?? "";
+  const rawPlan = getSingleSearchParam(searchParams?.plan) ?? "";
+  const rawAccountType = getSingleSearchParam(searchParams?.accountType) ?? "";
+  const rawEmailVerified = getSingleSearchParam(searchParams?.emailVerified) ?? "";
+
   return {
     currentPage: Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1,
     pageSize: ADMIN_USERS_PAGE_SIZE,
     query,
+    role: VALID_ROLE_FILTERS.has(rawRole) ? rawRole : undefined,
+    plan: VALID_PLAN_FILTERS.has(rawPlan) ? rawPlan : undefined,
+    accountType: VALID_ACCOUNT_TYPE_FILTERS.has(rawAccountType)
+      ? rawAccountType
+      : undefined,
+    emailVerified: VALID_EMAIL_VERIFIED_FILTERS.has(rawEmailVerified)
+      ? rawEmailVerified
+      : undefined,
   };
 }
 
@@ -138,9 +169,29 @@ export async function getAdminUsersDirectory(
 ): Promise<AdminUsersDirectoryResult> {
   const requestedFilters = normalizeAdminUsersDirectoryFilters(searchParams);
   const pattern = requestedFilters.query ? `%${requestedFilters.query}%` : undefined;
-  const whereClause = pattern
-    ? or(ilike(user.name, pattern), ilike(user.email, pattern))
-    : undefined;
+
+  // 组合筛选:关键字(姓名/邮箱) + 角色 + 套餐 + 账号类型 + 邮箱验证状态
+  const conditions: SQL[] = [];
+  if (pattern) {
+    conditions.push(
+      or(ilike(user.name, pattern), ilike(user.email, pattern)) as SQL
+    );
+  }
+  if (requestedFilters.role) {
+    conditions.push(eq(user.role, requestedFilters.role));
+  }
+  if (requestedFilters.plan) {
+    conditions.push(eq(user.plan, requestedFilters.plan));
+  }
+  if (requestedFilters.accountType) {
+    conditions.push(eq(user.accountType, requestedFilters.accountType));
+  }
+  if (requestedFilters.emailVerified !== undefined) {
+    conditions.push(
+      eq(user.emailVerified, requestedFilters.emailVerified === "true")
+    );
+  }
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
   const [{ totalUsers: totalUsersValue }] = await (whereClause
     ? db.select({ totalUsers: count() }).from(user).where(whereClause)

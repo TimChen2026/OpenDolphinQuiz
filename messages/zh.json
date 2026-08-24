@@ -403,6 +403,7 @@
       "subtitle": "系统管理",
       "dashboard": "管理仪表盘",
       "users": "用户管理",
+      "usage": "权限使用",
       "internal": "内部管理",
       "backToDashboard": "返回用户面板"
     },
@@ -478,11 +479,44 @@
       "reason": "原因",
       "manualAdjustment": "手动调整",
       "cancel": "取消",
+      "filters": {
+        "allRoles": "全部角色",
+        "allPlans": "全部套餐",
+        "allTypes": "全部类型",
+        "allStatus": "全部状态",
+        "member": "正式用户",
+        "guest": "客户(Guest)",
+        "user": "普通用户",
+        "verified": "已验证",
+        "unverified": "未验证",
+        "salesDirector": "销售总监",
+        "salesManager": "销售经理",
+        "clear": "清除筛选"
+      },
       "pagination": {
         "previous": "上一页",
         "next": "下一页",
         "page": "第 {current} / {total} 页"
       }
+    },
+    "usage": {
+      "title": "权限使用汇总",
+      "description": "按团队统计套餐配额（Quiz 问卷 / 潜在客户）的已用与上限，口径与定价页关键指标一致。",
+      "columns": {
+        "team": "团队",
+        "admin": "管理员",
+        "plan": "套餐",
+        "quizUsage": "Quiz 已用/上限",
+        "customerUsage": "潜在客户 已用/上限",
+        "status": "状态"
+      },
+      "period": {
+        "month": "本月",
+        "year": "本年"
+      },
+      "limited": "已达上限",
+      "normal": "正常",
+      "emptyState": "暂无团队数据"
     }
   },
   "dashboard": {

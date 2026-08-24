@@ -19,7 +19,7 @@
  */
 
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import messages from "@/messages/en.json";
 import { UsersTable } from "@/features/admin/components/users-table";
 
@@ -242,10 +242,11 @@ describe("UsersTable", () => {
       />
     );
 
-    // 客户账号(customer)显示 Guest 徽章,而非 User 下拉框
-    expect(screen.getByText("Guest")).toBeInTheDocument();
+    // 客户账号(customer)显示 Guest 徽章,而非 User 下拉框(限定在表格内,排除筛选栏选项)
+    const table = screen.getByRole("table");
+    expect(within(table).getByText("Guest")).toBeInTheDocument();
     // 客户不显示角色下拉框:3 个用户中仅 2 个成员有角色下拉
-    const roleSelects = screen
+    const roleSelects = within(table)
       .getAllByRole("combobox")
       .filter((el) => (el as HTMLSelectElement).value === "user" || (el as HTMLSelectElement).value === "admin");
     expect(roleSelects).toHaveLength(2);

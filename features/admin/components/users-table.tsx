@@ -56,6 +56,10 @@ interface UsersTableProps {
   pageSize: number;
   totalPages: number;
   totalUsers: number;
+  role?: string;
+  plan?: string;
+  accountType?: string;
+  emailVerified?: string;
 }
 
 export function UsersTable({
@@ -65,6 +69,10 @@ export function UsersTable({
   pageSize,
   totalPages,
   totalUsers,
+  role = "",
+  plan = "",
+  accountType = "",
+  emailVerified = "",
 }: UsersTableProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -79,6 +87,28 @@ export function UsersTable({
   const [allTeams, setAllTeams] = useState<{ id: string; name: string }[]>([]);
   const t = useTranslations("Admin.users");
   const hasResults = users.length > 0;
+
+  // 筛选控件可选项(值与 URL 参数一致)
+  const roleOptions = [
+    { value: "admin", label: t("admin") },
+    { value: "sales_director", label: t("filters.salesDirector") },
+    { value: "sales_manager", label: t("filters.salesManager") },
+    { value: "user", label: t("filters.user") },
+  ];
+  const planOptions = [
+    { value: "free", label: t("planFree") },
+    { value: "pro", label: t("planPro") },
+    { value: "max", label: t("planMax") },
+  ];
+  const accountTypeOptions = [
+    { value: "member", label: t("filters.member") },
+    { value: "customer", label: t("filters.guest") },
+  ];
+  const emailVerifiedOptions = [
+    { value: "true", label: t("filters.verified") },
+    { value: "false", label: t("filters.unverified") },
+  ];
+  const hasActiveFilters = Boolean(role || plan || accountType || emailVerified);
   const pageStart = totalUsers === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const pageEnd = totalUsers === 0 ? 0 : Math.min(totalUsers, pageStart + users.length - 1);
   const pageNumbers = useMemo(() => {
@@ -116,7 +146,11 @@ export function UsersTable({
     }
   }, [isTransferModalOpen]);
 
-  const createUsersUrl = (nextQuery: string, nextPage: number) => {
+  const createUsersUrl = (
+    nextQuery: string,
+    nextPage: number,
+    filters?: { role?: string; plan?: string; accountType?: string; emailVerified?: string }
+  ) => {
     const params = new URLSearchParams();
 
     if (nextQuery) {
@@ -127,8 +161,41 @@ export function UsersTable({
       params.set("page", String(nextPage));
     }
 
+    // 筛选条件随 URL 持久化(刷新/分享后保持),未显式传入时沿用当前筛选
+    const activeFilters = filters ?? { role, plan, accountType, emailVerified };
+    if (activeFilters.role) {
+      params.set("role", activeFilters.role);
+    }
+    if (activeFilters.plan) {
+      params.set("plan", activeFilters.plan);
+    }
+    if (activeFilters.accountType) {
+      params.set("accountType", activeFilters.accountType);
+    }
+    if (activeFilters.emailVerified) {
+      params.set("emailVerified", activeFilters.emailVerified);
+    }
+
     const queryString = params.toString();
     return queryString ? `${pathname}?${queryString}` : pathname;
+  };
+
+  // 筛选条件变更:更新对应参数并回到第 1 页
+  const handleFilterChange = (
+    key: "role" | "plan" | "accountType" | "emailVerified",
+    value: string
+  ) => {
+    const nextFilters = {
+      role: key === "role" ? value : role,
+      plan: key === "plan" ? value : plan,
+      accountType: key === "accountType" ? value : accountType,
+      emailVerified: key === "emailVerified" ? value : emailVerified,
+    };
+    router.push(createUsersUrl(query, 1, nextFilters), { scroll: false });
+  };
+
+  const handleClearFilters = () => {
+    router.push(pathname, { scroll: false });
   };
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -270,6 +337,67 @@ export function UsersTable({
           ) : null}
         </div>
       </form>
+
+      {/* 筛选栏:角色/账号类型/套餐/邮箱验证状态(多条件叠加,与服务端查询一致) */}
+      <div className="flex flex-wrap items-center gap-2">
+        <select
+          value={role}
+          onChange={(e) => handleFilterChange("role", e.target.value)}
+          className="px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="">{t("filters.allRoles")}</option>
+          {roleOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={accountType}
+          onChange={(e) => handleFilterChange("accountType", e.target.value)}
+          className="px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="">{t("filters.allTypes")}</option>
+          {accountTypeOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={plan}
+          onChange={(e) => handleFilterChange("plan", e.target.value)}
+          className="px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="">{t("filters.allPlans")}</option>
+          {planOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={emailVerified}
+          onChange={(e) => handleFilterChange("emailVerified", e.target.value)}
+          className="px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="">{t("filters.allStatus")}</option>
+          {emailVerifiedOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        {hasActiveFilters ? (
+          <Button type="button" size="sm" variant="simple" onClick={handleClearFilters}>
+            {t("filters.clear")}
+          </Button>
+        ) : null}
+      </div>
 
       <div className="text-sm text-muted-foreground">
         {query
