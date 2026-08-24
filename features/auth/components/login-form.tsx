@@ -58,13 +58,19 @@ export function LoginForm({ showGoogleAuth = true }: LoginFormProps) {
       setIsLoading(true);
       setError(null);
 
-      const { error } = await signIn.email({
+      const { data, error } = await signIn.email({
         email: values.email,
         password: values.password,
       });
 
       if (error) {
         setError(error.message || t('errors.loginFailed'));
+        return;
+      }
+
+      // 邮箱未验证:跳转到验证引导页,完成验证前不放行进入系统
+      if (!data?.user?.emailVerified) {
+        router.push(`/${locale}/verify-email-prompt`);
         return;
       }
 

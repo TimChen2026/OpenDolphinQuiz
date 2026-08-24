@@ -22,7 +22,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useSession } from "@/lib/auth-client";
 
 type UpgradeDialogProps = {
   open: boolean;
@@ -32,12 +33,15 @@ type UpgradeDialogProps = {
 /**
  * 客户(Guest)升级为正式用户对话框
  *
- * 客户输入团队/公司名称后调用 /api/auth/customer-upgrade 完成升级,
- * 成功后刷新页面(服务端重新解析团队上下文)。
+ * 客户输入团队/公司名称后调用 /api/auth/customer-upgrade 完成升级。
+ * 升级成功后:邮箱未验证则跳转验证引导页(完成验证前不放行),
+ * 已验证则刷新页面(服务端重新解析团队上下文)。
  * 供用户菜单与导航栏"仪表盘"入口共用。
  */
 export function UpgradeDialog({ open, onClose }: UpgradeDialogProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const session = useSession();
   const t = useTranslations();
   const [upgradeTeamName, setUpgradeTeamName] = useState("");
   const [upgradeError, setUpgradeError] = useState<string | null>(null);
@@ -66,10 +70,14 @@ export function UpgradeDialog({ open, onClose }: UpgradeDialogProps) {
         setUpgradeError(data.error || t("auth.upgrade.errors.upgradeFailed"));
         return;
       }
-      // 升级成功后关闭对话框并刷新页面,使服务端按正式用户重新解析访问权限
+      // 升级成功后关闭对话框并刷新页面
       onClose();
       setUpgradeTeamName("");
       router.refresh();
+      // 邮箱未验证:引导完成邮箱验证,验证通过后才放行进入仪表盘
+      if (!session.data?.user?.emailVerified) {
+        router.push(`/${locale}/verify-email-prompt`);
+      }
     } catch {
       setUpgradeError(t("auth.upgrade.errors.upgradeFailed"));
     } finally {
