@@ -86,6 +86,15 @@ type PlanOption = {
 const PLANS_STORAGE_KEY = "dolphin_quiz_plans";
 const MAX_PLANS = 12;
 
+// 系统共享参考模板(教育培训)元信息
+// 完整节点数据存于 lib/reference-templates/education-template.json,
+// 点击「使用参考模板」时服务端校验 referenceId 并应用到当前模板
+const REFERENCE_EDUCATION = {
+  id: "1787559939428-11p606",
+  name: "教育培训",
+  styleId: "classic",
+};
+
 export function LinkGenView() {
   const [checking, setChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<CheckResult | null>(null);
@@ -167,6 +176,95 @@ export function LinkGenView() {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [renamePlanId, setRenamePlanId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
+
+  // 参考模板操作(使用参考模板 / 新建问卷)
+  const [referenceApplying, setReferenceApplying] = useState<"apply" | "clear" | null>(null);
+
+  // ==================== 参考模板操作 ====================
+
+  /** 应用共享参考模板:加载教育培训问卷信息到当前模板 */
+  const handleApplyReference = async () => {
+    setReferenceApplying("apply");
+    setPlanMsg(null);
+    try {
+      const res = await fetch("/api/dashboard/template/apply-reference", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "apply",
+          referenceId: REFERENCE_EDUCATION.id,
+        }),
+      });
+      const json = (await res.json()) as {
+        success?: boolean;
+        error?: string;
+        message?: string;
+        styleId?: string;
+      };
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? "应用参考模板失败");
+      }
+      // 应用参考模板风格到 sessionStorage(与链接生成逻辑一致)
+      try {
+        window.sessionStorage.setItem(
+          "dolphin_quiz_style",
+          json.styleId ?? REFERENCE_EDUCATION.styleId
+        );
+      } catch {
+        // sessionStorage 不可用时忽略
+      }
+      setPlanMsg({
+        type: "success",
+        text: `已应用参考模板「${REFERENCE_EDUCATION.name}」,问卷与风格已更新`,
+      });
+      // 应用后重新检查问卷信息
+      await runCheck();
+    } catch (error) {
+      setPlanMsg({
+        type: "error",
+        text: error instanceof Error ? error.message : "应用参考模板失败",
+      });
+    } finally {
+      setReferenceApplying(null);
+    }
+  };
+
+  /** 新建问卷:清空当前问卷与风格相关数据,等待重新输入 */
+  const handleNewQuiz = async () => {
+    setReferenceApplying("clear");
+    setPlanMsg(null);
+    try {
+      const res = await fetch("/api/dashboard/template/apply-reference", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "clear" }),
+      });
+      const json = (await res.json()) as {
+        success?: boolean;
+        error?: string;
+        message?: string;
+      };
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? "新建问卷失败");
+      }
+      // 清空风格数据(后续由用户重新选择)
+      try {
+        window.sessionStorage.removeItem("dolphin_quiz_style");
+      } catch {
+        // sessionStorage 不可用时忽略
+      }
+      setPlanMsg({ type: "success", text: json.message ?? "问卷已清空,请重新输入" });
+      // 清空后重新检查
+      await runCheck();
+    } catch (error) {
+      setPlanMsg({
+        type: "error",
+        text: error instanceof Error ? error.message : "新建问卷失败",
+      });
+    } finally {
+      setReferenceApplying(null);
+    }
+  };
 
   // 从 localStorage 读取已保存方案
   useEffect(() => {
@@ -335,6 +433,53 @@ export function LinkGenView() {
 
   return (
     <div className="space-y-6">
+      {/* 参考模板:系统共享的教育培训模板,所有用户可见 */}
+      <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h3 className="font-semibold text-foreground">参考模板</h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              已为您准备「教育培训」参考模板,包含完整的问卷问题与 Oxford 深蓝风格,
+              可一键应用快速建立问卷;也可新建问卷重新输入
+            </p>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-background px-3 py-1.5 text-sm">
+              <span className="font-medium text-foreground">
+                {REFERENCE_EDUCATION.name}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {STYLE_LABELS[REFERENCE_EDUCATION.styleId] ?? REFERENCE_EDUCATION.styleId}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              onClick={handleApplyReference}
+              disabled={referenceApplying !== null}
+            >
+              {referenceApplying === "apply" ? "应用中..." : "使用参考模板"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleNewQuiz}
+              disabled={referenceApplying !== null}
+            >
+              {referenceApplying === "clear" ? "清空中..." : "新建问卷"}
+            </Button>
+          </div>
+        </div>
+        {planMsg && (
+          <p
+            className={
+              planMsg.type === "success"
+                ? "mt-3 text-sm text-green-600"
+                : "mt-3 text-sm text-amber-600"
+            }
+          >
+            {planMsg.text}
+          </p>
+        )}
+      </div>
+
       {/* 第一步:检查 */}
       <div className="rounded-2xl border border-border bg-background p-5">
         <h3 className="font-semibold text-foreground">1. 检查问卷信息</h3>

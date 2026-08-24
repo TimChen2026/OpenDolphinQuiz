@@ -1,0 +1,1425 @@
+﻿{
+    "id":  "1787559939428-11p606",
+    "name":  "教育培训",
+    "savedAt":  1787559939428,
+    "styleId":  "classic",
+    "templateId":  "5047a901-3346-4c1d-8271-258b98ad29e6",
+    "nodes":  [
+                  {
+                      "id":  "1ef06581-292a-4c35-a861-71ac9d8fb0fe",
+                      "level":  "P2",
+                      "question":  "对哪方面比较感兴趣？",
+                      "parentId":  "c7c0b76d-6e55-405c-8406-c358956c7811",
+                      "options":  [
+                                      {
+                                          "id":  "4703598e-afc5-4c98-985d-8ad82e6ac464",
+                                          "optionLabel":  "A",
+                                          "optionText":  "语言",
+                                          "targetNodeId":  "5b404e39-7ded-4ad5-a397-cacb7809c942",
+                                          "resultTheme":  "语言",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "8b4462ca-728d-47b2-9cde-8688a07002bc",
+                                          "optionLabel":  "B",
+                                          "optionText":  "数学",
+                                          "targetNodeId":  "eda2147c-d9f2-4545-8bdc-6246d0c3e8cf",
+                                          "resultTheme":  "数学",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "ed9ec8bc-8b3f-419e-936e-ef5f0e51de4e",
+                                          "optionLabel":  "C",
+                                          "optionText":  "外语",
+                                          "targetNodeId":  "b0b582b1-25db-40d5-8fdf-09e0b50337d6",
+                                          "resultTheme":  "外语",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "1a598423-bb48-4951-9afc-65a1a6da3941",
+                                          "optionLabel":  "D",
+                                          "optionText":  "艺术",
+                                          "targetNodeId":  "73702cdb-fac6-455e-a36a-560cd6656fdd",
+                                          "resultTheme":  "艺术",
+                                          "resultManagerId":  null
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5b404e39-7ded-4ad5-a397-cacb7809c942",
+                      "level":  "P3",
+                      "question":  "那么，对语言的哪方面感兴趣？",
+                      "parentId":  "1ef06581-292a-4c35-a861-71ac9d8fb0fe",
+                      "options":  [
+                                      {
+                                          "id":  "a5e5efef-f8ed-45ea-a7ec-c16305226fb4",
+                                          "optionLabel":  "A",
+                                          "optionText":  "阅读",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-a",
+                                          "resultTheme":  "阅读",
+                                          "resultManagerId":  "RTw1ssFahNN8tmRtREmBIhVYIeOp1yZE"
+                                      },
+                                      {
+                                          "id":  "dbc0fff7-4805-4b3a-a8d6-1b64f610d8b9",
+                                          "optionLabel":  "B",
+                                          "optionText":  "写作",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-b",
+                                          "resultTheme":  "写作",
+                                          "resultManagerId":  "RTw1ssFahNN8tmRtREmBIhVYIeOp1yZE"
+                                      },
+                                      {
+                                          "id":  "f1f71a36-68ac-474a-a01f-43904e1171f1",
+                                          "optionLabel":  "C",
+                                          "optionText":  "口语",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-c",
+                                          "resultTheme":  "文言文",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "2e1163c1-8cff-4b5c-aff0-5a2687df53da",
+                                          "optionLabel":  "D",
+                                          "optionText":  "诗词",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-d",
+                                          "resultTheme":  " 诗词",
+                                          "resultManagerId":  "RTw1ssFahNN8tmRtREmBIhVYIeOp1yZE"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-72-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "75e39e62-fa1f-407b-b309-a90c354db872",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-7c-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "d59137dc-c480-4290-b355-39a09a9f687c",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-5f-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "58e0811f-4dd4-4f39-9147-5f4dffd22d5f",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-dd-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "73702cdb-fac6-455e-a36a-560cd6656fdd",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-43-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "7803bc6a-fa2b-4703-b14a-9a5f31ce6043",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-01-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "3cde54dd-6b84-40a0-975b-28c129e62a01",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-a4-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "093327db-768a-418d-9b1b-0cb40eb8f2a4",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "eda2147c-d9f2-4545-8bdc-6246d0c3e8cf",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "b0b582b1-25db-40d5-8fdf-09e0b50337d6",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "c7c0b76d-6e55-405c-8406-c358956c7811",
+                      "level":  "P1",
+                      "question":  "请问您关心哪个阶段的教育？谢谢！",
+                      "parentId":  null,
+                      "options":  [
+                                      {
+                                          "id":  "1857382c-2fa5-47b6-956b-dcd136738091",
+                                          "optionLabel":  "A",
+                                          "optionText":  "幼儿园",
+                                          "targetNodeId":  "1ef06581-292a-4c35-a861-71ac9d8fb0fe",
+                                          "resultTheme":  "幼儿园",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "ba57acc7-1457-4841-b6fc-876af45aa867",
+                                          "optionLabel":  "B",
+                                          "optionText":  "小学",
+                                          "targetNodeId":  "7eda0803-fa53-4c8f-9a4e-3045f63505fd",
+                                          "resultTheme":  "小学",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "74560b86-3629-49ec-8bea-87393af28947",
+                                          "optionLabel":  "C",
+                                          "optionText":  "初中",
+                                          "targetNodeId":  "c08987a0-3713-4bb3-989b-de557ae9acac",
+                                          "resultTheme":  "初中",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "524ceef6-0e38-4fe2-be89-7faf7de9cb56",
+                                          "optionLabel":  "D",
+                                          "optionText":  "高中",
+                                          "targetNodeId":  "951152d9-4eb5-40da-b1b0-1626b99cf88e",
+                                          "resultTheme":  " 高中",
+                                          "resultManagerId":  null
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-6c-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "71fa0a57-d0e5-4ff9-ab74-033588a0046c",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d0-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "02210248-78e3-417a-9cf5-1254703beed0",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-31-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "568058d6-0498-484f-b59f-90b09b0e9531",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-69-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "48fcbeac-e66e-413a-bbff-de6c39180a69",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-73-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "1d765027-c0af-4d0c-8447-90a44649a573",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-e3-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "e76d4269-0756-4586-b877-a8b3a7808ce3",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-a",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(数学)",
+                      "parentId":  "5b404e39-7ded-4ad5-a397-cacb7809c942",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "5b404e39-7ded-4ad5-a397-cacb7809c942",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-6c-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "71fa0a57-d0e5-4ff9-ab74-033588a0046c",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-31-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "568058d6-0498-484f-b59f-90b09b0e9531",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-43-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "7803bc6a-fa2b-4703-b14a-9a5f31ce6043",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d0-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "02210248-78e3-417a-9cf5-1254703beed0",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "eda2147c-d9f2-4545-8bdc-6246d0c3e8cf",
+                      "level":  "P3",
+                      "question":  "那么，对数学哪方面感兴趣？",
+                      "parentId":  "1ef06581-292a-4c35-a861-71ac9d8fb0fe",
+                      "options":  [
+                                      {
+                                          "id":  "c48d5f20-c3e9-40bc-a183-43c20d0d9659",
+                                          "optionLabel":  "A",
+                                          "optionText":  "代数",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-a",
+                                          "resultTheme":  "数学",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "22dd8165-2144-4b0e-a724-09cdd3712d52",
+                                          "optionLabel":  "B",
+                                          "optionText":  "几何",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-b",
+                                          "resultTheme":  "语文",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "cfad40c6-5086-47f5-b656-65fd92059f55",
+                                          "optionLabel":  "C",
+                                          "optionText":  "方程",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-c",
+                                          "resultTheme":  "英语",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "b5e6b629-e3ca-430a-806a-dc74dd05dcd9",
+                                          "optionLabel":  "D",
+                                          "optionText":  "数学应用",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-d",
+                                          "resultTheme":  "绘画",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "b0b582b1-25db-40d5-8fdf-09e0b50337d6",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-dd-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "73702cdb-fac6-455e-a36a-560cd6656fdd",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-e3-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "e76d4269-0756-4586-b877-a8b3a7808ce3",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-69-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "48fcbeac-e66e-413a-bbff-de6c39180a69",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-a4-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "093327db-768a-418d-9b1b-0cb40eb8f2a4",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "eda2147c-d9f2-4545-8bdc-6246d0c3e8cf",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-01-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "3cde54dd-6b84-40a0-975b-28c129e62a01",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "7eda0803-fa53-4c8f-9a4e-3045f63505fd",
+                      "level":  "P2",
+                      "question":  "对哪方面比较感兴趣？",
+                      "parentId":  "c7c0b76d-6e55-405c-8406-c358956c7811",
+                      "options":  [
+                                      {
+                                          "id":  "4c273843-7ed0-4e47-a641-6b3959deb950",
+                                          "optionLabel":  "A",
+                                          "optionText":  "语言",
+                                          "targetNodeId":  "e76d4269-0756-4586-b877-a8b3a7808ce3",
+                                          "resultTheme":  "语言",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "a618df11-1299-44b1-a31f-72bec51d4e67",
+                                          "optionLabel":  "B",
+                                          "optionText":  "数学",
+                                          "targetNodeId":  "093327db-768a-418d-9b1b-0cb40eb8f2a4",
+                                          "resultTheme":  "数学",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "75c9f042-37cc-4536-9eb9-3e01adf59f4d",
+                                          "optionLabel":  "C",
+                                          "optionText":  "外语",
+                                          "targetNodeId":  "568058d6-0498-484f-b59f-90b09b0e9531",
+                                          "resultTheme":  "外语",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "fe6a972e-6bb5-4711-9f33-0a5669e8d080",
+                                          "optionLabel":  "D",
+                                          "optionText":  "艺术",
+                                          "targetNodeId":  "3cde54dd-6b84-40a0-975b-28c129e62a01",
+                                          "resultTheme":  "艺术",
+                                          "resultManagerId":  null
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-73-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "1d765027-c0af-4d0c-8447-90a44649a573",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-7c-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "d59137dc-c480-4290-b355-39a09a9f687c",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-72-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "75e39e62-fa1f-407b-b309-a90c354db872",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-5f-b",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(语文)",
+                      "parentId":  "58e0811f-4dd4-4f39-9147-5f4dffd22d5f",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "5b404e39-7ded-4ad5-a397-cacb7809c942",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d0-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "02210248-78e3-417a-9cf5-1254703beed0",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-a4-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "093327db-768a-418d-9b1b-0cb40eb8f2a4",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-69-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "48fcbeac-e66e-413a-bbff-de6c39180a69",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-31-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "568058d6-0498-484f-b59f-90b09b0e9531",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-5f-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "58e0811f-4dd4-4f39-9147-5f4dffd22d5f",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-72-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "75e39e62-fa1f-407b-b309-a90c354db872",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-43-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "7803bc6a-fa2b-4703-b14a-9a5f31ce6043",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-6c-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "71fa0a57-d0e5-4ff9-ab74-033588a0046c",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-73-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "1d765027-c0af-4d0c-8447-90a44649a573",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-01-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "3cde54dd-6b84-40a0-975b-28c129e62a01",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "b0b582b1-25db-40d5-8fdf-09e0b50337d6",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-7c-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "d59137dc-c480-4290-b355-39a09a9f687c",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-dd-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "73702cdb-fac6-455e-a36a-560cd6656fdd",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "eda2147c-d9f2-4545-8bdc-6246d0c3e8cf",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "c08987a0-3713-4bb3-989b-de557ae9acac",
+                      "level":  "P2",
+                      "question":  "对哪方面比较感兴趣？",
+                      "parentId":  "c7c0b76d-6e55-405c-8406-c358956c7811",
+                      "options":  [
+                                      {
+                                          "id":  "0e31f1e0-6b4e-4afe-9b5e-375c0ed4befa",
+                                          "optionLabel":  "A",
+                                          "optionText":  "语言",
+                                          "targetNodeId":  "1d765027-c0af-4d0c-8447-90a44649a573",
+                                          "resultTheme":  "语言",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "f8bbdeb2-dfed-47bd-b361-9b6dead9b3cd",
+                                          "optionLabel":  "B",
+                                          "optionText":  "数学",
+                                          "targetNodeId":  "48fcbeac-e66e-413a-bbff-de6c39180a69",
+                                          "resultTheme":  " 数学",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "463ca43e-5c6b-47b5-8ad0-8614abf07847",
+                                          "optionLabel":  "C",
+                                          "optionText":  "外语",
+                                          "targetNodeId":  "02210248-78e3-417a-9cf5-1254703beed0",
+                                          "resultTheme":  " 外语",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "9a8bacba-46ac-487a-b6ea-f00c484eb359",
+                                          "optionLabel":  "D",
+                                          "optionText":  "艺术",
+                                          "targetNodeId":  "71fa0a57-d0e5-4ff9-ab74-033588a0046c",
+                                          "resultTheme":  "D 艺术",
+                                          "resultManagerId":  null
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-e3-c",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(英语)",
+                      "parentId":  "e76d4269-0756-4586-b877-a8b3a7808ce3",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "b0b582b1-25db-40d5-8fdf-09e0b50337d6",
+                      "level":  "P3",
+                      "question":  "那么，对外语的哪方面感兴趣？",
+                      "parentId":  "1ef06581-292a-4c35-a861-71ac9d8fb0fe",
+                      "options":  [
+                                      {
+                                          "id":  "9bb39be2-4138-4bce-87fd-ee8109ca2bff",
+                                          "optionLabel":  "A",
+                                          "optionText":  "口语",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-a",
+                                          "resultTheme":  "数学",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "d23c68ee-6fc6-4bc3-8afc-5424ef8850b6",
+                                          "optionLabel":  "B",
+                                          "optionText":  "阅读",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-b",
+                                          "resultTheme":  "语文",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "0875031c-ce82-4a0b-b9e7-3660a691c2b4",
+                                          "optionLabel":  "C",
+                                          "optionText":  "写作",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-c",
+                                          "resultTheme":  "英语",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "be6e4eb8-e49f-47ef-91ff-ebfc9303345d",
+                                          "optionLabel":  "D",
+                                          "optionText":  "诗词",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-d",
+                                          "resultTheme":  "绘画",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-69-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "48fcbeac-e66e-413a-bbff-de6c39180a69",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-a4-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "093327db-768a-418d-9b1b-0cb40eb8f2a4",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-72-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "75e39e62-fa1f-407b-b309-a90c354db872",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-73-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "1d765027-c0af-4d0c-8447-90a44649a573",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d0-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "02210248-78e3-417a-9cf5-1254703beed0",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "5b404e39-7ded-4ad5-a397-cacb7809c942",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-5f-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "58e0811f-4dd4-4f39-9147-5f4dffd22d5f",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "eda2147c-d9f2-4545-8bdc-6246d0c3e8cf",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-31-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "568058d6-0498-484f-b59f-90b09b0e9531",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-e3-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "e76d4269-0756-4586-b877-a8b3a7808ce3",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-43-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "7803bc6a-fa2b-4703-b14a-9a5f31ce6043",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "951152d9-4eb5-40da-b1b0-1626b99cf88e",
+                      "level":  "P2",
+                      "question":  "对哪方面比较感兴趣？",
+                      "parentId":  "c7c0b76d-6e55-405c-8406-c358956c7811",
+                      "options":  [
+                                      {
+                                          "id":  "cad28d07-a06a-42cb-a4f0-7e45b335844f",
+                                          "optionLabel":  "A",
+                                          "optionText":  "语言",
+                                          "targetNodeId":  "d59137dc-c480-4290-b355-39a09a9f687c",
+                                          "resultTheme":  "语言",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "c27c9aaf-b853-4c6e-90b3-0783c003336a",
+                                          "optionLabel":  "B",
+                                          "optionText":  "数学",
+                                          "targetNodeId":  "7803bc6a-fa2b-4703-b14a-9a5f31ce6043",
+                                          "resultTheme":  "数学",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "385cdb66-b87a-4aed-bc87-fb20f736bfe5",
+                                          "optionLabel":  "C",
+                                          "optionText":  "外语",
+                                          "targetNodeId":  "75e39e62-fa1f-407b-b309-a90c354db872",
+                                          "resultTheme":  " 外语",
+                                          "resultManagerId":  null
+                                      },
+                                      {
+                                          "id":  "ab79fc42-b8ca-446f-aba4-9b96fc951705",
+                                          "optionLabel":  "D",
+                                          "optionText":  "艺术",
+                                          "targetNodeId":  "58e0811f-4dd4-4f39-9147-5f4dffd22d5f",
+                                          "resultTheme":  " 艺术",
+                                          "resultManagerId":  null
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-dd-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "73702cdb-fac6-455e-a36a-560cd6656fdd",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-01-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "3cde54dd-6b84-40a0-975b-28c129e62a01",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "b0b582b1-25db-40d5-8fdf-09e0b50337d6",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "73702cdb-fac6-455e-a36a-560cd6656fdd",
+                      "level":  "P3",
+                      "question":  "那么，对艺术哪方面感兴趣？",
+                      "parentId":  "1ef06581-292a-4c35-a861-71ac9d8fb0fe",
+                      "options":  [
+                                      {
+                                          "id":  "03ab513e-3679-440f-9e76-76c19550f14a",
+                                          "optionLabel":  "A",
+                                          "optionText":  "音乐",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-dd-a",
+                                          "resultTheme":  "音乐",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "855033a6-0f87-4698-9e27-b365e1297751",
+                                          "optionLabel":  "B",
+                                          "optionText":  "绘画",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-dd-b",
+                                          "resultTheme":  " 绘画",
+                                          "resultManagerId":  "RTw1ssFahNN8tmRtREmBIhVYIeOp1yZE"
+                                      },
+                                      {
+                                          "id":  "3fc13717-98c6-4f12-96ba-117a9a02fc35",
+                                          "optionLabel":  "C",
+                                          "optionText":  "舞蹈",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-dd-c",
+                                          "resultTheme":  "舞蹈",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "93142456-4436-4511-86bd-a7353c4f4054",
+                                          "optionLabel":  "D",
+                                          "optionText":  "摄影",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-dd-d",
+                                          "resultTheme":  "摄影",
+                                          "resultManagerId":  "RTw1ssFahNN8tmRtREmBIhVYIeOp1yZE"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-6c-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "71fa0a57-d0e5-4ff9-ab74-033588a0046c",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-7c-d",
+                      "level":  "P4",
+                      "question":  "P4 结果节点(绘画)",
+                      "parentId":  "d59137dc-c480-4290-b355-39a09a9f687c",
+                      "options":  [
+
+                                  ]
+                  },
+                  {
+                      "id":  "e76d4269-0756-4586-b877-a8b3a7808ce3",
+                      "level":  "P3",
+                      "question":  "那么，对语言的哪方面感兴趣？",
+                      "parentId":  "7eda0803-fa53-4c8f-9a4e-3045f63505fd",
+                      "options":  [
+                                      {
+                                          "id":  "d7531fa1-25ce-49af-bab7-d7ed9c41ba19",
+                                          "optionLabel":  "A",
+                                          "optionText":  "阅读",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-e3-a",
+                                          "resultTheme":  "阅读",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "f2c973ea-752b-4635-9aa3-b9976ebc39e4",
+                                          "optionLabel":  "B",
+                                          "optionText":  "写作",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-e3-b",
+                                          "resultTheme":  " 写作",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "adb2580f-6416-4763-a480-a7eba6968313",
+                                          "optionLabel":  "C",
+                                          "optionText":  "口语",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-e3-c",
+                                          "resultTheme":  "口语",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "b2cee9f8-ed4c-4a35-843b-ca355d065e63",
+                                          "optionLabel":  "D",
+                                          "optionText":  "诗词",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-e3-d",
+                                          "resultTheme":  " 诗词",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "093327db-768a-418d-9b1b-0cb40eb8f2a4",
+                      "level":  "P3",
+                      "question":  "那么，对数学哪方面感兴趣？",
+                      "parentId":  "7eda0803-fa53-4c8f-9a4e-3045f63505fd",
+                      "options":  [
+                                      {
+                                          "id":  "bc0f12f2-fc28-4318-88a8-2a22531a2cd9",
+                                          "optionLabel":  "A",
+                                          "optionText":  "代数",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-a4-a",
+                                          "resultTheme":  " 代数",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "d4ce9d9d-df8d-4afb-9812-e6e5ddafc7d2",
+                                          "optionLabel":  "B",
+                                          "optionText":  "几何",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-a4-b",
+                                          "resultTheme":  "几何",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "7a3435c0-25a2-444b-a4f0-fbf20baf1ceb",
+                                          "optionLabel":  "C",
+                                          "optionText":  "方程",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-a4-c",
+                                          "resultTheme":  "方程",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "b86d8f7b-342d-4cb0-bb23-0e6ce155b6bf",
+                                          "optionLabel":  "D",
+                                          "optionText":  "数学应用",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-a4-d",
+                                          "resultTheme":  "数学应用",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "568058d6-0498-484f-b59f-90b09b0e9531",
+                      "level":  "P3",
+                      "question":  "那么，对外语的哪方面感兴趣？",
+                      "parentId":  "7eda0803-fa53-4c8f-9a4e-3045f63505fd",
+                      "options":  [
+                                      {
+                                          "id":  "8a1faa42-d7f1-4f39-a2bf-a3c523b61695",
+                                          "optionLabel":  "A",
+                                          "optionText":  "口语",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-31-a",
+                                          "resultTheme":  "口语",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "0ffd19f2-71db-4f14-9692-7d571040ddeb",
+                                          "optionLabel":  "B",
+                                          "optionText":  "阅读",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-31-b",
+                                          "resultTheme":  "阅读",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "dde8c7f8-b262-4063-b5d7-0ac664ba4dd5",
+                                          "optionLabel":  "C",
+                                          "optionText":  "写作",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-31-c",
+                                          "resultTheme":  "写作",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "ba2f9af9-26d1-4ccb-9a81-cc6c111c0857",
+                                          "optionLabel":  "D",
+                                          "optionText":  "诗词",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-31-d",
+                                          "resultTheme":  "诗词",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "3cde54dd-6b84-40a0-975b-28c129e62a01",
+                      "level":  "P3",
+                      "question":  "那么，对艺术哪方面感兴趣？",
+                      "parentId":  "7eda0803-fa53-4c8f-9a4e-3045f63505fd",
+                      "options":  [
+                                      {
+                                          "id":  "be52badb-ebd1-4e83-8fc7-ecee714a0930",
+                                          "optionLabel":  "A",
+                                          "optionText":  "音乐",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-01-a",
+                                          "resultTheme":  "音乐",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "27d8c4a0-d60b-48b0-b613-e6c6dd1893f1",
+                                          "optionLabel":  "B",
+                                          "optionText":  "绘画",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-01-b",
+                                          "resultTheme":  " 绘画",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "fa407cd9-effb-45eb-be54-b9144830abc6",
+                                          "optionLabel":  "C",
+                                          "optionText":  "舞蹈",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-01-c",
+                                          "resultTheme":  "舞蹈",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "1a1c3078-f1a3-4c37-a5e3-211564704fba",
+                                          "optionLabel":  "D",
+                                          "optionText":  "摄影",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-01-d",
+                                          "resultTheme":  "摄影",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "1d765027-c0af-4d0c-8447-90a44649a573",
+                      "level":  "P3",
+                      "question":  "那么，对语言的哪方面感兴趣？",
+                      "parentId":  "c08987a0-3713-4bb3-989b-de557ae9acac",
+                      "options":  [
+                                      {
+                                          "id":  "4adc357a-0962-45b7-bd93-6eaa09d900c6",
+                                          "optionLabel":  "A",
+                                          "optionText":  "阅读",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-73-a",
+                                          "resultTheme":  "阅读",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "1d873463-7d13-4c2c-a08c-a4e37516e141",
+                                          "optionLabel":  "B",
+                                          "optionText":  "写作",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-73-b",
+                                          "resultTheme":  " 写作",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "be5c0e9d-a299-454e-9c48-a6a28d86721a",
+                                          "optionLabel":  "C",
+                                          "optionText":  "口语",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-73-c",
+                                          "resultTheme":  " 口语",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "11a07970-4ec0-4264-ab30-0985481ef671",
+                                          "optionLabel":  "D",
+                                          "optionText":  "诗词",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-73-d",
+                                          "resultTheme":  "诗词",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "48fcbeac-e66e-413a-bbff-de6c39180a69",
+                      "level":  "P3",
+                      "question":  "那么，对数学哪方面感兴趣？",
+                      "parentId":  "c08987a0-3713-4bb3-989b-de557ae9acac",
+                      "options":  [
+                                      {
+                                          "id":  "da04600f-1a8e-4f1b-b945-64fe042b37e8",
+                                          "optionLabel":  "A",
+                                          "optionText":  "代数",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-69-a",
+                                          "resultTheme":  "代数",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "7bc162ff-7af0-459a-ae8a-33ad6ce9f3fb",
+                                          "optionLabel":  "B",
+                                          "optionText":  "几何",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-69-b",
+                                          "resultTheme":  "几何",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "da7cc74e-b0ae-44c0-82b2-bbd99d728278",
+                                          "optionLabel":  "C",
+                                          "optionText":  "方程",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-69-c",
+                                          "resultTheme":  " 方程",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "553ca9b9-32f8-4174-a2b8-02e719298c57",
+                                          "optionLabel":  "D",
+                                          "optionText":  "数学应用",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-69-d",
+                                          "resultTheme":  "数学应用",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "02210248-78e3-417a-9cf5-1254703beed0",
+                      "level":  "P3",
+                      "question":  "那么，对外语的哪方面感兴趣？",
+                      "parentId":  "c08987a0-3713-4bb3-989b-de557ae9acac",
+                      "options":  [
+                                      {
+                                          "id":  "f6b09252-c47f-46c1-994b-73539f9af8ae",
+                                          "optionLabel":  "A",
+                                          "optionText":  "口语",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d0-a",
+                                          "resultTheme":  "口语",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "7a8f11d5-7f44-4c79-a877-a97f277eb489",
+                                          "optionLabel":  "B",
+                                          "optionText":  "阅读",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d0-b",
+                                          "resultTheme":  "阅读",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "ea1c78c7-ec1c-431b-b294-815b713e5a46",
+                                          "optionLabel":  "C",
+                                          "optionText":  "写作",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d0-c",
+                                          "resultTheme":  " 写作",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "d8be04ec-8499-4ef0-9265-9b371413c2b2",
+                                          "optionLabel":  "D",
+                                          "optionText":  "诗词",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d0-d",
+                                          "resultTheme":  "诗词",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "71fa0a57-d0e5-4ff9-ab74-033588a0046c",
+                      "level":  "P3",
+                      "question":  "那么，对艺术哪方面感兴趣？",
+                      "parentId":  "c08987a0-3713-4bb3-989b-de557ae9acac",
+                      "options":  [
+                                      {
+                                          "id":  "0e1e5ec4-26cf-4c7c-88fa-0da1e4fd5b0b",
+                                          "optionLabel":  "A",
+                                          "optionText":  "音乐",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-6c-a",
+                                          "resultTheme":  "音乐",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "1be32e4e-9af1-4b6f-83f1-83b6c79df846",
+                                          "optionLabel":  "B",
+                                          "optionText":  "绘画",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-6c-b",
+                                          "resultTheme":  " 绘画",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "6d9c8b59-afab-4eda-bb1e-fd6a851bc0b4",
+                                          "optionLabel":  "C",
+                                          "optionText":  "舞蹈",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-6c-c",
+                                          "resultTheme":  " 舞蹈",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "e974e6cc-d807-4d22-bf91-47b70888134e",
+                                          "optionLabel":  "D",
+                                          "optionText":  "摄影",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-6c-d",
+                                          "resultTheme":  " 摄影",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "d59137dc-c480-4290-b355-39a09a9f687c",
+                      "level":  "P3",
+                      "question":  "那么，对语言的哪方面感兴趣？",
+                      "parentId":  "951152d9-4eb5-40da-b1b0-1626b99cf88e",
+                      "options":  [
+                                      {
+                                          "id":  "8774e927-fed2-4246-8531-5c9a62b0b29b",
+                                          "optionLabel":  "A",
+                                          "optionText":  "阅读",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-7c-a",
+                                          "resultTheme":  "阅读",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "8779ae52-15ef-4253-a4c8-a1d5d0d3f228",
+                                          "optionLabel":  "B",
+                                          "optionText":  "写作",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-7c-b",
+                                          "resultTheme":  "写作",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "d2c95303-7326-42f2-bb99-7bdf0f83e8ca",
+                                          "optionLabel":  "C",
+                                          "optionText":  "口语",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-7c-c",
+                                          "resultTheme":  "口语",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "807f1981-a880-4340-b73a-b224ffdd65a0",
+                                          "optionLabel":  "D",
+                                          "optionText":  "诗词",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-7c-d",
+                                          "resultTheme":  "诗词",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "7803bc6a-fa2b-4703-b14a-9a5f31ce6043",
+                      "level":  "P3",
+                      "question":  "那么，对数学哪方面感兴趣？",
+                      "parentId":  "951152d9-4eb5-40da-b1b0-1626b99cf88e",
+                      "options":  [
+                                      {
+                                          "id":  "4c553944-24c7-4ad1-9120-f80f75285616",
+                                          "optionLabel":  "A",
+                                          "optionText":  "代数",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-43-a",
+                                          "resultTheme":  "代数",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "90a4c015-6583-44bc-b19d-6409ab07f50d",
+                                          "optionLabel":  "B",
+                                          "optionText":  "几何",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-43-b",
+                                          "resultTheme":  "几何",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "c61d2d1f-23a8-4028-98a2-aa48a0115518",
+                                          "optionLabel":  "C",
+                                          "optionText":  "方程",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-43-c",
+                                          "resultTheme":  "方程",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "27a506b7-8a7f-4972-b784-a8a0c9e855ea",
+                                          "optionLabel":  "D",
+                                          "optionText":  "数学应用",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-43-d",
+                                          "resultTheme":  "数学应用",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "75e39e62-fa1f-407b-b309-a90c354db872",
+                      "level":  "P3",
+                      "question":  "那么，对外语的哪方面感兴趣？",
+                      "parentId":  "951152d9-4eb5-40da-b1b0-1626b99cf88e",
+                      "options":  [
+                                      {
+                                          "id":  "294e434d-b47b-450a-ae53-88c40bea6de0",
+                                          "optionLabel":  "A",
+                                          "optionText":  "口语",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-72-a",
+                                          "resultTheme":  "口语",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "be554407-8037-4e5f-a491-386f0f88d4f3",
+                                          "optionLabel":  "B",
+                                          "optionText":  "阅读",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-72-b",
+                                          "resultTheme":  "阅读",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "dfba463c-6f9d-402d-b9af-7a4e1e4c5d84",
+                                          "optionLabel":  "C",
+                                          "optionText":  "写作",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-72-c",
+                                          "resultTheme":  "写作",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "4fc13fe7-2cf9-4fe0-81d8-ae10fb9ca26b",
+                                          "optionLabel":  "D",
+                                          "optionText":  "诗词",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-72-d",
+                                          "resultTheme":  "诗词",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  "58e0811f-4dd4-4f39-9147-5f4dffd22d5f",
+                      "level":  "P3",
+                      "question":  "那么，对艺术哪方面感兴趣？",
+                      "parentId":  "951152d9-4eb5-40da-b1b0-1626b99cf88e",
+                      "options":  [
+                                      {
+                                          "id":  "1172c4bf-2827-45f5-a2c5-886f66b00369",
+                                          "optionLabel":  "A",
+                                          "optionText":  "音乐",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-5f-a",
+                                          "resultTheme":  "音乐",
+                                          "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
+                                      },
+                                      {
+                                          "id":  "56cf8f51-2240-42b5-8929-a79279a85994",
+                                          "optionLabel":  "B",
+                                          "optionText":  "绘画",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-5f-b",
+                                          "resultTheme":  " 绘画",
+                                          "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
+                                      },
+                                      {
+                                          "id":  "f7b979f3-3e55-4525-a097-d5e61ddbe85b",
+                                          "optionLabel":  "C",
+                                          "optionText":  "舞蹈",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-5f-c",
+                                          "resultTheme":  "舞蹈",
+                                          "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
+                                      },
+                                      {
+                                          "id":  "d0b16635-504a-434d-a990-9246e0cae69e",
+                                          "optionLabel":  "D",
+                                          "optionText":  "摄影",
+                                          "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-5f-d",
+                                          "resultTheme":  "摄影",
+                                          "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
+                                      }
+                                  ]
+                  }
+              ]
+}
