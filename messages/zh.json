@@ -339,6 +339,7 @@
         "phoneRequired": "请输入手机号",
         "phoneInvalid": "请输入有效的手机号",
         "turnstileRequired": "请完成人机验证",
+        "companyNameRequired": "请先输入团队/公司名称",
         "signupFailed": "注册失败，请重试。",
         "googleSignupFailed": "Google 注册失败，请重试。"
       }

@@ -327,6 +327,7 @@
         "phoneRequired": "Please enter your phone number",
         "phoneInvalid": "Please enter a valid phone number",
         "turnstileRequired": "Please complete verification",
+        "companyNameRequired": "Please enter your team/company name first",
         "signupFailed": "Sign up failed. Please try again.",
         "googleSignupFailed": "Google sign up failed. Please try again."
       }

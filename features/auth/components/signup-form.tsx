@@ -45,6 +45,9 @@ export function SignupForm({ showGoogleAuth = true }: SignupFormProps) {
   const t = useTranslations('auth.signup');
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  // Google 登录前的团队名称(独立于表单,因为 Google 登录绕过表单提交)
+  const [googleCompanyName, setGoogleCompanyName] = React.useState("");
+  const [companyNameError, setCompanyNameError] = React.useState<string | null>(null);
 
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
@@ -121,8 +124,17 @@ export function SignupForm({ showGoogleAuth = true }: SignupFormProps) {
   }
 
   async function handleGoogleSignIn() {
+    const trimmed = googleCompanyName.trim();
+    if (!trimmed) {
+      setCompanyNameError(t('errors.companyNameRequired'));
+      return;
+    }
+    setCompanyNameError(null);
+
     try {
       setIsLoading(true);
+      // 将团队名称存入 sessionStorage,供 Google 登录回调使用
+      sessionStorage.setItem("pendingCompanyName", trimmed);
       await signIn.social({
         provider: "google",
         callbackURL: "/",
@@ -153,7 +165,33 @@ export function SignupForm({ showGoogleAuth = true }: SignupFormProps) {
       }
       socialSlot={
         showGoogleAuth ? (
-          <SocialAuthButtons onGoogleSignIn={handleGoogleSignIn} isLoading={isLoading} />
+          <div className="space-y-4">
+            {/* Google 登录前的团队名称输入框 */}
+            <div className="space-y-2">
+              <label htmlFor="google-company-name" className="text-sm font-medium text-foreground">
+                {t('companyNameLabel')}
+                <span className="text-destructive ml-1">*</span>
+              </label>
+              <input
+                id="google-company-name"
+                type="text"
+                value={googleCompanyName}
+                onChange={(e) => {
+                  setGoogleCompanyName(e.target.value);
+                  if (e.target.value.trim()) {
+                    setCompanyNameError(null);
+                  }
+                }}
+                placeholder={t('companyNamePlaceholder')}
+                autoComplete="organization"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              {companyNameError && (
+                <p className="text-sm text-destructive">{companyNameError}</p>
+              )}
+            </div>
+            <SocialAuthButtons onGoogleSignIn={handleGoogleSignIn} isLoading={isLoading} />
+          </div>
         ) : undefined
       }
     >
