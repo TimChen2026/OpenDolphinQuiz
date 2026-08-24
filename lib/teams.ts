@@ -198,10 +198,10 @@ export async function markUserAsCustomer(userId: string) {
  *
  * - 团队成员:返回其所属团队的 id
  * - 客户:返回 null(客户可属多个团队,无单一团队上下文)
- * - 存量用户(升级前注册,无 team_member 记录):惰性迁移——
- *   自动创建以用户名命名的团队并成为管理员;超级管理员归入 Testing 团队
+ * - 超级管理员:自动归属到 Testing 团队
+ * - 普通用户无团队:返回 null(必须通过注册流程或团队设置 API 明确设置团队)
  *
- * @returns 团队 ID,客户或解析失败时返回 null
+ * @returns 团队 ID,客户/超级管理员未配置/普通用户未设置团队时返回 null
  */
 export async function resolveUserTeamId(userInfo: {
   id: string;
@@ -226,33 +226,40 @@ export async function resolveUserTeamId(userInfo: {
     return memberships[0].teamId;
   }
 
-  // 惰性迁移存量用户:创建团队并成为管理员
+  // 超级管理员:自动归属到 Testing 团队
   const isSuperAdmin =
     userInfo.email.trim().toLowerCase() ===
     process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
-  const teamName = isSuperAdmin ? SUPER_ADMIN_TEAM_NAME : userInfo.name;
 
-  // 团队名唯一约束冲突(重名用户)时追加后缀重试一次
-  let finalName = teamName;
-  if (await findTeamByName(finalName)) {
-    finalName = `${teamName}-${userInfo.id.slice(0, 8)}`;
+  if (isSuperAdmin) {
+    const existingTeam = await findTeamByName(SUPER_ADMIN_TEAM_NAME);
+    const teamId = existingTeam?.id ?? userInfo.id;
+
+    // 创建团队(如果不存在)
+    if (!existingTeam) {
+      await db
+        .insert(team)
+        .values({ id: teamId, name: SUPER_ADMIN_TEAM_NAME })
+        .onConflictDoNothing();
+    }
+
+    // 添加团队成员记录
+    await db
+      .insert(teamMember)
+      .values({
+        id: newId(),
+        teamId,
+        userId: userInfo.id,
+        role: TEAM_MEMBER_ROLES.ADMIN,
+      })
+      .onConflictDoNothing();
+
+    return teamId;
   }
 
-  await db
-    .insert(team)
-    .values({ id: userInfo.id, name: finalName })
-    .onConflictDoNothing();
-  await db
-    .insert(teamMember)
-    .values({
-      id: newId(),
-      teamId: userInfo.id,
-      userId: userInfo.id,
-      role: TEAM_MEMBER_ROLES.ADMIN,
-    })
-    .onConflictDoNothing();
-
-  return userInfo.id;
+  // 普通用户无团队归属:返回 null
+  // 用户必须通过注册流程(邮箱密码注册填写团队名)或团队设置 API 明确设置团队
+  return null;
 }
 
 /**

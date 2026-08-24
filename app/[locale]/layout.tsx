@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/context/theme-provider";
 import { Toaster } from "sonner";
 import Analytics from "@/src/analytics/analytics";
+import { AuthClientWrapper } from "@/features/auth/components/auth-client-wrapper";
 import "../globals.css";
 
 // DolphinQuiz 设计规范：Inter 正文 + Playfair Display 标题
@@ -87,7 +88,9 @@ export default async function LocaleLayout(
           defaultTheme="light"
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
-            {children}
+            <AuthClientWrapper>
+              {children}
+            </AuthClientWrapper>
             <Toaster position="top-right" richColors />
             <Analytics />
           </NextIntlClientProvider>

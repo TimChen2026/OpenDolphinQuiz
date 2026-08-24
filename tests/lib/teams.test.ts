@@ -217,9 +217,9 @@ describe("resolveUserTeamId", () => {
     );
   });
 
-  it("存量普通用户惰性迁移:创建以用户名命名的团队并成为 admin", async () => {
+  it("存量普通用户无团队:返回 null(不再自动创建以用户名命名的团队)", async () => {
     const { db } = await import("@/lib/db");
-    // 成员记录为空;findTeamByName(用户名) 为空
+    // 成员记录为空;非超级管理员
     vi.mocked(db).select = makeSelectMock([[], []]) as never;
     vi.mocked(db).insert = makeInsertMock() as never;
 
@@ -230,20 +230,13 @@ describe("resolveUserTeamId", () => {
       accountType: "member",
     });
 
-    expect(result).toBe("legacy-user");
-    expect(insertValuesMock).toHaveBeenCalledWith(
-      expect.objectContaining({ id: "legacy-user", name: "LegacyName" })
-    );
-    expect(insertValuesMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        teamId: "legacy-user",
-        userId: "legacy-user",
-        role: "admin",
-      })
-    );
+    // 普通用户不再自动创建团队,必须通过注册流程或团队设置 API 明确设置
+    expect(result).toBeNull();
+    // 没有调用 insert 创建团队
+    expect(insertValuesMock).not.toHaveBeenCalled();
   });
 
-  it("存量用户重名团队冲突时追加后缀重试", async () => {
+  it("存量用户重名团队冲突:返回 null(不再自动创建团队)", async () => {
     const { db } = await import("@/lib/db");
     // 成员记录为空;findTeamByName("Alice") 已存在同名团队
     vi.mocked(db).select = makeSelectMock([
@@ -259,11 +252,10 @@ describe("resolveUserTeamId", () => {
       accountType: "member",
     });
 
-    expect(result).toBe("user-77");
-    // 团队名追加了 userId 前缀避免重名
-    expect(insertValuesMock).toHaveBeenCalledWith(
-      expect.objectContaining({ name: expect.stringMatching(/^Alice-/) })
-    );
+    // 普通用户不再自动创建团队
+    expect(result).toBeNull();
+    // 没有调用 insert 创建团队
+    expect(insertValuesMock).not.toHaveBeenCalled();
   });
 });
 
