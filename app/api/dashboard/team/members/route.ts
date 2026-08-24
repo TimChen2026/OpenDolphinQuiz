@@ -23,14 +23,17 @@
 // GET: 获取当前用户所在团队的成员列表
 // 权限:团队成员可访问(客户已在 requireTeamAccess 拦截)
 // 数据隔离:仅返回当前用户所在团队的成员信息
+// 超级管理员:可通过查询参数 teamId 指定任意团队
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireTeamAccess } from "@/lib/rbac";
 import { getTeamMembersList } from "@/lib/teams";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { teamId } = await requireTeamAccess();
+    // 超级管理员可通过查询参数 teamId 指定任意团队
+    const targetTeamId = request.nextUrl.searchParams.get("teamId") ?? undefined;
+    const { teamId } = await requireTeamAccess(targetTeamId);
 
     const members = await getTeamMembersList(teamId);
 

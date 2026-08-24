@@ -33,11 +33,14 @@ import {
   Search,
   Trash2,
   Pencil,
+  ArrowRightLeft,
 } from "lucide-react";
 import {
   updateUserRole,
   updateUserPlan,
   updateUserTeamName,
+  updateUserTeamMembership,
+  listAllTeams,
   banUser,
   deleteUser,
 } from "@/features/admin/actions/user-actions";
@@ -71,6 +74,9 @@ export function UsersTable({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [teamEditUser, setTeamEditUser] = useState<User | null>(null);
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [transferTeamUser, setTransferTeamUser] = useState<User | null>(null);
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [allTeams, setAllTeams] = useState<{ id: string; name: string }[]>([]);
   const t = useTranslations("Admin.users");
   const hasResults = users.length > 0;
   const pageStart = totalUsers === 0 ? 0 : (currentPage - 1) * pageSize + 1;
@@ -100,6 +106,15 @@ export function UsersTable({
   useEffect(() => {
     setSearchTerm(query);
   }, [query]);
+
+  // 加载所有团队列表(用于团队切换)
+  useEffect(() => {
+    if (isTransferModalOpen) {
+      listAllTeams()
+        .then((teams) => setAllTeams(teams))
+        .catch(() => toast.error("加载团队列表失败"));
+    }
+  }, [isTransferModalOpen]);
 
   const createUsersUrl = (nextQuery: string, nextPage: number) => {
     const params = new URLSearchParams();
@@ -211,6 +226,22 @@ export function UsersTable({
     }
   };
 
+  const handleTransferTeam = async (userId: string, targetTeamInput: string) => {
+    try {
+      const result = await updateUserTeamMembership(userId, targetTeamInput);
+      setUsers((currentUsers) =>
+        currentUsers.map((existingUser) =>
+          existingUser.id === userId ? { ...existingUser, teamName: result.teamName } : existingUser
+        )
+      );
+      toast.success(`已切换到团队:${result.teamName}`);
+      setIsTransferModalOpen(false);
+      setTransferTeamUser(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "切换团队失败");
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* 搜索栏 */}
@@ -314,6 +345,16 @@ export function UsersTable({
                           <Pencil className="h-3 w-3" />
                         </button>
                       ) : null}
+                      <button
+                        onClick={() => {
+                          setTransferTeamUser(user);
+                          setIsTransferModalOpen(true);
+                        }}
+                        className="p-1 rounded hover:bg-hover text-muted-foreground"
+                        title="切换团队"
+                      >
+                        <ArrowRightLeft className="h-3 w-3" />
+                      </button>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -498,6 +539,17 @@ export function UsersTable({
           onSave={handleSaveTeam}
         />
       )}
+      {isTransferModalOpen && transferTeamUser && (
+        <TransferTeamModal
+          user={transferTeamUser}
+          allTeams={allTeams}
+          onClose={() => {
+            setIsTransferModalOpen(false);
+            setTransferTeamUser(null);
+          }}
+          onTransfer={handleTransferTeam}
+        />
+      )}
     </div>
   );
 }
@@ -649,6 +701,154 @@ function TeamEditModal({
           </Button>
           <Button onClick={handleSubmit} disabled={isSaving}>
             {isSaving ? t("saving") : t("save")}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 团队切换模态框(超级管理员专属)
+ *
+ * 允许超级管理员将用户切换到任意现有团队,
+ * 或输入新的团队名称创建新团队并将用户加入。
+ */
+function TransferTeamModal({
+  user,
+  allTeams,
+  onClose,
+  onTransfer,
+}: {
+  user: User;
+  allTeams: { id: string; name: string }[];
+  onClose: () => void;
+  onTransfer: (userId: string, targetTeamInput: string) => Promise<void> | void;
+}) {
+  const t = useTranslations("Admin.users");
+  const [selectedTeamId, setSelectedTeamId] = useState("");
+  const [customTeamName, setCustomTeamName] = useState("");
+  const [mode, setMode] = useState<"select" | "create">("select");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async () => {
+    let targetTeamInput = "";
+
+    if (mode === "select") {
+      if (!selectedTeamId) {
+        toast.error("请选择目标团队");
+        return;
+      }
+      targetTeamInput = selectedTeamId;
+    } else {
+      const trimmed = customTeamName.trim();
+      if (!trimmed) {
+        toast.error("请输入新团队名称");
+        return;
+      }
+      targetTeamInput = trimmed;
+    }
+
+    setIsSaving(true);
+    try {
+      await onTransfer(user.id, targetTeamInput);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4 border border-border">
+        <h2 className="text-xl font-bold text-foreground mb-4">
+          切换用户团队
+        </h2>
+
+        <div className="mb-4 p-3 bg-secondary rounded-lg">
+          <p className="text-sm text-muted-foreground">
+            用户:<span className="font-medium text-foreground">{user.name}</span>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            当前团队:<span className="font-medium text-foreground">{user.teamName ?? "无"}</span>
+          </p>
+        </div>
+
+        {/* 切换模式 */}
+        <div className="flex gap-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setMode("select")}
+            className={`px-3 py-1.5 text-sm rounded-md ${
+              mode === "select"
+                ? "bg-foreground text-background"
+                : "bg-secondary text-muted-foreground"
+            }`}
+          >
+            选择现有团队
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("create")}
+            className={`px-3 py-1.5 text-sm rounded-md ${
+              mode === "create"
+                ? "bg-foreground text-background"
+                : "bg-secondary text-muted-foreground"
+            }`}
+          >
+            创建新团队
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {mode === "select" ? (
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                目标团队
+              </label>
+              <select
+                value={selectedTeamId}
+                onChange={(e) => setSelectedTeamId(e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">请选择团队</option>
+                {allTeams.map((team) => (
+                  <option key={team.id} value={team.id}>
+                    {team.name}
+                  </option>
+                ))}
+              </select>
+              {allTeams.length === 0 && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  暂无团队,请使用"创建新团队"选项
+                </p>
+              )}
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                新团队名称
+              </label>
+              <input
+                type="text"
+                value={customTeamName}
+                onChange={(e) => setCustomTeamName(e.target.value)}
+                placeholder="输入新团队名称"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          )}
+
+          <p className="text-xs text-muted-foreground">
+            提示:切换后,如果目标团队无成员,该用户将自动成为管理员
+          </p>
+        </div>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <Button variant="outline" onClick={onClose}>
+            取消
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSaving}>
+            {isSaving ? "处理中..." : "确认切换"}
           </Button>
         </div>
       </div>

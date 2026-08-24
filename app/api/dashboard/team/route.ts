@@ -42,9 +42,11 @@ const addManagerSchema = z.object({
   email: z.string().email("请输入有效邮箱").trim().toLowerCase(),
 });
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { teamId } = await requireTeamAccess();
+    // 超级管理员可通过查询参数 teamId 指定任意团队
+    const targetTeamId = request.nextUrl.searchParams.get("teamId") ?? undefined;
+    const { teamId } = await requireTeamAccess(targetTeamId);
 
     const managers = await listSalesManagers(teamId);
     const director = await getSalesDirector(teamId);
@@ -78,7 +80,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { teamId } = await requireTeamAccess();
+    const targetTeamId = request.nextUrl.searchParams.get("teamId") ?? undefined;
+    const { teamId } = await requireTeamAccess(targetTeamId);
 
     const body = await request.json().catch(() => null);
     if (!body) {
@@ -106,7 +109,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { teamId } = await requireTeamAccess();
+    const targetTeamId = request.nextUrl.searchParams.get("teamId") ?? undefined;
+    const { teamId } = await requireTeamAccess(targetTeamId);
 
     const userId = request.nextUrl.searchParams.get("userId");
     if (!userId) {

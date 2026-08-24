@@ -21,11 +21,12 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { user, team, teamMember, USER_ROLES, USER_PLANS } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { user, team, teamMember, USER_ROLES, USER_PLANS, TEAM_MEMBER_ROLES } from "@/lib/db/schema";
+import { and, eq, inArray } from "drizzle-orm";
 import { isAdmin, getCurrentUserWithRole } from "@/lib/auth/admin";
 import { isAdmin as hasAdminPermission, hasRole } from "@/lib/rbac";
 import { revalidatePath } from "next/cache";
+import { findTeamByName, getTeamMembersList } from "@/lib/teams";
 
 export async function updateUserRole(userId: string, newRole: string) {
   // 检查权限
@@ -184,4 +185,148 @@ export async function deleteUser(userId: string) {
 
   revalidatePath("/admin/users");
   return { success: true };
+}
+
+/**
+ * 超级管理员专属:切换用户的团队归属
+ *
+ * 操作:
+ * 1. 查找目标团队(按名称或 ID)
+ * 2. 删除用户原有团队成员关系(客户角色保留,仅切换主团队)
+ * 3. 添加用户到新团队,并判断是否为第一个成员来设置管理员
+ *
+ * @param userId 要切换的用户 ID
+ * @param targetTeamInput 目标团队的名称或 ID
+ */
+export async function updateUserTeamMembership(
+  userId: string,
+  targetTeamInput: string
+) {
+  // 检查权限:仅超级管理员可操作
+  const hasAdminAccess = await isAdmin();
+  if (!hasAdminAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const trimmed = targetTeamInput.trim();
+  if (!trimmed) {
+    throw new Error("目标团队不能为空");
+  }
+
+  // 查找目标团队(先按 ID,再按名称)
+  let targetTeam = await db
+    .select({ id: team.id, name: team.name })
+    .from(team)
+    .where(eq(team.id, trimmed))
+    .limit(1);
+
+  if (!targetTeam.length) {
+    targetTeam = await db
+      .select({ id: team.id, name: team.name })
+      .from(team)
+      .where(eq(team.name, trimmed))
+      .limit(1);
+  }
+
+  if (!targetTeam.length) {
+    throw new Error(`团队 "${trimmed}" 不存在`);
+  }
+
+  const targetTeamId = targetTeam[0].id;
+  const targetTeamName = targetTeam[0].name;
+
+  // 查找用户当前的主要团队成员关系(非客户角色)
+  const currentMembership = await db
+    .select({ id: teamMember.id, teamId: teamMember.teamId, role: teamMember.role })
+    .from(teamMember)
+    .where(
+      and(
+        eq(teamMember.userId, userId),
+        inArray(teamMember.role, [TEAM_MEMBER_ROLES.ADMIN, TEAM_MEMBER_ROLES.MEMBER])
+      )
+    )
+    .limit(1);
+
+  // 如果用户已经在目标团队,直接返回成功
+  if (currentMembership.length && currentMembership[0].teamId === targetTeamId) {
+    return { success: true, message: "用户已在该团队", teamName: targetTeamName };
+  }
+
+  // 检查用户是否为源团队的管理员(第一个成员)
+  if (currentMembership.length) {
+    const sourceTeamMembers = await getTeamMembersList(currentMembership[0].teamId);
+    const isSourceAdmin = sourceTeamMembers.find(
+      (m) => m.id === userId && m.isTeamAdmin
+    );
+
+    if (isSourceAdmin) {
+      throw new Error(
+        "该用户是其所在团队的管理员,无法直接切换团队。请先转移管理员角色。"
+      );
+    }
+
+    // 删除原有非客户角色的团队成员关系
+    await db
+      .delete(teamMember)
+      .where(
+        and(
+          eq(teamMember.userId, userId),
+          eq(teamMember.teamId, currentMembership[0].teamId),
+          inArray(teamMember.role, [TEAM_MEMBER_ROLES.ADMIN, TEAM_MEMBER_ROLES.MEMBER])
+        )
+      );
+  }
+
+  // 检查目标团队是否已有成员(用于判断是否设置管理员)
+  const existingMembers = await db
+    .select({ userId: teamMember.userId })
+    .from(teamMember)
+    .where(
+      and(
+        eq(teamMember.teamId, targetTeamId),
+        inArray(teamMember.role, [TEAM_MEMBER_ROLES.ADMIN, TEAM_MEMBER_ROLES.MEMBER])
+      )
+    )
+    .limit(1);
+
+  const isFirstMember = existingMembers.length === 0;
+  const newRole = isFirstMember
+    ? TEAM_MEMBER_ROLES.ADMIN
+    : TEAM_MEMBER_ROLES.MEMBER;
+
+  // 添加到新团队
+  await db
+    .insert(teamMember)
+    .values({
+      id: crypto.randomUUID(),
+      teamId: targetTeamId,
+      userId,
+      role: newRole,
+    })
+    .onConflictDoNothing();
+
+  revalidatePath("/admin/users");
+  return {
+    success: true,
+    teamName: targetTeamName,
+    newRole: isFirstMember ? "admin" : "member",
+  };
+}
+
+/**
+ * 获取所有团队列表(用于下拉选择)
+ * 仅超级管理员可访问
+ */
+export async function listAllTeams() {
+  const hasAdminAccess = await isAdmin();
+  if (!hasAdminAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const teams = await db
+    .select({ id: team.id, name: team.name })
+    .from(team)
+    .orderBy(team.name);
+
+  return teams;
 }

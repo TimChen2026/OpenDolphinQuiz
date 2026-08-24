@@ -149,9 +149,27 @@ export type TeamContext = {
  *
  * 在 requireDashboardAccess 基础上进一步保证 teamId 非空
  * (客户已在 requireDashboardAccess 拦截,此处为类型收窄)
+ *
+ * 超级管理员(isSuperAdminEmail)可指定 targetTeamId 访问任意团队
+ * 普通用户仍使用自身 teamId,严格遵守团队隔离
  */
-export async function requireTeamAccess(): Promise<TeamContext> {
+export async function requireTeamAccess(targetTeamId?: string): Promise<TeamContext> {
   const accessUser = await requireDashboardAccess();
+
+  // 超级管理员可访问任意团队
+  if (isSuperAdminEmail(accessUser.email)) {
+    // 使用指定的 teamId 或默认返回 null(后续处理)
+    const teamId = targetTeamId ?? accessUser.teamId ?? "";
+    if (!teamId) {
+      // 超级管理员未指定团队时,返回空 teamId 让调用方处理
+      return { user: accessUser, teamId: "", teamPlan: accessUser.plan };
+    }
+    const { getTeamPlan } = await import("@/lib/teams");
+    const teamPlan = await getTeamPlan(teamId);
+    return { user: accessUser, teamId, teamPlan };
+  }
+
+  // 普通用户:使用自身 teamId
   if (!accessUser.teamId) {
     redirect("/quiz");
   }

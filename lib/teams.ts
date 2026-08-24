@@ -87,13 +87,30 @@ export async function joinTeamByName(userId: string, teamName: string) {
 
   const existing = await findTeamByName(trimmed);
   if (existing) {
+    // 判断是否为该团队第一个成员(排除客户角色)
+    // 如果是第一个成员,则设为管理员
+    const existingMembers = await db
+      .select({ userId: teamMember.userId })
+      .from(teamMember)
+      .where(
+        and(
+          eq(teamMember.teamId, existing.id),
+          inArray(teamMember.role, [TEAM_MEMBER_ROLES.ADMIN, TEAM_MEMBER_ROLES.MEMBER])
+        )
+      )
+      .limit(1);
+    const isFirstMember = existingMembers.length === 0;
+    const memberRole = isFirstMember
+      ? TEAM_MEMBER_ROLES.ADMIN
+      : TEAM_MEMBER_ROLES.MEMBER;
+
     await db
       .insert(teamMember)
       .values({
         id: newId(),
         teamId: existing.id,
         userId,
-        role: TEAM_MEMBER_ROLES.MEMBER,
+        role: memberRole,
       })
       .onConflictDoNothing();
     return existing;
@@ -106,13 +123,29 @@ export async function joinTeamByName(userId: string, teamName: string) {
   } catch {
     const raced = await findTeamByName(trimmed);
     if (raced) {
+      // 并发场景:检查是否为第一个成员
+      const existingMembers = await db
+        .select({ userId: teamMember.userId })
+        .from(teamMember)
+        .where(
+          and(
+            eq(teamMember.teamId, raced.id),
+            inArray(teamMember.role, [TEAM_MEMBER_ROLES.ADMIN, TEAM_MEMBER_ROLES.MEMBER])
+          )
+        )
+        .limit(1);
+      const isFirstMember = existingMembers.length === 0;
+      const memberRole = isFirstMember
+        ? TEAM_MEMBER_ROLES.ADMIN
+        : TEAM_MEMBER_ROLES.MEMBER;
+
       await db
         .insert(teamMember)
         .values({
           id: newId(),
           teamId: raced.id,
           userId,
-          role: TEAM_MEMBER_ROLES.MEMBER,
+          role: memberRole,
         })
         .onConflictDoNothing();
       return raced;
@@ -322,7 +355,7 @@ export type TeamMemberInfo = {
  * 获取团队成员列表(仅本团队成员,团队隔离)
  *
  * 展示团队成员的姓名、邮箱、角色信息:
- * - admin:团队管理员,显示"管理员"title
+ * - 基于 joinedAt 动态判断管理员(第一个加入的非客户成员为管理员)
  * - member:普通成员
  * - customer:客户
  *
@@ -360,11 +393,17 @@ export async function getTeamMembersList(teamId: string): Promise<TeamMemberInfo
 
   const userMap = new Map(users.map((u) => [u.id, u]));
 
-  // 组装结果
+  // 找到第一个加入的非客户成员作为管理员
+  const firstStaffMember = memberships.find(
+    (m) => m.role === TEAM_MEMBER_ROLES.ADMIN || m.role === TEAM_MEMBER_ROLES.MEMBER
+  );
+  const adminUserId = firstStaffMember?.userId;
+
+  // 组装结果:基于 joinedAt 动态判断管理员
   return memberships.map((m) => {
     const userInfo = userMap.get(m.userId);
-    // 管理员角色标记:team_member.role === admin
-    const isTeamAdmin = m.role === TEAM_MEMBER_ROLES.ADMIN;
+    // 管理员标记:第一个加入的非客户成员
+    const isTeamAdmin = m.userId === adminUserId;
     return {
       id: m.userId,
       name: userInfo?.name ?? "未知用户",
