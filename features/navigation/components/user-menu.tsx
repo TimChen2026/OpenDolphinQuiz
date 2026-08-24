@@ -41,6 +41,7 @@ export function UserMenu() {
   const t = useTranslations();
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [teamName, setTeamName] = useState<string | null>(null);
 
   useEffect(() => {
     // 检查用户是否是管理员
@@ -59,6 +60,25 @@ export function UserMenu() {
     };
     
     checkAdminStatus();
+  }, [session.data?.user?.id]);
+
+  useEffect(() => {
+    // 获取用户归属团队名称(团队信息显示在用户面板中)
+    const fetchTeamName = async () => {
+      if (session.data?.user?.id) {
+        try {
+          const response = await fetch('/api/user/profile');
+          if (response.ok) {
+            const data = await response.json();
+            setTeamName(data.teamName ?? null);
+          }
+        } catch (error) {
+          console.error('Failed to fetch team name:', error);
+        }
+      }
+    };
+    
+    fetchTeamName();
   }, [session.data?.user?.id]);
 
   if (session.isPending) {
@@ -136,6 +156,10 @@ export function UserMenu() {
                 {user.plan
                   ? user.plan.charAt(0).toUpperCase() + user.plan.slice(1)
                   : "Free"}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {t('navigation.main.team')}:{" "}
+                {teamName ?? "—"}
               </p>
             </div>
 

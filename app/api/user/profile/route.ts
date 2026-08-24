@@ -27,6 +27,7 @@ import {
   normalizeProfileName,
   updateProfileSchema,
 } from "@/lib/account-settings";
+import { getTeamName } from "@/lib/teams";
 
 export async function GET(req: NextRequest) {
   try {
@@ -57,7 +58,12 @@ export async function GET(req: NextRequest) {
 
     const user = users[0];
 
-    return NextResponse.json({ user });
+    // 附加所属团队名称(客户无单一团队,返回 null)
+    const teamName = access.user.teamId
+      ? await getTeamName(access.user.teamId)
+      : null;
+
+    return NextResponse.json({ user, teamName });
   } catch (error) {
     console.error("Error fetching user profile:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
