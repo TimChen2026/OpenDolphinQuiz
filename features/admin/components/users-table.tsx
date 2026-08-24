@@ -32,8 +32,15 @@ import {
   Calendar,
   Search,
   Trash2,
+  Pencil,
 } from "lucide-react";
-import { updateUserRole, updateUserPlan, banUser, deleteUser } from "@/features/admin/actions/user-actions";
+import {
+  updateUserRole,
+  updateUserPlan,
+  updateUserTeamName,
+  banUser,
+  deleteUser,
+} from "@/features/admin/actions/user-actions";
 import { toast } from "sonner";
 import type { AdminUserListItem } from "@/lib/admin-user-directory";
 
@@ -62,6 +69,8 @@ export function UsersTable({
   const [searchTerm, setSearchTerm] = useState(query);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [teamEditUser, setTeamEditUser] = useState<User | null>(null);
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const t = useTranslations("Admin.users");
   const hasResults = users.length > 0;
   const pageStart = totalUsers === 0 ? 0 : (currentPage - 1) * pageSize + 1;
@@ -186,6 +195,22 @@ export function UsersTable({
     }
   };
 
+  const handleSaveTeam = async (userId: string, newTeamName: string) => {
+    try {
+      await updateUserTeamName(userId, newTeamName);
+      setUsers((currentUsers) =>
+        currentUsers.map((existingUser) =>
+          existingUser.id === userId ? { ...existingUser, teamName: newTeamName } : existingUser
+        )
+      );
+      toast.success(t("teamUpdated"));
+      setIsTeamModalOpen(false);
+      setTeamEditUser(null);
+    } catch {
+      toast.error(t("teamUpdateFailed"));
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* 搜索栏 */}
@@ -235,6 +260,9 @@ export function UsersTable({
                   {t("role")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  {t("team")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   {t("plan")}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -267,6 +295,25 @@ export function UsersTable({
                           {user.email}
                         </div>
                       </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-medium text-foreground">
+                        {user.teamName ?? t("noTeam")}
+                      </div>
+                      {user.teamName ? (
+                        <button
+                          onClick={() => {
+                            setTeamEditUser(user);
+                            setIsTeamModalOpen(true);
+                          }}
+                          className="p-1 rounded hover:bg-hover text-muted-foreground"
+                          title={t("editTeam")}
+                        >
+                          <Pencil className="h-3 w-3" />
+                        </button>
+                      ) : null}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -356,7 +403,7 @@ export function UsersTable({
               ))}
               {!hasResults ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                  <td colSpan={7} className="px-6 py-12 text-center text-sm text-muted-foreground">
                     {query ? t("emptySearchState") : t("emptyState")}
                   </td>
                 </tr>
@@ -439,6 +486,16 @@ export function UsersTable({
             setIsEditModalOpen(false);
             setSelectedUser(null);
           }}
+        />
+      )}
+      {isTeamModalOpen && teamEditUser && (
+        <TeamEditModal
+          user={teamEditUser}
+          onClose={() => {
+            setIsTeamModalOpen(false);
+            setTeamEditUser(null);
+          }}
+          onSave={handleSaveTeam}
         />
       )}
     </div>
@@ -528,6 +585,70 @@ function UserDetailModal({
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="outline" onClick={onClose}>
             {t("close")}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TeamEditModal({
+  user,
+  onClose,
+  onSave,
+}: {
+  user: User;
+  onClose: () => void;
+  onSave: (userId: string, newTeamName: string) => Promise<void> | void;
+}) {
+  const t = useTranslations("Admin.users");
+  const [teamName, setTeamName] = useState(user.teamName ?? "");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async () => {
+    const trimmed = teamName.trim();
+    if (!trimmed) {
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await onSave(user.id, trimmed);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4 border border-border">
+        <h2 className="text-xl font-bold text-foreground mb-4">
+          {t("editTeam")}
+        </h2>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground">
+              {t("teamName")}
+            </label>
+            <input
+              type="text"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+              placeholder={t("teamNamePlaceholder")}
+              className="mt-1 w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {t("teamNameHint")}
+          </p>
+        </div>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <Button variant="outline" onClick={onClose}>
+            {t("close")}
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSaving}>
+            {isSaving ? t("saving") : t("save")}
           </Button>
         </div>
       </div>

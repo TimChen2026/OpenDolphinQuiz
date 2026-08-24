@@ -104,6 +104,8 @@ const users = [
     banExpires: null,
     planKey: "starter_monthly",
     plan: "free",
+    teamName: "Acme",
+    teamId: "team_1",
     createdAt: new Date("2025-01-01T00:00:00.000Z"),
     updatedAt: new Date("2025-01-01T00:00:00.000Z"),
   },
@@ -119,6 +121,8 @@ const users = [
     banExpires: null,
     planKey: "pro_monthly",
     plan: "pro",
+    teamName: null,
+    teamId: null,
     createdAt: new Date("2025-01-02T00:00:00.000Z"),
     updatedAt: new Date("2025-01-02T00:00:00.000Z"),
   },
@@ -185,5 +189,24 @@ describe("UsersTable", () => {
 
     expect(screen.getByText("No users match this search")).toBeInTheDocument();
     expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
+  });
+
+  it("shows each user's team name in the Team column, with edit control for members of a team", () => {
+    render(
+      <UsersTable
+        currentPage={1}
+        pageSize={20}
+        query=""
+        totalPages={1}
+        totalUsers={2}
+        users={users}
+      />
+    );
+
+    // 有团队的用户显示团队名,无团队的用户显示占位符
+    expect(screen.getByText("Acme")).toBeInTheDocument();
+    expect(screen.getByText("—")).toBeInTheDocument();
+    // 团队列的编辑按钮(供超级管理员修改团队信息)
+    expect(screen.getByTitle("Edit Team")).toBeInTheDocument();
   });
 });

@@ -21,7 +21,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { user, USER_ROLES, USER_PLANS } from "@/lib/db/schema";
+import { user, team, teamMember, USER_ROLES, USER_PLANS } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { isAdmin, getCurrentUserWithRole } from "@/lib/auth/admin";
 import { isAdmin as hasAdminPermission, hasRole } from "@/lib/rbac";
@@ -93,6 +93,56 @@ export async function banUser(userId: string, banned: boolean, reason?: string) 
 
   revalidatePath("/admin/users");
   return { success: true };
+}
+
+/**
+ * 重命名用户所属团队(超级管理员专属)
+ *
+ * 修改会应用到该团队全体成员(团队名称是团队级信息)。
+ * 若新名称已被其他团队占用(team.name 唯一约束),抛出错误。
+ */
+export async function updateUserTeamName(userId: string, newTeamName: string) {
+  // 检查权限:仅超级管理员可修改用户团队信息
+  const hasAdminAccess = await isAdmin();
+  if (!hasAdminAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  const trimmed = newTeamName.trim();
+  if (!trimmed) {
+    throw new Error("团队名称不能为空");
+  }
+
+  // 找到该用户最早加入的团队
+  const membership = await db
+    .select({ teamId: teamMember.teamId })
+    .from(teamMember)
+    .where(eq(teamMember.userId, userId))
+    .orderBy(teamMember.joinedAt)
+    .limit(1);
+
+  if (!membership.length) {
+    throw new Error("该用户暂不属于任何团队");
+  }
+
+  // 团队名唯一约束冲突时提前拦截,给出明确错误
+  const nameExists = await db
+    .select({ id: team.id })
+    .from(team)
+    .where(eq(team.name, trimmed))
+    .limit(1);
+
+  if (nameExists.length && nameExists[0].id !== membership[0].teamId) {
+    throw new Error(`团队名称 "${trimmed}" 已被其他团队使用`);
+  }
+
+  await db
+    .update(team)
+    .set({ name: trimmed })
+    .where(eq(team.id, membership[0].teamId));
+
+  revalidatePath("/admin/users");
+  return { success: true, teamName: trimmed };
 }
 
 export async function deleteUser(userId: string) {

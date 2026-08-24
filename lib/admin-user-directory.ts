@@ -18,9 +18,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { count, desc, ilike, or } from "drizzle-orm";
+import { count, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { user } from "@/lib/db/schema";
+import { user, teamMember, team } from "@/lib/db/schema";
 
 export const ADMIN_USERS_PAGE_SIZE = 20;
 
@@ -43,6 +43,56 @@ export interface AdminUserListItem {
   banExpires: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  /** 用户所属团队名称(按加入时间取第一个团队;客户可属多团队) */
+  teamName: string | null;
+  /** 用户所属团队 ID(取第一个团队;无团队为 null) */
+  teamId: string | null;
+}
+
+/**
+ * 批量补齐用户所属团队信息(取每个用户 join 时间最早的团队)
+ * 团队成员(member/admin)通常仅一个团队;客户(customer)可属多团队,这里展示最早加入的团队
+ */
+async function attachTeamInfo(
+  users: Omit<AdminUserListItem, "teamName" | "teamId">[]
+): Promise<AdminUserListItem[]> {
+  if (users.length === 0) {
+    return [];
+  }
+
+  const userIds = users.map((u) => u.id);
+
+  // 按用户取最早加入的团队关联(同用户多团队时取第一条)
+  const memberships = await db
+    .select({ userId: teamMember.userId, teamId: teamMember.teamId })
+    .from(teamMember)
+    .where(inArray(teamMember.userId, userIds))
+    .orderBy(teamMember.joinedAt);
+
+  const firstTeamByUser = new Map<string, string>();
+  for (const membership of memberships) {
+    if (!firstTeamByUser.has(membership.userId)) {
+      firstTeamByUser.set(membership.userId, membership.teamId);
+    }
+  }
+
+  const teamIds = Array.from(new Set(firstTeamByUser.values()));
+  const teams = teamIds.length > 0
+    ? await db
+        .select({ id: team.id, name: team.name })
+        .from(team)
+        .where(inArray(team.id, teamIds))
+    : [];
+  const teamNameById = new Map(teams.map((t) => [t.id, t.name]));
+
+  return users.map((existing) => {
+    const teamId = firstTeamByUser.get(existing.id) ?? null;
+    return {
+      ...existing,
+      teamName: teamId ? (teamNameById.get(teamId) ?? null) : null,
+      teamId,
+    };
+  });
 }
 
 export interface AdminUsersDirectoryFilters {
@@ -138,12 +188,14 @@ export async function getAdminUsersDirectory(
         .limit(requestedFilters.pageSize)
         .offset(offset));
 
+  const usersWithTeams = await attachTeamInfo(users);
+
   return {
     currentPage,
     pageSize: requestedFilters.pageSize,
     query: requestedFilters.query,
     totalPages,
     totalUsers,
-    users,
+    users: usersWithTeams,
   };
 }
