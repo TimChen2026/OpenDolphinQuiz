@@ -54,7 +54,7 @@ const TABS = [
   { key: "report", label: "报告模板" },
   { key: "team", label: "团队界面" },
   { key: "warning", label: "邮件设置" },
-  { key: "link", label: "链接生成" },
+  { key: "link", label: "模板与链接" },
   { key: "database", label: "数据库" },
   { key: "analysis", label: "数据分析" },
 ] as const;

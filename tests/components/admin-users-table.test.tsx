@@ -104,6 +104,7 @@ const users = [
     banExpires: null,
     planKey: "starter_monthly",
     plan: "free",
+    accountType: "member",
     teamName: "Acme",
     teamId: "team_1",
     createdAt: new Date("2025-01-01T00:00:00.000Z"),
@@ -121,10 +122,29 @@ const users = [
     banExpires: null,
     planKey: "pro_monthly",
     plan: "pro",
+    accountType: "member",
     teamName: null,
     teamId: null,
     createdAt: new Date("2025-01-02T00:00:00.000Z"),
     updatedAt: new Date("2025-01-02T00:00:00.000Z"),
+  },
+  {
+    id: "user_3",
+    name: "Carol Guest",
+    email: "carol@example.com",
+    emailVerified: true,
+    credits: 0,
+    role: "user",
+    banned: false,
+    banReason: null,
+    banExpires: null,
+    planKey: "free",
+    plan: "free",
+    accountType: "customer",
+    teamName: "Acme",
+    teamId: "team_1",
+    createdAt: new Date("2025-01-03T00:00:00.000Z"),
+    updatedAt: new Date("2025-01-03T00:00:00.000Z"),
   },
 ];
 
@@ -172,7 +192,7 @@ describe("UsersTable", () => {
     expect(routerPushMock).toHaveBeenCalledWith("/en/admin/users?query=alice&page=3", {
       scroll: false,
     });
-    expect(screen.getByText('61 matching users for "alice" | Showing 21-22 of 61')).toBeInTheDocument();
+    expect(screen.getByText('61 matching users for "alice" | Showing 21-23 of 61')).toBeInTheDocument();
   });
 
   it("shows an empty-state message when the current server result has no users", () => {
@@ -199,7 +219,7 @@ describe("UsersTable", () => {
         query=""
         totalPages={1}
         totalUsers={2}
-        users={users}
+        users={users.slice(0, 2)}
       />
     );
 
@@ -208,5 +228,26 @@ describe("UsersTable", () => {
     expect(screen.getByText("—")).toBeInTheDocument();
     // 团队列的编辑按钮(供超级管理员修改团队信息)
     expect(screen.getByTitle("Edit Team")).toBeInTheDocument();
+  });
+
+  it("shows customer accounts as Guest role instead of User", () => {
+    render(
+      <UsersTable
+        currentPage={1}
+        pageSize={20}
+        query=""
+        totalPages={1}
+        totalUsers={3}
+        users={users}
+      />
+    );
+
+    // 客户账号(customer)显示 Guest 徽章,而非 User 下拉框
+    expect(screen.getByText("Guest")).toBeInTheDocument();
+    // 客户不显示角色下拉框:3 个用户中仅 2 个成员有角色下拉
+    const roleSelects = screen
+      .getAllByRole("combobox")
+      .filter((el) => (el as HTMLSelectElement).value === "user" || (el as HTMLSelectElement).value === "admin");
+    expect(roleSelects).toHaveLength(2);
   });
 });

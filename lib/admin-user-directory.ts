@@ -43,6 +43,8 @@ export interface AdminUserListItem {
   banExpires: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  /** 账号类型:member(团队成员) | customer(客户/Guest) */
+  accountType: string;
   /** 用户所属团队名称(按加入时间取第一个团队;客户可属多团队) */
   teamName: string | null;
   /** 用户所属团队 ID(取第一个团队;无团队为 null) */
@@ -163,6 +165,7 @@ export async function getAdminUsersDirectory(
           banExpires: user.banExpires,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
+          accountType: user.accountType,
         })
         .from(user)
         .where(whereClause)
@@ -182,6 +185,7 @@ export async function getAdminUsersDirectory(
           banExpires: user.banExpires,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
+          accountType: user.accountType,
         })
         .from(user)
         .orderBy(desc(user.createdAt))

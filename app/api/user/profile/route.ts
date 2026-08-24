@@ -47,6 +47,7 @@ export async function GET(req: NextRequest) {
         email: userTable.email,
         emailVerified: userTable.emailVerified,
         image: userTable.image,
+        accountType: userTable.accountType,
         createdAt: userTable.createdAt,
       })
       .from(userTable)

@@ -41,6 +41,7 @@
       "contact": "Contact",
       "docs": "Docs",
       "dashboard": "Dashboard",
+      "quiz": "Quiz",
       "plan": "Plan",
       "team": "Team",
       "credits": "Credits",
@@ -335,6 +336,18 @@
     "social": {
       "googleSignIn": "Continue with Google",
       "or": "Or continue with"
+    },
+    "upgrade": {
+      "upgradeLink": "Upgrade to Full User",
+      "title": "Upgrade to Full User",
+      "description": "Guest accounts can only access the quiz. Enter your team/company name to upgrade to a full user and unlock the dashboard and all features.",
+      "teamNamePlaceholder": "Enter your team or company name",
+      "confirm": "Upgrade",
+      "upgrading": "Upgrading...",
+      "errors": {
+        "teamNameRequired": "Please enter your team/company name first",
+        "upgradeFailed": "Upgrade failed. Please try again."
+      }
     },
     "checkEmail": {
       "title": "Check Your Email",

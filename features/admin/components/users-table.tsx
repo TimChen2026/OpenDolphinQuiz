@@ -358,14 +358,21 @@ export function UsersTable({
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <select
-                      value={user.role}
-                      onChange={(e) => handleUpdateRole(user.id, e.target.value)}
-                      className="px-3 py-1 text-sm rounded-lg border border-border bg-background text-foreground"
-                    >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                    </select>
+                    {user.accountType === "customer" ? (
+                      // 客户(Guest):角色固定为 Guest,不可修改为 user/admin
+                      <span className="px-2 py-1 text-xs rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+                        Guest
+                      </span>
+                    ) : (
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleUpdateRole(user.id, e.target.value)}
+                        className="px-3 py-1 text-sm rounded-lg border border-border bg-background text-foreground"
+                      >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <select
@@ -588,7 +595,9 @@ function UserDetailModal({
               <label className="block text-sm font-medium text-muted-foreground">
                 {t("role")}
               </label>
-              <p className="mt-1 text-foreground">{user.role}</p>
+              <p className="mt-1 text-foreground">
+                {user.accountType === "customer" ? "Guest" : user.role}
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-muted-foreground">
@@ -725,7 +734,6 @@ function TransferTeamModal({
   onClose: () => void;
   onTransfer: (userId: string, targetTeamInput: string) => Promise<void> | void;
 }) {
-  const t = useTranslations("Admin.users");
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [customTeamName, setCustomTeamName] = useState("");
   const [mode, setMode] = useState<"select" | "create">("select");
@@ -819,7 +827,7 @@ function TransferTeamModal({
               </select>
               {allTeams.length === 0 && (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  暂无团队,请使用"创建新团队"选项
+                  暂无团队,请使用「创建新团队」选项
                 </p>
               )}
             </div>

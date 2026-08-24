@@ -42,6 +42,13 @@ export function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [teamName, setTeamName] = useState<string | null>(null);
+  // 账号类型:customer = 客户(Guest),member = 正式用户
+  const [accountType, setAccountType] = useState<string | null>(null);
+  // 客户升级对话框状态
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [upgradeTeamName, setUpgradeTeamName] = useState("");
+  const [upgradeError, setUpgradeError] = useState<string | null>(null);
+  const [upgrading, setUpgrading] = useState(false);
 
   useEffect(() => {
     // 检查用户是否是管理员
@@ -63,7 +70,7 @@ export function UserMenu() {
   }, [session.data?.user?.id]);
 
   useEffect(() => {
-    // 获取用户归属团队名称(团队信息显示在用户面板中)
+    // 获取用户归属团队名称与账号类型(团队信息显示在用户面板中)
     const fetchTeamName = async () => {
       if (session.data?.user?.id) {
         try {
@@ -71,6 +78,7 @@ export function UserMenu() {
           if (response.ok) {
             const data = await response.json();
             setTeamName(data.teamName ?? null);
+            setAccountType(data.user?.accountType ?? null);
           }
         } catch (error) {
           console.error('Failed to fetch team name:', error);
@@ -80,6 +88,37 @@ export function UserMenu() {
     
     fetchTeamName();
   }, [session.data?.user?.id]);
+
+  // 客户升级为正式用户:输入团队名后调用升级 API
+  const handleUpgrade = async () => {
+    const trimmed = upgradeTeamName.trim();
+    if (!trimmed) {
+      setUpgradeError(t('auth.upgrade.errors.teamNameRequired'));
+      return;
+    }
+    setUpgradeError(null);
+    setUpgrading(true);
+    try {
+      const response = await fetch('/api/auth/customer-upgrade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamName: trimmed }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setUpgradeError(data.error || t('auth.upgrade.errors.upgradeFailed'));
+        return;
+      }
+      // 升级成功后关闭对话框并刷新页面
+      setIsUpgradeOpen(false);
+      setUpgradeTeamName("");
+      router.refresh();
+    } catch {
+      setUpgradeError(t('auth.upgrade.errors.upgradeFailed'));
+    } finally {
+      setUpgrading(false);
+    }
+  };
 
   if (session.isPending) {
     return (
@@ -163,43 +202,69 @@ export function UserMenu() {
               </p>
             </div>
 
-            <Link
-              href={`/${locale}/dashboard`}
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
-            >
-              <IconLayoutDashboard className="w-4 h-4" />
-              {t('navigation.main.dashboard')}
-            </Link>
+            {/* 客户(Guest)登录后:仅可访问问卷,可升级为正式用户 */}
+            {accountType === "customer" ? (
+              <>
+                <Link
+                  href={`/${locale}/quiz`}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
+                >
+                  <IconLayoutDashboard className="w-4 h-4" />
+                  {t('navigation.main.quiz')}
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsUpgradeOpen(true);
+                  }}
+                  className="flex items-center gap-3 w-full px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors text-left"
+                >
+                  <IconShield className="w-4 h-4" />
+                  {t('auth.upgrade.upgradeLink')}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={`/${locale}/dashboard`}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
+                >
+                  <IconLayoutDashboard className="w-4 h-4" />
+                  {t('navigation.main.dashboard')}
+                </Link>
 
-            <Link
-              href={`/${locale}/settings`}
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
-            >
-              <IconSettings className="w-4 h-4" />
-              {t('navigation.main.settings')}
-            </Link>
+                <Link
+                  href={`/${locale}/settings`}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
+                >
+                  <IconSettings className="w-4 h-4" />
+                  {t('navigation.main.settings')}
+                </Link>
 
-            {isAdmin && (
-              <Link
-                href={`/${locale}/admin`}
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
-              >
-                <IconShield className="w-4 h-4" />
-                {t('Admin.sidebar.title')}
-              </Link>
+                {isAdmin && (
+                  <Link
+                    href={`/${locale}/admin`}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
+                  >
+                    <IconShield className="w-4 h-4" />
+                    {t('Admin.sidebar.title')}
+                  </Link>
+                )}
+
+                <Link
+                  href={`/${locale}/profile`}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
+                >
+                  <IconUser className="w-4 h-4" />
+                  {t('navigation.main.profile')}
+                </Link>
+              </>
             )}
-
-            <Link
-              href={`/${locale}/profile`}
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
-            >
-              <IconUser className="w-4 h-4" />
-              {t('navigation.main.profile')}
-            </Link>
 
             <div className="border-t border-border mt-1 pt-1">
               <button
@@ -212,6 +277,58 @@ export function UserMenu() {
             </div>
           </div>
         </>
+      )}
+
+      {/* 客户升级为正式用户对话框 */}
+      {isUpgradeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-background p-6 rounded-lg shadow-lg max-w-md w-full mx-4 border border-border">
+            <h3 className="text-lg font-semibold mb-2">
+              {t('auth.upgrade.title')}
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              {t('auth.upgrade.description')}
+            </p>
+            <input
+              type="text"
+              value={upgradeTeamName}
+              onChange={(e) => {
+                setUpgradeTeamName(e.target.value);
+                if (e.target.value.trim()) {
+                  setUpgradeError(null);
+                }
+              }}
+              placeholder={t('auth.upgrade.teamNamePlaceholder')}
+              autoComplete="organization"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            {upgradeError && (
+              <p className="text-sm text-destructive mt-2">{upgradeError}</p>
+            )}
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setIsUpgradeOpen(false);
+                  setUpgradeTeamName("");
+                  setUpgradeError(null);
+                }}
+                disabled={upgrading}
+                className="px-4 py-2 rounded-md border border-border text-sm text-muted-foreground hover:bg-hover transition-colors disabled:opacity-40"
+              >
+                {t('common.actions.cancel')}
+              </button>
+              <button
+                onClick={handleUpgrade}
+                disabled={upgrading}
+                className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
+              >
+                {upgrading
+                  ? t('auth.upgrade.upgrading')
+                  : t('auth.upgrade.confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

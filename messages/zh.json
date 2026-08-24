@@ -41,6 +41,7 @@
       "contact": "联系我们",
       "docs": "文档",
       "dashboard": "仪表盘",
+      "quiz": "问卷",
       "plan": "套餐",
       "team": "团队",
       "credits": "积分",
@@ -347,6 +348,18 @@
     "social": {
       "googleSignIn": "使用 Google 继续",
       "or": "或者继续使用"
+    },
+    "upgrade": {
+      "upgradeLink": "升级为正式用户",
+      "title": "升级为正式用户",
+      "description": "客户账号仅可访问问卷。输入团队/公司名称后，即可升级为正式用户，解锁仪表盘等全部功能。",
+      "teamNamePlaceholder": "请输入您所在的团队或公司名称",
+      "confirm": "确认升级",
+      "upgrading": "升级中...",
+      "errors": {
+        "teamNameRequired": "请先输入团队/公司名称",
+        "upgradeFailed": "升级失败，请重试。"
+      }
     },
     "checkEmail": {
       "title": "请查收您的邮件",

@@ -24,6 +24,7 @@ import { EmailVerifiedGuard } from "@/features/auth/components/email-verified-gu
 import { PassportGuard } from "@/features/auth/components/passport-guard";
 import { NavBar } from "@/features/navigation/components/navbar";
 import { getActiveSessionUser } from "@/lib/auth/session";
+import { ACCOUNT_TYPES } from "@/lib/db/schema";
 
 export default async function ProtectedLayout(
   props: {
@@ -44,6 +45,11 @@ export default async function ProtectedLayout(
   const access = await getActiveSessionUser(await headers());
   if (!access.ok) {
     redirect(`/${locale}/login`);
+  }
+
+  // 客户(Guest)未完成注册,仅可访问问卷,禁止进入仪表盘/个人中心
+  if (access.user.accountType === ACCOUNT_TYPES.CUSTOMER) {
+    redirect(`/${locale}/quiz`);
   }
 
   return (
