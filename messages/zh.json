@@ -313,7 +313,7 @@
       }
     },
     "signup": {
-      "title": "尊贵的用户，欢迎注册一个新账户",
+      "title": "尊贵的用户，欢迎注册",
       "nameLabel": "姓名",
       "namePlaceholder": "张三",
       "companyNameLabel": "团队/公司名称",

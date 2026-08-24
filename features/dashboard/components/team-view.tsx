@@ -31,6 +31,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
+import { TeamMembersPanel } from "@/features/dashboard/components/team-members-panel";
 import type { SalesManager } from "@/features/dashboard/types";
 
 type Director = {
@@ -464,6 +465,9 @@ export function TeamView() {
           注:需先让该用户在系统中注册,方可提升为销售经理
         </p>
       </div>
+
+      {/* 团队成员显示面板(仅显示本团队成员信息) */}
+      <TeamMembersPanel />
 
       {message && (
         <p

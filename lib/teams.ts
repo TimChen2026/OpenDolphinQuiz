@@ -302,3 +302,76 @@ export async function getTeamName(teamId: string): Promise<string | null> {
     .limit(1);
   return rows[0]?.name ?? null;
 }
+
+/**
+ * 团队成员信息(用于团队成员面板展示)
+ */
+export type TeamMemberInfo = {
+  id: string;
+  name: string;
+  email: string;
+  /** 团队内角色:admin(管理员) | member(普通成员) | customer(客户) */
+  teamRole: string;
+  /** 是否为团队管理员(第一个加入者) */
+  isTeamAdmin: boolean;
+  /** 用户在系统中的角色(admin/sales_director/sales_manager/user) */
+  userRole: string;
+};
+
+/**
+ * 获取团队成员列表(仅本团队成员,团队隔离)
+ *
+ * 展示团队成员的姓名、邮箱、角色信息:
+ * - admin:团队管理员,显示"管理员"title
+ * - member:普通成员
+ * - customer:客户
+ *
+ * @param teamId 团队 ID
+ * @returns 团队成员信息列表,按加入时间排序
+ */
+export async function getTeamMembersList(teamId: string): Promise<TeamMemberInfo[]> {
+  // 获取本团队所有成员的用户 ID 和团队内角色
+  const memberships = await db
+    .select({
+      userId: teamMember.userId,
+      role: teamMember.role,
+      joinedAt: teamMember.joinedAt,
+    })
+    .from(teamMember)
+    .where(eq(teamMember.teamId, teamId))
+    .orderBy(teamMember.joinedAt);
+
+  if (memberships.length === 0) {
+    return [];
+  }
+
+  const userIds = memberships.map((m) => m.userId);
+
+  // 批量查询用户信息
+  const users = await db
+    .select({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    })
+    .from(user)
+    .where(inArray(user.id, userIds));
+
+  const userMap = new Map(users.map((u) => [u.id, u]));
+
+  // 组装结果
+  return memberships.map((m) => {
+    const userInfo = userMap.get(m.userId);
+    // 管理员角色标记:team_member.role === admin
+    const isTeamAdmin = m.role === TEAM_MEMBER_ROLES.ADMIN;
+    return {
+      id: m.userId,
+      name: userInfo?.name ?? "未知用户",
+      email: userInfo?.email ?? "",
+      teamRole: m.role,
+      isTeamAdmin,
+      userRole: userInfo?.role ?? "user",
+    };
+  });
+}
