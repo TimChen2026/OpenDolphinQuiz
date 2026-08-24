@@ -472,6 +472,7 @@
         "allPlans": "All plans",
         "allTypes": "All types",
         "allStatus": "All statuses",
+        "allTeams": "All teams",
         "member": "Member",
         "guest": "Guest",
         "user": "User",
@@ -479,7 +480,7 @@
         "unverified": "Unverified",
         "salesDirector": "Sales Director",
         "salesManager": "Sales Manager",
-        "clear": "Clear filters"
+        "showAll": "Show all"
       },
       "pagination": {
         "previous": "Previous",

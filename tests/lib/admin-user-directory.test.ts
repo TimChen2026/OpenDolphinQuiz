@@ -63,6 +63,7 @@ describe("admin user directory helpers", () => {
         plan: "pro",
         accountType: "customer",
         emailVerified: "true",
+        team: "team_1",
       })
     ).toEqual({
       currentPage: 1,
@@ -72,6 +73,7 @@ describe("admin user directory helpers", () => {
       plan: "pro",
       accountType: "customer",
       emailVerified: "true",
+      team: "team_1",
     });
   });
 
@@ -82,6 +84,7 @@ describe("admin user directory helpers", () => {
         plan: "enterprise",
         accountType: "stranger",
         emailVerified: "yes",
+        team: "   ",
       })
     ).toEqual({
       currentPage: 1,
@@ -91,6 +94,19 @@ describe("admin user directory helpers", () => {
       plan: undefined,
       accountType: undefined,
       emailVerified: undefined,
+      team: undefined,
+    });
+  });
+
+  it("keeps any non-empty team id as a dynamic filter value", () => {
+    // 团队 ID 为动态数据,不做静态白名单,仅去除首尾空白
+    expect(
+      normalizeAdminUsersDirectoryFilters({ team: "  team_42  " })
+    ).toEqual({
+      currentPage: 1,
+      pageSize: ADMIN_USERS_PAGE_SIZE,
+      query: "",
+      team: "team_42",
     });
   });
 });

@@ -60,6 +60,7 @@ interface UsersTableProps {
   plan?: string;
   accountType?: string;
   emailVerified?: string;
+  team?: string;
 }
 
 export function UsersTable({
@@ -73,6 +74,7 @@ export function UsersTable({
   plan = "",
   accountType = "",
   emailVerified = "",
+  team = "",
 }: UsersTableProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -108,7 +110,6 @@ export function UsersTable({
     { value: "true", label: t("filters.verified") },
     { value: "false", label: t("filters.unverified") },
   ];
-  const hasActiveFilters = Boolean(role || plan || accountType || emailVerified);
   const pageStart = totalUsers === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const pageEnd = totalUsers === 0 ? 0 : Math.min(totalUsers, pageStart + users.length - 1);
   const pageNumbers = useMemo(() => {
@@ -137,19 +138,23 @@ export function UsersTable({
     setSearchTerm(query);
   }, [query]);
 
-  // 加载所有团队列表(用于团队切换)
+  // 加载所有团队列表(筛选栏 + 团队切换共用,挂载时一次加载)
   useEffect(() => {
-    if (isTransferModalOpen) {
-      listAllTeams()
-        .then((teams) => setAllTeams(teams))
-        .catch(() => toast.error("加载团队列表失败"));
-    }
-  }, [isTransferModalOpen]);
+    listAllTeams()
+      .then((teams) => setAllTeams(teams))
+      .catch(() => toast.error("加载团队列表失败"));
+  }, []);
 
   const createUsersUrl = (
     nextQuery: string,
     nextPage: number,
-    filters?: { role?: string; plan?: string; accountType?: string; emailVerified?: string }
+    filters?: {
+      role?: string;
+      plan?: string;
+      accountType?: string;
+      emailVerified?: string;
+      team?: string;
+    }
   ) => {
     const params = new URLSearchParams();
 
@@ -162,7 +167,7 @@ export function UsersTable({
     }
 
     // 筛选条件随 URL 持久化(刷新/分享后保持),未显式传入时沿用当前筛选
-    const activeFilters = filters ?? { role, plan, accountType, emailVerified };
+    const activeFilters = filters ?? { role, plan, accountType, emailVerified, team };
     if (activeFilters.role) {
       params.set("role", activeFilters.role);
     }
@@ -175,6 +180,9 @@ export function UsersTable({
     if (activeFilters.emailVerified) {
       params.set("emailVerified", activeFilters.emailVerified);
     }
+    if (activeFilters.team) {
+      params.set("team", activeFilters.team);
+    }
 
     const queryString = params.toString();
     return queryString ? `${pathname}?${queryString}` : pathname;
@@ -182,7 +190,7 @@ export function UsersTable({
 
   // 筛选条件变更:更新对应参数并回到第 1 页
   const handleFilterChange = (
-    key: "role" | "plan" | "accountType" | "emailVerified",
+    key: "role" | "plan" | "accountType" | "emailVerified" | "team",
     value: string
   ) => {
     const nextFilters = {
@@ -190,10 +198,12 @@ export function UsersTable({
       plan: key === "plan" ? value : plan,
       accountType: key === "accountType" ? value : accountType,
       emailVerified: key === "emailVerified" ? value : emailVerified,
+      team: key === "team" ? value : team,
     };
     router.push(createUsersUrl(query, 1, nextFilters), { scroll: false });
   };
 
+  // 显示所有:清空全部筛选条件,恢复无筛选状态
   const handleClearFilters = () => {
     router.push(pathname, { scroll: false });
   };
@@ -338,7 +348,7 @@ export function UsersTable({
         </div>
       </form>
 
-      {/* 筛选栏:角色/账号类型/套餐/邮箱验证状态(多条件叠加,与服务端查询一致) */}
+      {/* 筛选栏:角色/账号类型/套餐/邮箱验证状态/团队(多条件叠加,与服务端查询一致) */}
       <div className="flex flex-wrap items-center gap-2">
         <select
           value={role}
@@ -392,11 +402,25 @@ export function UsersTable({
           ))}
         </select>
 
-        {hasActiveFilters ? (
-          <Button type="button" size="sm" variant="simple" onClick={handleClearFilters}>
-            {t("filters.clear")}
-          </Button>
-        ) : null}
+        {/* 团队筛选:选项来自全部团队 */}
+        <select
+          value={team}
+          onChange={(e) => handleFilterChange("team", e.target.value)}
+          aria-label={t("filters.allTeams")}
+          className="px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="">{t("filters.allTeams")}</option>
+          {allTeams.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+
+        {/* 显示所有:重置全部筛选条件 */}
+        <Button type="button" size="sm" variant="simple" onClick={handleClearFilters}>
+          {t("filters.showAll")}
+        </Button>
       </div>
 
       <div className="text-sm text-muted-foreground">
@@ -498,7 +522,10 @@ export function UsersTable({
                         className="px-3 py-1 text-sm rounded-lg border border-border bg-background text-foreground"
                       >
                         <option value="user">User</option>
-                        <option value="admin">Admin</option>
+                        {/* 超级管理员显示 S-Admin,团队管理员显示 T-Admin */}
+                        <option value="admin">
+                          {user.isSuperAdmin ? "S-Admin" : "T-Admin"}
+                        </option>
                       </select>
                     )}
                   </td>
@@ -724,7 +751,13 @@ function UserDetailModal({
                 {t("role")}
               </label>
               <p className="mt-1 text-foreground">
-                {user.accountType === "customer" ? "Guest" : user.role}
+                {user.accountType === "customer"
+                  ? "Guest"
+                  : user.isSuperAdmin
+                    ? "S-Admin"
+                    : user.role === "admin"
+                      ? "T-Admin"
+                      : user.role}
               </p>
             </div>
             <div>

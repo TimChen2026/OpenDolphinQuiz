@@ -70,6 +70,7 @@ export default async function AdminUsersPage(props: AdminUsersPageProps) {
         plan={directory.plan}
         accountType={directory.accountType}
         emailVerified={directory.emailVerified}
+        team={directory.team}
         totalPages={directory.totalPages}
         totalUsers={directory.totalUsers}
         users={directory.users}

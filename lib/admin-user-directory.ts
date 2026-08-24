@@ -21,6 +21,7 @@
 import { and, count, desc, eq, ilike, inArray, or, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user, teamMember, team, USER_ROLES, USER_PLANS, ACCOUNT_TYPES } from "@/lib/db/schema";
+import { isSuperAdminEmail } from "@/lib/rbac";
 
 export const ADMIN_USERS_PAGE_SIZE = 20;
 
@@ -37,6 +38,8 @@ export interface AdminUsersDirectorySearchParams {
   accountType?: SearchParamValue;
   /** 邮箱验证状态筛选:true | false */
   emailVerified?: SearchParamValue;
+  /** 团队筛选:团队 ID */
+  team?: SearchParamValue;
 }
 
 export interface AdminUserListItem {
@@ -57,6 +60,8 @@ export interface AdminUserListItem {
   teamName: string | null;
   /** 用户所属团队 ID(取第一个团队;无团队为 null) */
   teamId: string | null;
+  /** 是否为超级管理员(SUPER_ADMIN_EMAIL 指定的唯一平台管理员) */
+  isSuperAdmin: boolean;
 }
 
 /**
@@ -64,8 +69,8 @@ export interface AdminUserListItem {
  * 团队成员(member/admin)通常仅一个团队;客户(customer)可属多团队,这里展示最早加入的团队
  */
 async function attachTeamInfo(
-  users: Omit<AdminUserListItem, "teamName" | "teamId">[]
-): Promise<AdminUserListItem[]> {
+  users: Omit<AdminUserListItem, "teamName" | "teamId" | "isSuperAdmin">[]
+): Promise<Omit<AdminUserListItem, "isSuperAdmin">[]> {
   if (users.length === 0) {
     return [];
   }
@@ -113,6 +118,7 @@ export interface AdminUsersDirectoryFilters {
   plan?: string;
   accountType?: string;
   emailVerified?: string;
+  team?: string;
 }
 
 export interface AdminUsersDirectoryResult extends AdminUsersDirectoryFilters {
@@ -144,6 +150,8 @@ export function normalizeAdminUsersDirectoryFilters(
   const rawPlan = getSingleSearchParam(searchParams?.plan) ?? "";
   const rawAccountType = getSingleSearchParam(searchParams?.accountType) ?? "";
   const rawEmailVerified = getSingleSearchParam(searchParams?.emailVerified) ?? "";
+  // 团队 ID 为动态值,不做静态白名单;参数化子查询保证安全,空白视为无筛选
+  const rawTeam = getSingleSearchParam(searchParams?.team) ?? "";
 
   return {
     currentPage: Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1,
@@ -157,6 +165,7 @@ export function normalizeAdminUsersDirectoryFilters(
     emailVerified: VALID_EMAIL_VERIFIED_FILTERS.has(rawEmailVerified)
       ? rawEmailVerified
       : undefined,
+    team: rawTeam.trim() || undefined,
   };
 }
 
@@ -189,6 +198,18 @@ export async function getAdminUsersDirectory(
   if (requestedFilters.emailVerified !== undefined) {
     conditions.push(
       eq(user.emailVerified, requestedFilters.emailVerified === "true")
+    );
+  }
+  // 团队筛选:用户属于该团队(任一团队关联,与表格展示口径一致)
+  if (requestedFilters.team) {
+    conditions.push(
+      inArray(
+        user.id,
+        db
+          .select({ userId: teamMember.userId })
+          .from(teamMember)
+          .where(eq(teamMember.teamId, requestedFilters.team))
+      )
     );
   }
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
@@ -243,7 +264,11 @@ export async function getAdminUsersDirectory(
         .limit(requestedFilters.pageSize)
         .offset(offset));
 
-  const usersWithTeams = await attachTeamInfo(users);
+  // 标记超级管理员(SUPER_ADMIN_EMAIL 指定,用于表格 S-Admin / T-Admin 区分展示)
+  const usersWithTeams = (await attachTeamInfo(users)).map((u) => ({
+    ...u,
+    isSuperAdmin: isSuperAdminEmail(u.email),
+  }));
 
   return {
     currentPage,

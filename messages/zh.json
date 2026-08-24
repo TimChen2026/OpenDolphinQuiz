@@ -484,6 +484,7 @@
         "allPlans": "全部套餐",
         "allTypes": "全部类型",
         "allStatus": "全部状态",
+        "allTeams": "全部团队",
         "member": "正式用户",
         "guest": "客户(Guest)",
         "user": "普通用户",
@@ -491,7 +492,7 @@
         "unverified": "未验证",
         "salesDirector": "销售总监",
         "salesManager": "销售经理",
-        "clear": "清除筛选"
+        "showAll": "显示所有"
       },
       "pagination": {
         "previous": "上一页",
