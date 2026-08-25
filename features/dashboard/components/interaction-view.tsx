@@ -51,6 +51,20 @@ const STATUS_ACTIONS: Record<string, string[]> = {
 type TemplateData = {
   projects: DashboardProject[];
   limitStatus: InquiryLimitStatus;
+  /** 项目查看授权:projectId -> 已授权销售经理 ID 列表 */
+  projectPermissions: Record<string, string[]>;
+  /** 当前用户是否为团队管理员(可授权销售经理查看项目) */
+  canGrantAccess: boolean;
+};
+
+/** 团队成员信息(用于销售经理选择,与 /api/dashboard/team/members 响应一致) */
+type TeamMember = {
+  id: string;
+  name: string;
+  email: string;
+  teamRole: string;
+  isTeamAdmin: boolean;
+  userRole: string;
 };
 
 export function InteractionView() {
@@ -58,6 +72,8 @@ export function InteractionView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [grantProjectId, setGrantProjectId] = useState<string | null>(null);
+  const [salesManagers, setSalesManagers] = useState<TeamMember[]>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -79,6 +95,23 @@ export function InteractionView() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // 管理员视角:加载本团队销售经理列表(用于授权面板选择)
+  useEffect(() => {
+    if (!data?.canGrantAccess) {
+      return;
+    }
+    fetch("/api/dashboard/team/members")
+      .then((res) => res.json())
+      .then((json: { members?: TeamMember[] }) => {
+        setSalesManagers(
+          (json.members ?? []).filter((m) => m.userRole === "sales_manager")
+        );
+      })
+      .catch(() => {
+        setSalesManagers([]);
+      });
+  }, [data?.canGrantAccess]);
 
   /** 更新项目状态 */
   const handleStatusChange = async (projectId: string, status: string) => {
@@ -102,6 +135,29 @@ export function InteractionView() {
     }
   };
 
+  /** 管理员授权/撤销销售经理查看指定项目 */
+  const handleToggleAccess = async (
+    projectId: string,
+    managerId: string,
+    isGranted: boolean
+  ) => {
+    try {
+      const res = await fetch("/api/dashboard/project-permissions", {
+        method: isGranted ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId, managerId }),
+      });
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        alert(json?.error ?? "操作失败");
+        return;
+      }
+      await fetchData();
+    } catch {
+      alert("网络异常,请重试");
+    }
+  };
+
   if (loading && !data) {
     return <div className="py-16 text-center text-muted-foreground">加载中...</div>;
   }
@@ -112,6 +168,8 @@ export function InteractionView() {
 
   const projects = data?.projects ?? [];
   const limitStatus = data?.limitStatus;
+  const projectPermissions = data?.projectPermissions ?? {};
+  const canGrantAccess = data?.canGrantAccess ?? false;
 
   return (
     <div className="space-y-6">
@@ -135,8 +193,8 @@ export function InteractionView() {
         </div>
       )}
 
-      {/* 今日询盘统计 */}
-      {limitStatus && (
+      {/* 今日询盘统计(仅套餐有每日询盘上限时展示,Pro/Max 无限制不显示) */}
+      {limitStatus && limitStatus.limit !== null && (
         <div className="flex flex-wrap gap-3 text-sm">
           <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">
             今日询盘:{limitStatus.count}/{limitStatus.limit} 次
@@ -224,6 +282,76 @@ export function InteractionView() {
                       {updatingId === project.id ? "更新中..." : `设为${action}`}
                     </button>
                   ))}
+                </div>
+              )}
+
+              {/* 项目查看授权(仅团队管理员可授权销售经理查看非自己跟踪的项目) */}
+              {canGrantAccess && (
+                <div className="mt-4 border-t border-border pt-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs text-muted-foreground">
+                      已授权经理:
+                      {(() => {
+                        const grantedIds = projectPermissions[project.id] ?? [];
+                        if (grantedIds.length === 0) {
+                          return " 无";
+                        }
+                        const names = grantedIds
+                          .map((id) => salesManagers.find((m) => m.id === id)?.name)
+                          .filter((n): n is string => Boolean(n));
+                        return names.length > 0 ? ` ${names.join("、")}` : " 无";
+                      })()}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setGrantProjectId(
+                          grantProjectId === project.id ? null : project.id
+                        )
+                      }
+                      className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground hover:bg-hover"
+                    >
+                      {grantProjectId === project.id ? "收起" : "授权给销售经理"}
+                    </button>
+                  </div>
+
+                  {grantProjectId === project.id && (
+                    <div className="mt-2 space-y-1">
+                      {salesManagers.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                          暂无销售经理,请先在团队设置中添加
+                        </p>
+                      ) : (
+                        salesManagers.map((manager) => {
+                          const isGranted = (
+                            projectPermissions[project.id] ?? []
+                          ).includes(manager.id);
+                          return (
+                            <button
+                              key={manager.id}
+                              type="button"
+                              onClick={() =>
+                                handleToggleAccess(
+                                  project.id,
+                                  manager.id,
+                                  isGranted
+                                )
+                              }
+                              className={cn(
+                                "flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs transition hover:bg-hover",
+                                isGranted
+                                  ? "bg-primary/10 text-primary"
+                                  : "text-muted-foreground"
+                              )}
+                            >
+                              <span>{manager.name}</span>
+                              <span>{isGranted ? "已授权 · 点击撤销" : "未授权 · 点击授权"}</span>
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

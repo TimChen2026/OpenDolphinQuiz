@@ -46,7 +46,8 @@ export const INQUIRY_NEAR_LIMIT = 3;
 // 询盘限制状态
 export type InquiryLimitStatus = {
   count: number;
-  limit: number;
+  /** 每日询盘上限(null = 套餐无硬上限,Pro/Max 不受每日询盘限制) */
+  limit: number | null;
   nearLimit: number;
   // 是否已达硬上限(客户无法继续 Quiz)
   isLimited: boolean;
@@ -92,18 +93,23 @@ export async function countInquiriesToday(
 
 /**
  * 获取询盘限制状态(纯计算)
+ *
+ * limit 为 null 时表示套餐无每日询盘硬上限(Pro/Max),永不接近/达到上限
  */
 export function computeInquiryLimitStatus(
   count: number,
-  limit: number = FREE_DAILY_INQUIRY_LIMIT,
+  limit: number | null = FREE_DAILY_INQUIRY_LIMIT,
   nearLimit: number = INQUIRY_NEAR_LIMIT
 ): InquiryLimitStatus {
+  const isLimited = limit !== null && count >= limit;
+  const isNearLimit =
+    limit !== null && count >= nearLimit && count < limit;
   return {
     count,
     limit,
     nearLimit,
-    isLimited: count >= limit,
-    isNearLimit: count >= nearLimit && count < limit,
+    isLimited,
+    isNearLimit,
   };
 }
 
@@ -111,14 +117,16 @@ export function computeInquiryLimitStatus(
  * 获取租户当前询盘限制状态(组合查询 + 计算)
  *
  * @param tenantId 租户 ID
+ * @param dailyInquiryLimit 套餐每日询盘上限(null = 无硬上限,Pro/Max 不受限)
  * @param now 当前时间(便于测试)
  */
 export async function getInquiryLimitStatusForTenant(
   tenantId: string,
+  dailyInquiryLimit: number | null = FREE_DAILY_INQUIRY_LIMIT,
   now: Date = new Date()
 ): Promise<InquiryLimitStatus> {
   const count = await countInquiriesToday(tenantId, now);
-  return computeInquiryLimitStatus(count);
+  return computeInquiryLimitStatus(count, dailyInquiryLimit);
 }
 
 /**

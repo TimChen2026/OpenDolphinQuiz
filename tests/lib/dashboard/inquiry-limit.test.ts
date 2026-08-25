@@ -76,4 +76,11 @@ describe("computeInquiryLimitStatus", () => {
     expect(status.isNearLimit).toBe(true);
     expect(status.isLimited).toBe(false);
   });
+
+  it("limit 为 null 时无每日询盘限制(Pro/Max),任何次数都不接近/达到上限", () => {
+    const status = computeInquiryLimitStatus(50, null, INQUIRY_NEAR_LIMIT);
+    expect(status.limit).toBeNull();
+    expect(status.isLimited).toBe(false);
+    expect(status.isNearLimit).toBe(false);
+  });
 });

@@ -29,14 +29,18 @@ import { requireTeamAccess } from "@/lib/rbac";
 import { getActiveClientTemplate } from "@/lib/quiz/queries";
 import { createDefaultQuizTemplate } from "@/lib/quiz/template-init";
 import { getEditableTemplate } from "@/lib/dashboard/quiz-editor";
-import { getProjectsByTenant } from "@/lib/dashboard/project-status";
+import {
+  getVisibleProjectsByTenant,
+  listTeamProjectPermissions,
+  isTeamAdminViewer,
+} from "@/lib/dashboard/project-permissions";
 import { getInquiryLimitStatusForTenant } from "@/lib/dashboard/inquiry-limit";
-import { getQuizLimitStatusForTenant } from "@/lib/plan-limits";
+import { getQuizLimitStatusForTenant, getPlanLimits } from "@/lib/plan-limits";
 
 export async function GET() {
   try {
     // 团队隔离:租户数据按团队(teamId)而非个人 userId 查询
-    const { teamId, teamPlan } = await requireTeamAccess();
+    const { teamId, teamPlan, user } = await requireTeamAccess();
 
     // 获取租户激活模板
     let clientTemplate = await getActiveClientTemplate(teamId);
@@ -69,11 +73,25 @@ export async function GET() {
     // 获取可编辑模板数据(节点+选项)
     const editableTemplate = await getEditableTemplate(clientTemplate.id);
 
-    // 获取项目列表(交互界面)
-    const projects = await getProjectsByTenant(teamId);
+    // 获取项目列表(项目看板,按查看者角色过滤)
+    const viewer = {
+      id: user.id,
+      role: user.role,
+      isDirector: user.isDirector,
+      email: user.email,
+    };
+    const projects = await getVisibleProjectsByTenant(teamId, viewer);
 
-    // 获取询盘限制状态(升级提示横幅)
-    const limitStatus = await getInquiryLimitStatusForTenant(teamId);
+    // 获取询盘限制状态(升级提示横幅;仅 Free 有每日询盘上限,Pro/Max 不限制)
+    const limitStatus = await getInquiryLimitStatusForTenant(
+      teamId,
+      getPlanLimits(teamPlan).dailyInquiryLimit
+    );
+
+    // 项目查看授权信息(管理员可授权销售经理查看非自己跟踪的项目)
+    const permissionsMap = await listTeamProjectPermissions(teamId);
+    const projectPermissions = Object.fromEntries(permissionsMap);
+    const canGrantAccess = isTeamAdminViewer(teamId, viewer);
 
     return NextResponse.json({
       template: {
@@ -84,6 +102,8 @@ export async function GET() {
       },
       projects,
       limitStatus,
+      projectPermissions,
+      canGrantAccess,
     });
   } catch (error) {
     console.error("dashboard template 错误:", error);

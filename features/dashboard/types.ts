@@ -111,7 +111,8 @@ export type WarningSettings = {
 
 export type InquiryLimitStatus = {
   count: number;
-  limit: number;
+  /** 每日询盘上限(null = 套餐无硬上限,Pro/Max 不受限,前端不展示统计) */
+  limit: number | null;
   nearLimit: number;
   isLimited: boolean;
   isNearLimit: boolean;

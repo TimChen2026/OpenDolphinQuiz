@@ -29,6 +29,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getInquiryLimitStatusForTenant } from "@/lib/dashboard/inquiry-limit";
+import { getPlanLimits } from "@/lib/plan-limits";
+import { getTeamPlan } from "@/lib/teams";
 
 const querySchema = z.object({
   tenantId: z.string().min(1),
@@ -46,7 +48,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const status = await getInquiryLimitStatusForTenant(parsed.data.tenantId);
+    // 按团队套餐判断每日询盘上限(Free 5 次/天;Pro/Max 无硬上限)
+    const teamPlan = await getTeamPlan(parsed.data.tenantId);
+    const status = await getInquiryLimitStatusForTenant(
+      parsed.data.tenantId,
+      getPlanLimits(teamPlan).dailyInquiryLimit
+    );
     return NextResponse.json({ ...status });
   } catch (error) {
     console.error("quiz limit 错误:", error);

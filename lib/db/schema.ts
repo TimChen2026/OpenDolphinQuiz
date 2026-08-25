@@ -356,6 +356,41 @@ export const projects = pgTable("projects", {
     .notNull(),
 });
 
+// ==================== 项目查看授权(管理员授权销售经理查看特定项目) ====================
+
+// 项目查看授权表:管理员可授权销售经理查看非自己跟踪的项目
+// 默认:管理员/销售总监可看全部项目,销售经理仅看自己跟踪的项目(manager_id)
+export const projectPermissions = pgTable(
+  "project_permissions",
+  {
+    id: text("id").primaryKey(),
+    // 被授权查看的项目
+    projectId: text("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    // 被授权的销售经理用户 id
+    managerId: text("manager_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    // 多租户隔离:项目所属团队(便于按团队清理/查询)
+    tenantId: text("tenant_id")
+      .notNull()
+      .references(() => team.id, { onDelete: "cascade" }),
+    // 授权人(团队管理员用户 id)
+    grantedBy: text("granted_by")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    // 同一项目对同一经理仅一条授权
+    unique("project_permissions_project_manager_unique").on(
+      table.projectId,
+      table.managerId
+    ),
+  ]
+);
+
 // ==================== Phase 3: Dashboard 控制台模块 ====================
 
 // 邮件模板类型常量

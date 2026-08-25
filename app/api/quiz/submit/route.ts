@@ -41,7 +41,7 @@ import {
   getInquiryLimitStatusForTenant,
   maybeSendInquiryLimitEmails,
 } from "@/lib/dashboard/inquiry-limit";
-import { getPotentialCustomerLimitStatusForTenant } from "@/lib/plan-limits";
+import { getPotentialCustomerLimitStatusForTenant, getPlanLimits } from "@/lib/plan-limits";
 import { getEmailTemplatesByTenant } from "@/lib/dashboard/email-templates";
 import { EMAIL_TEMPLATE_TYPES } from "@/lib/db/schema";
 import { getTemplateTenantId } from "@/lib/quiz/queries";
@@ -164,8 +164,12 @@ export async function POST(request: NextRequest) {
       await joinTeamAsCustomer(session.user.id, teamId);
     }
 
-    // 3.3 询盘次数限制检查(按团队计算,AC-06:免费套餐 5 次/天硬上限)
-    const limitStatus = await getInquiryLimitStatusForTenant(teamId);
+    // 3.3 询盘次数限制检查(按团队套餐:Free 5 次/天硬上限;Pro/Max 无每日询盘限制)
+    const teamPlan = await getTeamPlan(teamId);
+    const limitStatus = await getInquiryLimitStatusForTenant(
+      teamId,
+      getPlanLimits(teamPlan).dailyInquiryLimit
+    );
     if (limitStatus.isLimited) {
       return NextResponse.json(
         { error: "今日询盘次数已达上限,请明日再试" },
@@ -174,7 +178,6 @@ export async function POST(request: NextRequest) {
     }
 
     // 3.4 潜在客户配额检查(按团队套餐计算:Free 30个/月,Pro 10000个/年,Max 30000个/年)
-    const teamPlan = await getTeamPlan(teamId);
     const customerLimit = await getPotentialCustomerLimitStatusForTenant(
       teamId,
       teamPlan
