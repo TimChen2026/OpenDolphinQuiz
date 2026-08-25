@@ -46,6 +46,7 @@ type RefreshStatus = "idle" | "refreshing" | "success" | "error";
 
 export function DatabaseView() {
   const [projects, setProjects] = useState<DashboardProject[]>([]);
+  const [themeManagers, setThemeManagers] = useState<Record<string, string>>({});
   const [auditLogsData, setAuditLogsData] = useState<AuditLogEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [exportStatus, setExportStatus] = useState<ExportStatus>("idle");
@@ -68,6 +69,8 @@ export function DatabaseView() {
       if (res.ok) {
         const data = await res.json();
         setProjects(data.projects ?? []);
+        // 主题 → 跟踪项目经理映射(团队界面配置)
+        setThemeManagers(data.themeManagers ?? {});
       }
     } catch (e) {
       console.error("加载项目数据失败", e);
@@ -154,7 +157,6 @@ export function DatabaseView() {
         }
         throw new Error("刷新失败");
       }
-      const data = await res.json();
       setRefreshStatus("success");
       // 刷新完成后重新加载数据
       await loadData();
@@ -262,6 +264,7 @@ export function DatabaseView() {
               <th className="whitespace-nowrap px-3 py-2.5 font-medium">项目编号</th>
               <th className="whitespace-nowrap px-3 py-2.5 font-medium">客户名</th>
               <th className="whitespace-nowrap px-3 py-2.5 font-medium">主题</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">跟踪项目经理</th>
               <th className="whitespace-nowrap px-3 py-2.5 font-medium">状态</th>
               <th className="whitespace-nowrap px-3 py-2.5 font-medium">项目金额</th>
               <th className="whitespace-nowrap px-3 py-2.5 font-medium">询盘时间</th>
@@ -273,7 +276,7 @@ export function DatabaseView() {
           <tbody>
             {filteredProjects.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-3 py-8 text-center text-muted-foreground">
+                <td colSpan={10} className="px-3 py-8 text-center text-muted-foreground">
                   {loading ? "加载中..." : "暂无项目数据"}
                 </td>
               </tr>
@@ -285,6 +288,10 @@ export function DatabaseView() {
                   </td>
                   <td className="px-3 py-2">{project.customerName}</td>
                   <td className="px-3 py-2">{project.theme ?? "-"}</td>
+                  <td className="px-3 py-2">
+                    {/* 跟踪项目经理:按主题取团队界面配置的销售经理 */}
+                    {themeManagers[project.theme ?? ""] ?? "-"}
+                  </td>
                   <td className="px-3 py-2">
                     <span
                       className={

@@ -29,6 +29,7 @@ import { requireTeamAccess } from "@/lib/rbac";
 import { getActiveClientTemplate } from "@/lib/quiz/queries";
 import { createDefaultQuizTemplate } from "@/lib/quiz/template-init";
 import { getEditableTemplate } from "@/lib/dashboard/quiz-editor";
+import { getThemeAssignments } from "@/lib/dashboard/team";
 import {
   getVisibleProjectsByTenant,
   listTeamProjectPermissions,
@@ -93,6 +94,15 @@ export async function GET() {
     const projectPermissions = Object.fromEntries(permissionsMap);
     const canGrantAccess = isTeamAdminViewer(teamId, viewer);
 
+    // 主题 → 跟踪项目经理映射(团队界面配置的主题-经理关联,用于项目表格显示经理名)
+    const themeAssignments = await getThemeAssignments(clientTemplate.id);
+    const themeManagers: Record<string, string> = {};
+    for (const assignment of themeAssignments) {
+      if (assignment.managerName) {
+        themeManagers[assignment.theme] = assignment.managerName;
+      }
+    }
+
     return NextResponse.json({
       template: {
         id: clientTemplate.id,
@@ -104,6 +114,7 @@ export async function GET() {
       limitStatus,
       projectPermissions,
       canGrantAccess,
+      themeManagers,
     });
   } catch (error) {
     console.error("dashboard template 错误:", error);

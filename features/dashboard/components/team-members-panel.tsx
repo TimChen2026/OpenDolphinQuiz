@@ -121,6 +121,10 @@ export function TeamMembersPanel() {
     );
   }
 
+  // 分隔展示:正式成员(管理员/普通成员)与客户分区,符合实际业务逻辑
+  const staffMembers = members.filter((m) => m.teamRole !== "customer");
+  const customerMembers = members.filter((m) => m.teamRole === "customer");
+
   return (
     <div className="rounded-2xl border border-border bg-background p-5">
       <div className="flex items-center justify-between">
@@ -137,65 +141,92 @@ export function TeamMembersPanel() {
           暂无团队成员
         </p>
       ) : (
-        <ul className="mt-4 divide-y divide-border">
-          {members.map((member) => (
-            <li key={member.id} className="py-3">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  {/* 头像占位符 */}
-                  <div
-                    className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium",
-                      member.isTeamAdmin
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {member.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-foreground">
-                        {member.name}
-                      </p>
-                      {/* 管理员 title 标签 */}
-                      {member.isTeamAdmin && (
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                          管理员
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {member.email}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {/* 团队内角色标签 */}
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 text-xs",
-                      member.teamRole === "admin"
-                        ? "bg-primary/10 text-primary"
-                        : member.teamRole === "customer"
-                          ? "bg-muted text-muted-foreground"
-                          : "bg-secondary text-secondary-foreground"
-                    )}
-                  >
-                    {TEAM_ROLE_LABELS[member.teamRole] ?? member.teamRole}
-                  </span>
-                  {/* 系统角色标签(如果有特殊角色) */}
-                  {member.userRole !== "user" && member.userRole !== "admin" && (
-                    <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
-                      {USER_ROLE_LABELS[member.userRole] ?? member.userRole}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-4">
+          {/* 正式成员(管理员/普通成员) */}
+          {staffMembers.length > 0 && (
+            <ul className="divide-y divide-border">
+              {staffMembers.map((member) => (
+                <MemberRow key={member.id} member={member} />
+              ))}
+            </ul>
+          )}
+
+          {/* 分隔横线 + 客户栏:客户与正式成员分开展示 */}
+          {customerMembers.length > 0 && (
+            <>
+              <div className="my-2 border-t border-border" />
+              <p className="pt-1 text-xs font-medium text-muted-foreground">
+                客户
+              </p>
+              <ul className="mt-1 divide-y divide-border">
+                {customerMembers.map((member) => (
+                  <MemberRow key={member.id} member={member} />
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
       )}
     </div>
+  );
+}
+
+/** 单个团队成员条目(头像/姓名/邮箱/角色标签) */
+function MemberRow({ member }: { member: TeamMember }) {
+  return (
+    <li className="py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          {/* 头像占位符 */}
+          <div
+            className={cn(
+              "flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium",
+              member.isTeamAdmin
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground"
+            )}
+          >
+            {member.name.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium text-foreground">
+                {member.name}
+              </p>
+              {/* 管理员 title 标签 */}
+              {member.isTeamAdmin && (
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                  管理员
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {member.email}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* 团队内角色标签 */}
+          <span
+            className={cn(
+              "rounded-full px-2 py-0.5 text-xs",
+              member.teamRole === "admin"
+                ? "bg-primary/10 text-primary"
+                : member.teamRole === "customer"
+                  ? "bg-muted text-muted-foreground"
+                  : "bg-secondary text-secondary-foreground"
+            )}
+          >
+            {TEAM_ROLE_LABELS[member.teamRole] ?? member.teamRole}
+          </span>
+          {/* 系统角色标签(如果有特殊角色) */}
+          {member.userRole !== "user" && member.userRole !== "admin" && (
+            <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
+              {USER_ROLE_LABELS[member.userRole] ?? member.userRole}
+            </span>
+          )}
+        </div>
+      </div>
+    </li>
   );
 }
