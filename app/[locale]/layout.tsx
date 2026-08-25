@@ -73,6 +73,9 @@ export default async function LocaleLayout(
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <head>
+        <meta name="waffo-verify" content="599e391737a7ddd76b5e9c7045bd17df" />
+      </head>
       <body
         className={cn(
           inter.variable,
