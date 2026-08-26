@@ -37,6 +37,8 @@ interface ProgressIndicatorProps {
   btnBg?: string;
   /** 主按钮文字色(通常传 s.btnText) */
   btnText?: string;
+  /** 是否渲染操作按钮(返回/继续/完成);为 false 时仅渲染圆点进度指示,用于纯展示场景 */
+  showButtons?: boolean;
   onBack?: () => void;
   onContinue?: () => void;
 }
@@ -51,13 +53,19 @@ const ProgressIndicator = ({
   track = DEFAULT_TRACK,
   btnBg = DEFAULT_ACCENT,
   btnText = "#ffffff",
+  showButtons = true,
   onContinue,
   onBack,
 }: ProgressIndicatorProps) => {
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-6">
+    <div
+      className={cn(
+        "flex w-full flex-col items-center justify-center",
+        showButtons && "gap-6"
+      )}
+    >
       {/* 步骤圆点 + 进度覆盖层 */}
-      <div className="relative flex items-center gap-6 py-1">
+      <div className={cn("flex items-center gap-6", showButtons ? "py-1" : "py-0")}>
         {[1, 2, 3].map((dot) => (
           <div
             key={dot}
@@ -87,8 +95,9 @@ const ProgressIndicator = ({
       </div>
 
       {/* 操作按钮 */}
-      <div className="w-full">
-        <motion.div
+      {showButtons && (
+        <div className="w-full">
+          <motion.div
           className="flex items-center gap-2"
           animate={{
             justifyContent: isExpanded ? "stretch" : "space-between",
@@ -142,7 +151,8 @@ const ProgressIndicator = ({
             </div>
           </motion.button>
         </motion.div>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

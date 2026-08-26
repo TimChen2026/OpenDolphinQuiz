@@ -589,29 +589,8 @@ function MobilePreview({
         fontFamily: s.fontFamily,
       }}
     >
-      {/* 进度指示器 + 操作按钮(整体替换原顶部进度条与底部继续按钮)
-          step 按节点等级映射:P1=1 / P2=2 / P3=3 / P4(结果页)=3 保持满格;
-          P1 仅显示「继续」,P2/P3/P4 额外显示「返回」
-          配色沿用原进度条 s.progressTrack(轨道)/ s.accent(填充)与 s.btnBg/s.btnText(按钮) */}
-      <div className="px-6 pt-6">
-        <ProgressIndicator
-          step={
-            node.level === "P1"
-              ? 1
-              : node.level === "P2"
-                ? 2
-                : /* P3 与 P4 结果页均映射到满格步骤 3 */ 3
-          }
-          isExpanded={node.level === "P1"}
-          accent={s.accent}
-          track={s.progressTrack}
-          btnBg={s.btnBg}
-          btnText={s.btnText}
-        />
-      </div>
-
-      {/* 问题 */}
-      <div className="px-6 pt-5 pb-2">
+      {/* 问题(进度指示器在 DOM 顺序变更中已移至卡片底部,此处为卡片首个子元素) */}
+      <div className="px-6 pt-6 pb-2">
         <h3
           className="text-base font-semibold leading-snug"
           style={{ color: s.text, fontFamily: s.fontFamily }}
@@ -648,6 +627,27 @@ function MobilePreview({
             Summary 结果页
           </div>
         )}
+      </div>
+
+      {/* 进度指示器 + 操作按钮(整体替换原顶部进度条与底部继续按钮,置于卡片底部)
+          step 按节点等级映射:P1=1 / P2=2 / P3=3 / P4(结果页)=3 保持满格;
+          P1 仅显示「继续」,P2/P3/P4 额外显示「返回」
+          配色沿用原进度条 s.progressTrack(轨道)/ s.accent(填充)与 s.btnBg/s.btnText(按钮) */}
+      <div className="px-6 pb-6">
+        <ProgressIndicator
+          step={
+            node.level === "P1"
+              ? 1
+              : node.level === "P2"
+                ? 2
+                : /* P3 与 P4 结果页均映射到满格步骤 3 */ 3
+          }
+          isExpanded={node.level === "P1"}
+          accent={s.accent}
+          track={s.progressTrack}
+          btnBg={s.btnBg}
+          btnText={s.btnText}
+        />
       </div>
     </div>
   );

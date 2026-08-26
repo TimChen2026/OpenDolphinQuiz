@@ -23,6 +23,7 @@
 import { useState, useCallback, useMemo, type CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import ProgressIndicator from "@/components/ui/progress-indicator";
 import { useSession } from "@/lib/auth-client";
 import type {
   QuizClientTemplate,
@@ -151,7 +152,7 @@ function renderTemplate(text: string, vars: Record<string, string>): string {
  * 流转:P1 → P2 → P3 → P4(结果层)
  * - P1/P2/P3:显示问题 + 4 个选项,选中后高亮,点击"继续"跳转下一节点
  * - P4:展示报告模板 summary 摘要渲染后的内容 + "返回开始"按钮(提交询盘)
- * - 进度条为图形样式(参考首页样品,无文字)
+ * - 进度指示器为新版圆点样式(与仪表盘手机预览保持一致,纯视觉,不含按钮)
  */
 export function QuizFlow({
   template,
@@ -180,10 +181,10 @@ export function QuizFlow({
   const currentNode = template.nodes[currentNodeId];
   const isResultNode = currentNode.level === "P4";
 
-  // 当前进度:P1=25% P2=50% P3=75% P4=100%
-  const progressPercent = useMemo(() => {
-    const order: Record<string, number> = { P1: 25, P2: 50, P3: 75, P4: 100 };
-    return order[currentNode.level] ?? 0;
+  // 当前进度步骤:P1=1 P2=2 P3=3 P4(结果页)=3 保持满格(与仪表盘手机预览一致)
+  const progressStep = useMemo(() => {
+    const order: Record<string, number> = { P1: 1, P2: 2, P3: 3, P4: 3 };
+    return order[currentNode.level] ?? 1;
   }, [currentNode.level]);
 
   /** 选择选项(高亮) */
@@ -250,13 +251,15 @@ export function QuizFlow({
       className="w-full max-w-2xl mx-auto px-4 py-8 sm:py-12 flex flex-col flex-1"
       style={styleVars as CSSProperties}
     >
-      {/* 图形进度条(参考首页样品,无文字) */}
-      <div className="w-full h-1.5 rounded-full bg-muted">
-        <div
-          className="h-1.5 rounded-full bg-accent transition-all duration-300"
-          style={{ width: `${progressPercent}%` }}
-        />
-      </div>
+      {/* 进度指示器(纯视觉,替换原先的图形进度条;仅展示圆点+进度覆盖层,
+          答题按钮仍沿用本组件自带的「继续」与 P4 的「返回开始」逻辑)
+         accent/track 取当前风格的 CSS 变量,与仪表盘手机预览配色保持一致 */}
+      <ProgressIndicator
+        step={progressStep}
+        showButtons={false}
+        accent="var(--accent)"
+        track="var(--muted)"
+      />
 
       <AnimatePresence mode="wait">
         <motion.div
