@@ -277,7 +277,7 @@ export function QuizFlow({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.2 }}
-          className="mt-8 flex flex-col flex-1"
+          className="-mt-5 sm:-mt-6 flex flex-col flex-1"
         >
           {isResultNode ? (
             <ResultSummary
