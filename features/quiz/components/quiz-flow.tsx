@@ -137,6 +137,21 @@ const QUIZ_STYLE_VARS: Record<string, QuizStyleConfig> = {
   system: { vars: {} },
 };
 
+// 各风格的进度指示器配色(与仪表盘交互界面 MobilePreview 的 PREVIEW_STYLES 保持一致)
+// accent=进度填充色、track=未激活圆点颜色
+// 注:必须用真实色值(hex/rgb),不能写成 var(--xxx) 或原始 HSL 字符串,
+//    否则 hsl(var(...)) 无法解析为合法颜色,进度条会显示异常。
+const QUIZ_PROGRESS_COLORS: Record<string, { accent: string; track: string }> = {
+  classic: { accent: "rgb(197, 164, 89)", track: "rgb(240, 237, 229)" },
+  princeton: { accent: "#E98338", track: "#E5DDD3" },
+  yale: { accent: "#00356B", track: "#E0E0E0" },
+  stanford: { accent: "#8C1515", track: "#E8E4DD" },
+  mit: { accent: "#A31F34", track: "#DDDDDD" },
+  harvard: { accent: "#A51C30", track: "#E0E0E0" },
+  // 跟随系统:浅色模式下复用 classic(Oxford 深蓝)样式配置
+  system: { accent: "rgb(197, 164, 89)", track: "rgb(240, 237, 229)" },
+};
+
 // Summary 模板渲染时的变量替换
 function renderTemplate(text: string, vars: Record<string, string>): string {
   let result = text;
@@ -186,6 +201,10 @@ export function QuizFlow({
     const order: Record<string, number> = { P1: 1, P2: 2, P3: 3, P4: 3 };
     return order[currentNode.level] ?? 1;
   }, [currentNode.level]);
+
+  // 当前风格的进度指示器配色(与仪表盘 PREVIEW_STYLES 一致),未知风格统一回退 classic
+  const progressColors =
+    QUIZ_PROGRESS_COLORS[styleId ?? "classic"] ?? QUIZ_PROGRESS_COLORS.classic;
 
   /** 选择选项(高亮) */
   const handleSelectOption = useCallback((optionId: string) => {
@@ -307,13 +326,13 @@ export function QuizFlow({
 
       {/* 进度指示器(纯视觉,与仪表盘手机预览一致;底部展示圆点+进度覆盖层,
           答题按钮仍沿用本组件自带的「继续」与 P4 的「返回开始」逻辑)
-         accent/track 取当前风格的 CSS 变量,配色保持一致 */}
+         accent/track 取当前风格的真实配色,与仪表盘 PREVIEW_STYLES 完全一致 */}
       <div className="mt-8 w-full">
         <ProgressIndicator
           step={progressStep}
           showButtons={false}
-          accent="var(--accent)"
-          track="var(--muted)"
+          accent={progressColors.accent}
+          track={progressColors.track}
         />
       </div>
     </div>
