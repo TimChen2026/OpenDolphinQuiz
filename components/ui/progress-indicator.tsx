@@ -64,8 +64,8 @@ const ProgressIndicator = ({
         showButtons && "gap-6"
       )}
     >
-      {/* 步骤圆点 + 进度覆盖层 */}
-      <div className={cn("flex items-center gap-6", showButtons ? "py-1" : "py-0")}>
+      {/* 步骤圆点 + 进度覆盖层(relative 锚定覆盖层,确保其始终贴齐圆点行并居中) */}
+      <div className={cn("relative flex items-center gap-6", showButtons ? "py-1" : "py-0")}>
         {[1, 2, 3].map((dot) => (
           <div
             key={dot}

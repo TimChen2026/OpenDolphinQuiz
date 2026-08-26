@@ -20,7 +20,7 @@
 
 "use client";
 
-import { useState, useCallback, useMemo, type CSSProperties } from "react";
+import { useState, useCallback, useMemo, type CSSProperties, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import ProgressIndicator from "@/components/ui/progress-indicator";
@@ -287,6 +287,15 @@ export function QuizFlow({
               customerName={session.data?.user?.name ?? ""}
               customerEmail={session.data?.user?.email ?? ""}
               onSubmit={handleSubmitResult}
+              progress={
+                /* P4 结果页进度指示器:满格步骤 3,置于摘要下方、提交按钮上方,与答题页位置一致 */
+                <ProgressIndicator
+                  step={3}
+                  showButtons={false}
+                  accent={progressColors.accent}
+                  track={progressColors.track}
+                />
+              }
             />
           ) : (
             <>
@@ -303,6 +312,17 @@ export function QuizFlow({
                     onClick={() => handleSelectOption(option.id)}
                   />
                 ))}
+              </div>
+
+              {/* 进度指示器(纯视觉,位于选项菜单下方、继续按钮上方,居中展示;
+                  配色取当前风格真实色值,与仪表盘交互界面手机预览一一对应) */}
+              <div className="mt-6">
+                <ProgressIndicator
+                  step={progressStep}
+                  showButtons={false}
+                  accent={progressColors.accent}
+                  track={progressColors.track}
+                />
               </div>
 
               {/* 继续按钮:选中选项后出现 */}
@@ -323,18 +343,6 @@ export function QuizFlow({
           )}
         </motion.div>
       </AnimatePresence>
-
-      {/* 进度指示器(纯视觉,与仪表盘手机预览一致;底部展示圆点+进度覆盖层,
-          答题按钮仍沿用本组件自带的「继续」与 P4 的「返回开始」逻辑)
-         accent/track 取当前风格的真实配色,与仪表盘 PREVIEW_STYLES 完全一致 */}
-      <div className="mt-8 w-full">
-        <ProgressIndicator
-          step={progressStep}
-          showButtons={false}
-          accent={progressColors.accent}
-          track={progressColors.track}
-        />
-      </div>
     </div>
   );
 }
@@ -391,6 +399,7 @@ function ResultSummary({
   customerName,
   customerEmail,
   onSubmit,
+  progress,
 }: {
   summaryTemplate: { subject: string; body: string } | null;
   path: QuizPathEntry[];
@@ -398,6 +407,8 @@ function ResultSummary({
   customerName: string;
   customerEmail: string;
   onSubmit: () => void;
+  /** 进度指示器(纯视觉),渲染于摘要正文与提交按钮之间,与答题页位置一致 */
+  progress?: ReactNode;
 }) {
   // 选择路径摘要
   const pathSummary = path
@@ -435,6 +446,9 @@ function ResultSummary({
       <div className="p-5 sm:p-6 rounded-2xl border border-border bg-background mb-6 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
         {body}
       </div>
+
+      {/* 进度指示器:摘要下方、提交按钮上方,居中(与答题页位置一致) */}
+      {progress && <div className="mb-6">{progress}</div>}
 
       {/* 返回开始按钮(提交询盘) */}
       <div className="flex justify-center">
