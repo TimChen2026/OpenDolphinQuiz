@@ -277,7 +277,7 @@ export function QuizFlow({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.2 }}
-          className="-mt-5 sm:-mt-6 flex flex-col flex-1"
+          className="mt-2 flex flex-col flex-1"
         >
           {isResultNode ? (
             <ResultSummary
@@ -315,8 +315,9 @@ export function QuizFlow({
               </div>
 
               {/* 进度指示器(纯视觉,位于选项菜单下方、继续按钮上方,居中展示;
-                  配色取当前风格真实色值,与仪表盘交互界面手机预览一一对应) */}
-              <div className="mt-6">
+                  配色取当前风格真实色值,与仪表盘交互界面手机预览一一对应;
+                  与选项/继续按钮间距压缩至 12px,避免在手机框内溢出) */}
+              <div className="mt-3">
                 <ProgressIndicator
                   step={progressStep}
                   showButtons={false}
@@ -331,7 +332,7 @@ export function QuizFlow({
                 disabled={!selectedOptionId}
                 onClick={handleContinue}
                 className={cn(
-                  "w-full py-3 rounded-lg text-sm font-semibold transition-all mt-6",
+                  "w-full py-3 rounded-lg text-sm font-semibold transition-all mt-3",
                   selectedOptionId
                     ? "bg-primary text-primary-foreground hover:opacity-90"
                     : "bg-muted text-muted-foreground cursor-not-allowed"
