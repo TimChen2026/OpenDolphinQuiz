@@ -251,16 +251,6 @@ export function QuizFlow({
       className="w-full max-w-2xl mx-auto px-4 py-8 sm:py-12 flex flex-col flex-1"
       style={styleVars as CSSProperties}
     >
-      {/* 进度指示器(纯视觉,替换原先的图形进度条;仅展示圆点+进度覆盖层,
-          答题按钮仍沿用本组件自带的「继续」与 P4 的「返回开始」逻辑)
-         accent/track 取当前风格的 CSS 变量,与仪表盘手机预览配色保持一致 */}
-      <ProgressIndicator
-        step={progressStep}
-        showButtons={false}
-        accent="var(--accent)"
-        track="var(--muted)"
-      />
-
       <AnimatePresence mode="wait">
         <motion.div
           key={currentNode.id}
@@ -314,6 +304,18 @@ export function QuizFlow({
           )}
         </motion.div>
       </AnimatePresence>
+
+      {/* 进度指示器(纯视觉,与仪表盘手机预览一致;底部展示圆点+进度覆盖层,
+          答题按钮仍沿用本组件自带的「继续」与 P4 的「返回开始」逻辑)
+         accent/track 取当前风格的 CSS 变量,配色保持一致 */}
+      <div className="mt-8 w-full">
+        <ProgressIndicator
+          step={progressStep}
+          showButtons={false}
+          accent="var(--accent)"
+          track="var(--muted)"
+        />
+      </div>
     </div>
   );
 }
