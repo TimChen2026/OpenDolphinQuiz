@@ -31,6 +31,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
+import ProgressIndicator from "@/components/ui/progress-indicator";
 import type {
   DashboardTemplate,
   EditableNodeData,
@@ -579,15 +580,6 @@ function MobilePreview({
       ? SYSTEM_DARK_STYLE
       : PREVIEW_STYLES[activeStyleId] ?? PREVIEW_STYLES.classic;
 
-  const progressWidth =
-    node.level === "P1"
-      ? "25%"
-      : node.level === "P2"
-        ? "50%"
-        : node.level === "P3"
-          ? "75%"
-          : "100%";
-
   return (
     <div
       className="mx-auto w-full max-w-xs rounded-2xl border shadow-lg"
@@ -597,17 +589,25 @@ function MobilePreview({
         fontFamily: s.fontFamily,
       }}
     >
-      {/* 进度条 */}
+      {/* 进度指示器 + 操作按钮(整体替换原顶部进度条与底部继续按钮)
+          step 按节点等级映射:P1=1 / P2=2 / P3=3 / P4(结果页)=3 保持满格;
+          P1 仅显示「继续」,P2/P3/P4 额外显示「返回」
+          配色沿用原进度条 s.progressTrack(轨道)/ s.accent(填充)与 s.btnBg/s.btnText(按钮) */}
       <div className="px-6 pt-6">
-        <div
-          className="w-full h-1.5 rounded-full"
-          style={{ background: s.progressTrack }}
-        >
-          <div
-            className="h-1.5 rounded-full transition-all"
-            style={{ width: progressWidth, background: s.accent }}
-          />
-        </div>
+        <ProgressIndicator
+          step={
+            node.level === "P1"
+              ? 1
+              : node.level === "P2"
+                ? 2
+                : /* P3 与 P4 结果页均映射到满格步骤 3 */ 3
+          }
+          isExpanded={node.level === "P1"}
+          accent={s.accent}
+          track={s.progressTrack}
+          btnBg={s.btnBg}
+          btnText={s.btnText}
+        />
       </div>
 
       {/* 问题 */}
@@ -648,20 +648,6 @@ function MobilePreview({
             Summary 结果页
           </div>
         )}
-      </div>
-
-      {/* 继续按钮 */}
-      <div className="px-6 pb-6">
-        <button
-          type="button"
-          className="w-full py-3 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
-          style={{
-            background: s.btnBg,
-            color: s.btnText,
-          }}
-        >
-          继续
-        </button>
       </div>
     </div>
   );
