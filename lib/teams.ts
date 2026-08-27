@@ -26,9 +26,10 @@
 // - 客户(customer):通过问卷链接注册/访问,自动归属问卷所属团队,可属于多个团队
 // - 每个团队第一个加入的用户为团队管理员(team_member.role = admin)
 
-import { and, eq, inArray } from "drizzle-orm";
+import { and, count, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user, team, teamMember, TEAM_MEMBER_ROLES, ACCOUNT_TYPES } from "@/lib/db/schema";
+import { getPlanLimits } from "@/lib/plan-limits";
 
 // 超级管理员所属团队名(需求:超级管理员 Tim 属于 Testing 团队)
 export const SUPER_ADMIN_TEAM_NAME = "Testing";
@@ -69,6 +70,39 @@ export async function findTeamByName(name: string) {
 }
 
 /**
+ * 统计团队正式成员数量(管理员 + 普通成员,不含客户/Guest)
+ */
+async function getTeamStaffCount(teamId: string): Promise<number> {
+  const rows = await db
+    .select({ count: count() })
+    .from(teamMember)
+    .where(
+      and(
+        eq(teamMember.teamId, teamId),
+        inArray(teamMember.role, [TEAM_MEMBER_ROLES.ADMIN, TEAM_MEMBER_ROLES.MEMBER])
+      )
+    );
+  return Number(rows[0]?.count ?? 0);
+}
+
+/**
+ * 团队用户总上限检查(基于团队管理员套餐,客户/Guest 不计)
+ *
+ * 团队正式成员(管理员+成员)已满时抛出异常,阻止注册/加入流程放行。
+ * 仅对「加入既有团队」生效;创建新团队(首个正式成员)总是允许。
+ */
+async function assertTeamUsersWithinLimit(teamId: string) {
+  const teamPlan = await getTeamPlan(teamId);
+  const maxTeamUsers = getPlanLimits(teamPlan).maxTeamUsers;
+  const staffCount = await getTeamStaffCount(teamId);
+  if (staffCount >= maxTeamUsers) {
+    throw new Error(
+      `该团队用户已达上限(${maxTeamUsers} 人,Guest 除外),无法加入新成员`
+    );
+  }
+}
+
+/**
  * 用户注册时加入团队(团队成员流程)
  *
  * 规则:
@@ -87,6 +121,8 @@ export async function joinTeamByName(userId: string, teamName: string) {
 
   const existing = await findTeamByName(trimmed);
   if (existing) {
+    // 团队用户总上限检查:正式成员已满则禁止加入(客户/Guest 不计)
+    await assertTeamUsersWithinLimit(existing.id);
     // 判断是否为该团队第一个成员(排除客户角色)
     // 如果是第一个成员,则设为管理员
     const existingMembers = await db
@@ -123,7 +159,9 @@ export async function joinTeamByName(userId: string, teamName: string) {
   } catch {
     const raced = await findTeamByName(trimmed);
     if (raced) {
-      // 并发场景:检查是否为第一个成员
+      // 并发场景:先做团队用户总上限检查(正式成员已满则禁止加入)
+      await assertTeamUsersWithinLimit(raced.id);
+      // 检查是否为第一个成员
       const existingMembers = await db
         .select({ userId: teamMember.userId })
         .from(teamMember)
@@ -375,6 +413,8 @@ export type TeamMemberInfo = {
   isTeamAdmin: boolean;
   /** 用户在系统中的角色(admin/sales_director/sales_manager/user) */
   userRole: string;
+  /** 加入团队时间(用于"满一周可移除"规则) */
+  joinedAt: Date;
 };
 
 /**
@@ -437,6 +477,79 @@ export async function getTeamMembersList(teamId: string): Promise<TeamMemberInfo
       teamRole: m.role,
       isTeamAdmin,
       userRole: userInfo?.role ?? "user",
+      joinedAt: m.joinedAt,
     };
   });
+}
+
+const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * 移除团队成员(仅团队界面,由团队管理员或超级管理员调用)
+ *
+ * 规则:
+ * - 超级管理员(S-Admin):可随时移除任意正式成员,不受"满一周"限制、可移除团队管理员
+ * - 团队管理员(T-Admin):仅可移除普通成员(member),且该成员加入须满一周
+ * - 普通成员/被移除对象为团队管理员时:拒绝
+ *
+ * csv 唯一约束(teamId+userId)保证一个用户在一个团队仅一条记录。
+ */
+export async function removeTeamMember(args: {
+  teamId: string;
+  actorUserId: string;
+  actorIsSuperAdmin: boolean;
+  targetUserId: string;
+}): Promise<void> {
+  const { teamId, actorUserId, actorIsSuperAdmin, targetUserId } = args;
+
+  if (actorUserId === targetUserId) {
+    throw new Error("不能移除自己,请由团队管理员或超级管理员处理");
+  }
+
+  // 目标必须为本团队成员且为正式成员(管理员/成员,非客户)
+  const targetRows = await db
+    .select({ role: teamMember.role, joinedAt: teamMember.joinedAt })
+    .from(teamMember)
+    .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, targetUserId)))
+    .limit(1);
+  const target = targetRows[0];
+  if (
+    !target ||
+    (target.role !== TEAM_MEMBER_ROLES.ADMIN &&
+      target.role !== TEAM_MEMBER_ROLES.MEMBER)
+  ) {
+    throw new Error("目标用户不是本团队正式成员");
+  }
+
+  // 超级管理员:不受成员身份/一周限制约束
+  if (actorIsSuperAdmin) {
+    await db
+      .delete(teamMember)
+      .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, targetUserId)));
+    return;
+  }
+
+  // 非超管:仅团队管理员可移除此处目标,且目标不能是团队管理员
+  const actorRows = await db
+    .select({ role: teamMember.role })
+    .from(teamMember)
+    .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, actorUserId)))
+    .limit(1);
+  const actorRole = actorRows[0]?.role;
+  if (actorRole !== TEAM_MEMBER_ROLES.ADMIN) {
+    throw new Error("仅团队管理员可移除成员");
+  }
+  if (target.role === TEAM_MEMBER_ROLES.ADMIN) {
+    throw new Error("不能移除团队管理员,请由超级管理员处理");
+  }
+
+  // 满一周才可移除
+  const joinedSince = Date.now() - new Date(target.joinedAt).getTime();
+  if (joinedSince < ONE_WEEK_MS) {
+    throw new Error("该成员加入未满一周,暂时无法移除");
+  }
+
+  await db
+    .delete(teamMember)
+    .where(and(eq(teamMember.teamId, teamId), eq(teamMember.userId, targetUserId)));
 }

@@ -21,9 +21,9 @@
 // 套餐权限限制(用户权限管理,依据定价方案 /zh/pricing)
 //
 // 配额说明:
-// - Free:1 个 Quiz 问卷 / 每月最多 30 个潜在客户(另有 5 次/天询盘硬上限,见 inquiry-limit.ts)
-// - Pro:6 个 Quiz 问卷 / 每年最多 10000 个潜在客户
-// - Max:12 个 Quiz 问卷 / 每年最多 30000 个潜在客户
+// - Free:1 个 Quiz 问卷 / 每月最多 30 个潜在客户(另有 5 次/天询盘硬上限,见 inquiry-limit.ts)/ 团队用户总上限 5 人(Guest 除外)
+// - Pro:6 个 Quiz 问卷 / 每年最多 10000 个潜在客户 / 团队用户总上限 50 人(Guest 除外)
+// - Max:12 个 Quiz 问卷 / 每年最多 30000 个潜在客户 / 团队用户总上限 150 人(Guest 除外)
 //
 // 多租户隔离:每个用户(Pro/Max 即一个 Team)的数据以 tenant_id = user.id 行级隔离,
 // 其他用户不可见;超级管理员通过环境变量 SUPER_ADMIN_EMAIL 识别(见 lib/rbac.ts)。
@@ -53,6 +53,8 @@ export const PLAN_LIMITS: Record<
     dailyInquiryLimit: number | null;
     /** 每月预警提醒上限(定价页:Free 最多 6 次/月;Pro/Max 无硬上限) */
     monthlyWarningLimit: number | null;
+    /** 团队用户总上限(成员+管理员,不含 Guest/客户;定义于 lib/teams.ts 的管控逻辑) */
+    maxTeamUsers: number;
   }
 > = {
   [USER_PLANS.FREE]: {
@@ -61,6 +63,7 @@ export const PLAN_LIMITS: Record<
     potentialCustomerPeriod: POTENTIAL_CUSTOMER_PERIODS.MONTH,
     dailyInquiryLimit: 5,
     monthlyWarningLimit: 6,
+    maxTeamUsers: 5,
   },
   [USER_PLANS.PRO]: {
     maxQuizTemplates: 6,
@@ -68,6 +71,7 @@ export const PLAN_LIMITS: Record<
     potentialCustomerPeriod: POTENTIAL_CUSTOMER_PERIODS.YEAR,
     dailyInquiryLimit: null,
     monthlyWarningLimit: null,
+    maxTeamUsers: 50,
   },
   [USER_PLANS.MAX]: {
     maxQuizTemplates: 12,
@@ -75,6 +79,7 @@ export const PLAN_LIMITS: Record<
     potentialCustomerPeriod: POTENTIAL_CUSTOMER_PERIODS.YEAR,
     dailyInquiryLimit: null,
     monthlyWarningLimit: null,
+    maxTeamUsers: 150,
   },
 };
 

@@ -56,10 +56,11 @@ describe("getAdminUsageSummary", () => {
   });
 
   it("按团队汇总套餐配额使用(年周期套餐)", async () => {
-    // select 调用顺序:teams → admins → quiz 计数 → 潜在客户(年) → 今日询盘 → 预警黄 → 预警红
+    // select 调用顺序:teams → admins → 团队正式用户 → quiz 计数 → 潜在客户(年) → 今日询盘 → 预警黄 → 预警红
     vi.mocked(db).select = makeSelectMock([
       [{ id: "team-1", name: "Acme" }],
       [{ id: "team-1", name: "Alice", email: "alice@example.com", plan: "pro" }],
+      [{ teamId: "team-1", total: 3 }],
       [{ tenantId: "team-1", total: 3 }],
       [{ tenantId: "team-1", total: 1200 }],
       [{ tenantId: "team-1", total: 2 }],
@@ -85,17 +86,21 @@ describe("getAdminUsageSummary", () => {
       dailyInquiryLimit: null,
       monthlyWarningCount: 1,
       monthlyWarningLimit: null,
+      teamUsersCount: 3,
+      maxTeamUsers: 50,
       isQuizLimited: false,
       isPotentialCustomerLimited: false,
       isDailyInquiryLimited: false,
       isMonthlyWarningLimited: false,
+      isTeamUsersLimited: false,
     });
   });
 
-  it("套餐达到上限时标记超限(free:Quiz 满/潜在客户满/每日询盘满/每月预警满)", async () => {
+  it("套餐达到上限时标记超限(free:Quiz 满/潜在客户满/每日询盘满/每月预警满/团队用户满)", async () => {
     vi.mocked(db).select = makeSelectMock([
       [{ id: "team-2", name: "Beta" }],
       [{ id: "team-2", name: "Bob", email: "bob@example.com", plan: "free" }],
+      [{ teamId: "team-2", total: 5 }],
       [{ tenantId: "team-2", total: 1 }],
       [{ tenantId: "team-2", total: 30 }],
       [{ tenantId: "team-2", total: 5 }],
@@ -116,10 +121,13 @@ describe("getAdminUsageSummary", () => {
       dailyInquiryLimit: 5,
       monthlyWarningCount: 6,
       monthlyWarningLimit: 6,
+      teamUsersCount: 5,
+      maxTeamUsers: 5,
       isQuizLimited: true,
       isPotentialCustomerLimited: true,
       isDailyInquiryLimited: true,
       isMonthlyWarningLimited: true,
+      isTeamUsersLimited: true,
     });
   });
 });

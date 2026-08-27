@@ -28,33 +28,36 @@ import {
 } from "@/lib/plan-limits";
 
 describe("PLAN_LIMITS 配额与定价方案一致", () => {
-  it("Free:1 个 Quiz / 每月 30 个潜在客户 / 每日询盘 5 次 / 每月预警 6 次", () => {
+  it("Free:1 个 Quiz / 每月 30 个潜在客户 / 每日询盘 5 次 / 每月预警 6 次 / 团队用户 5 人", () => {
     expect(PLAN_LIMITS.free).toEqual({
       maxQuizTemplates: 1,
       maxPotentialCustomers: 30,
       potentialCustomerPeriod: "month",
       dailyInquiryLimit: 5,
       monthlyWarningLimit: 6,
+      maxTeamUsers: 5,
     });
   });
 
-  it("Pro:6 个 Quiz / 每年 10000 个潜在客户(无每日询盘/每月预警硬上限)", () => {
+  it("Pro:6 个 Quiz / 每年 10000 个潜在客户 / 团队用户 50 人(无每日询盘/每月预警硬上限)", () => {
     expect(PLAN_LIMITS.pro).toEqual({
       maxQuizTemplates: 6,
       maxPotentialCustomers: 10000,
       potentialCustomerPeriod: "year",
       dailyInquiryLimit: null,
       monthlyWarningLimit: null,
+      maxTeamUsers: 50,
     });
   });
 
-  it("Max:12 个 Quiz / 每年 30000 个潜在客户(无每日询盘/每月预警硬上限)", () => {
+  it("Max:12 个 Quiz / 每年 30000 个潜在客户 / 团队用户 150 人(无每日询盘/每月预警硬上限)", () => {
     expect(PLAN_LIMITS.max).toEqual({
       maxQuizTemplates: 12,
       maxPotentialCustomers: 30000,
       potentialCustomerPeriod: "year",
       dailyInquiryLimit: null,
       monthlyWarningLimit: null,
+      maxTeamUsers: 150,
     });
   });
 });

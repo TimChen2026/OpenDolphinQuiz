@@ -32,9 +32,11 @@ import { db } from "@/lib/db";
 import {
   user,
   team,
+  teamMember,
   quizTemplates,
   projects,
   QUIZ_TEMPLATE_STATUS,
+  TEAM_MEMBER_ROLES,
 } from "@/lib/db/schema";
 import {
   getPlanLimits,
@@ -68,10 +70,15 @@ export type AdminUsageSummaryItem = {
   monthlyWarningCount: number;
   /** 每月预警提醒上限(null = 无硬上限,Pro/Max) */
   monthlyWarningLimit: number | null;
+  /** 团队正式用户数(已用,管理员+成员,不含客户/Guest) */
+  teamUsersCount: number;
+  /** 团队用户总上限(基于团队套餐) */
+  maxTeamUsers: number;
   isQuizLimited: boolean;
   isPotentialCustomerLimited: boolean;
   isDailyInquiryLimited: boolean;
   isMonthlyWarningLimited: boolean;
+  isTeamUsersLimited: boolean;
 };
 
 /**
@@ -97,6 +104,21 @@ export async function getAdminUsageSummary(): Promise<AdminUsageSummaryItem[]> {
     .from(user)
     .where(inArray(user.id, teamIds));
   const adminMap = new Map(admins.map((a) => [a.id, a]));
+
+  // 团队正式用户计数(管理员+成员,不含客户/Guest,口径与 lib/teams.ts 管控一致)
+  const teamMemberRows = await db
+    .select({ teamId: teamMember.teamId, total: count() })
+    .from(teamMember)
+    .where(
+      and(
+        inArray(teamMember.teamId, teamIds),
+        inArray(teamMember.role, [TEAM_MEMBER_ROLES.ADMIN, TEAM_MEMBER_ROLES.MEMBER])
+      )
+    )
+    .groupBy(teamMember.teamId);
+  const teamUsersCountMap = new Map(
+    teamMemberRows.map((row) => [row.teamId, Number(row.total)])
+  );
 
   // Quiz 计数(批量聚合,排除已归档)
   const quizRows = await db
@@ -162,6 +184,7 @@ export async function getAdminUsageSummary(): Promise<AdminUsageSummaryItem[]> {
     const potentialCustomerCount = customerCountMap.get(t.id) ?? 0;
     const dailyInquiryCount = dailyInquiryCountMap.get(t.id) ?? 0;
     const monthlyWarningCount = warningCountMap.get(t.id) ?? 0;
+    const teamUsersCount = teamUsersCountMap.get(t.id) ?? 0;
     return {
       teamId: t.id,
       teamName: t.name,
@@ -177,6 +200,8 @@ export async function getAdminUsageSummary(): Promise<AdminUsageSummaryItem[]> {
       dailyInquiryLimit: limits.dailyInquiryLimit,
       monthlyWarningCount,
       monthlyWarningLimit: limits.monthlyWarningLimit,
+      teamUsersCount,
+      maxTeamUsers: limits.maxTeamUsers,
       isQuizLimited: quizCount >= limits.maxQuizTemplates,
       isPotentialCustomerLimited:
         potentialCustomerCount >= limits.maxPotentialCustomers,
@@ -186,6 +211,7 @@ export async function getAdminUsageSummary(): Promise<AdminUsageSummaryItem[]> {
       isMonthlyWarningLimited:
         limits.monthlyWarningLimit !== null &&
         monthlyWarningCount >= limits.monthlyWarningLimit,
+      isTeamUsersLimited: teamUsersCount >= limits.maxTeamUsers,
     };
   });
 }

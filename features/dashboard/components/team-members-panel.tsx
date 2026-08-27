@@ -45,6 +45,15 @@ type TeamMember = {
   isTeamAdmin: boolean;
   /** 用户在系统中的角色 */
   userRole: string;
+  /** 加入团队时间(ISO 字符串,用于"满一周可移除"规则) */
+  joinedAt: string;
+};
+
+/** 操作者权限上下文(由 GET /api/dashboard/team/members 返回) */
+type TeamActor = {
+  id: string;
+  isSuperAdmin: boolean;
+  isTeamAdmin: boolean;
 };
 
 /**
@@ -68,8 +77,14 @@ const USER_ROLE_LABELS: Record<string, string> = {
 
 export function TeamMembersPanel() {
   const [members, setMembers] = useState<TeamMember[]>([]);
+  const [actor, setActor] = useState<TeamActor>({
+    id: "",
+    isSuperAdmin: false,
+    isTeamAdmin: false,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [removing, setRemoving] = useState(false);
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -79,8 +94,12 @@ export function TeamMembersPanel() {
       if (!res.ok) {
         throw new Error("加载团队成员失败");
       }
-      const json = (await res.json()) as { members: TeamMember[] };
+      const json = (await res.json()) as {
+        members: TeamMember[];
+        actor: TeamActor;
+      };
       setMembers(json.members);
+      setActor(json.actor);
     } catch (err) {
       setError(err instanceof Error ? err.message : "加载失败");
     } finally {
@@ -91,6 +110,38 @@ export function TeamMembersPanel() {
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
+
+  const handleRemove = useCallback(
+    async (targetUserId: string) => {
+      if (removing) {
+        return;
+      }
+      if (!window.confirm("确定要将该成员移出团队吗?")) {
+        return;
+      }
+      setRemoving(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/dashboard/team/members", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: targetUserId }),
+        });
+        if (!res.ok) {
+          const json = (await res.json()) as { error?: string };
+          throw new Error(json.error ?? "移除成员失败");
+        }
+        setMembers((prev) =>
+          prev.filter((m) => m.id !== targetUserId)
+        );
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "移除失败");
+      } finally {
+        setRemoving(false);
+      }
+    },
+    [removing]
+  );
 
   if (loading) {
     return (
@@ -136,6 +187,12 @@ export function TeamMembersPanel() {
         </div>
       </div>
 
+      {error && (
+        <p className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          {error}
+        </p>
+      )}
+
       {members.length === 0 ? (
         <p className="mt-4 py-6 text-center text-sm text-muted-foreground">
           暂无团队成员
@@ -146,7 +203,13 @@ export function TeamMembersPanel() {
           {staffMembers.length > 0 && (
             <ul className="divide-y divide-border">
               {staffMembers.map((member) => (
-                <MemberRow key={member.id} member={member} />
+                <MemberRow
+                  key={member.id}
+                  member={member}
+                  actor={actor}
+                  onRemove={handleRemove}
+                  removing={removing}
+                />
               ))}
             </ul>
           )}
@@ -160,10 +223,23 @@ export function TeamMembersPanel() {
               </p>
               <ul className="mt-1 divide-y divide-border">
                 {customerMembers.map((member) => (
-                  <MemberRow key={member.id} member={member} />
+                  <MemberRow
+                    key={member.id}
+                    member={member}
+                    actor={actor}
+                    onRemove={handleRemove}
+                    removing={removing}
+                  />
                 ))}
               </ul>
             </>
+          )}
+
+          {/* 提示:加入满一周才可被团队管理员移除 */}
+          {!actor.isSuperAdmin && actor.isTeamAdmin && (
+            <p className="mt-4 rounded-lg bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
+              提示:正式成员加入团队满一周后,团队管理员才能将其移出团队;移除团队成员请谨慎操作。
+            </p>
           )}
         </div>
       )}
@@ -171,8 +247,32 @@ export function TeamMembersPanel() {
   );
 }
 
-/** 单个团队成员条目(头像/姓名/邮箱/角色标签) */
-function MemberRow({ member }: { member: TeamMember }) {
+/** 单个团队成员条目(头像/姓名/邮箱/角色标签/移除) */
+function MemberRow({
+  member,
+  actor,
+  onRemove,
+  removing,
+}: {
+  member: TeamMember;
+  actor: TeamActor;
+  onRemove: (userId: string) => void;
+  removing: boolean;
+}) {
+  // 是否展示移除按钮(仅正式成员)
+  const isStaff = member.teamRole !== "customer";
+  // 加入是否满一周
+  const joinedAt = new Date(member.joinedAt).getTime();
+  const joinedOverWeek =
+    !Number.isNaN(joinedAt) && Date.now() - joinedAt >= 7 * 24 * 60 * 60 * 1000;
+  // 超级管理员:不受一周限制、可移除团队管理员;团队管理员:仅可移除满一周的普通成员
+  const canRemove =
+    actor.isSuperAdmin ||
+    (actor.isTeamAdmin && isStaff && !member.isTeamAdmin && joinedOverWeek);
+  // 团队管理员视角下,普通成员未满一周时的提示文案
+  const showWeekHint =
+    actor.isTeamAdmin && !actor.isSuperAdmin && isStaff && !member.isTeamAdmin && !joinedOverWeek;
+
   return (
     <li className="py-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -224,6 +324,23 @@ function MemberRow({ member }: { member: TeamMember }) {
             <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
               {USER_ROLE_LABELS[member.userRole] ?? member.userRole}
             </span>
+          )}
+          {/* 未满一周提示(团队管理员视角,普通成员) */}
+          {showWeekHint && (
+            <span className="text-xs text-muted-foreground">
+              加入未满一周
+            </span>
+          )}
+          {/* 移除成员按钮 */}
+          {canRemove && (
+            <button
+              type="button"
+              onClick={() => onRemove(member.id)}
+              disabled={removing}
+              className="text-xs font-medium text-destructive hover:underline disabled:opacity-50"
+            >
+              移除
+            </button>
           )}
         </div>
       </div>

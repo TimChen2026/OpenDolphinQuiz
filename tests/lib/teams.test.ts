@@ -76,6 +76,7 @@ import {
   markUserAsCustomer,
   resolveUserTeamId,
   getTeamMemberUserIds,
+  removeTeamMember,
   SUPER_ADMIN_TEAM_NAME,
 } from "@/lib/teams";
 
@@ -276,5 +277,173 @@ describe("getTeamMemberUserIds", () => {
 
     const ids = await getTeamMemberUserIds("team-1");
     expect(ids).toEqual(["admin-1", "member-1", "customer-1"]);
+  });
+});
+
+describe("joinTeamByName 团队用户上限", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("团队正式成员达到套餐上限时禁止加入", async () => {
+    const existingTeam = { id: "team-1", name: "Acme", createdAt: new Date() };
+    const { db } = await import("@/lib/db");
+    // select 顺序:findTeamByName → 管理员套餐 → 团队正式成员计数
+    vi.mocked(db).select = makeSelectMock([
+      [existingTeam],
+      [{ plan: "free" }], // 团队管理员套餐为 Free,maxTeamUsers = 5
+      [{ count: 5 }], // 正式成员已 5 人,达到上限
+    ]) as never;
+
+    await expect(joinTeamByName("user-2", "Acme")).rejects.toThrow(
+      "该团队用户已达上限(5 人,Guest 除外)"
+    );
+  });
+
+  it("正式成员未达上限时允许加入", async () => {
+    const existingTeam = { id: "team-1", name: "Acme", createdAt: new Date() };
+    const { db } = await import("@/lib/db");
+    // select 顺序:findTeamByName → 管理员套餐 → 团队正式成员计数 → 已有成员(判断是否首员)
+    vi.mocked(db).select = makeSelectMock([
+      [existingTeam],
+      [{ plan: "pro" }], // Pro 上限 50
+      [{ count: 3 }], // 已 3 人,未达上限
+      [{ userId: "admin-1" }], // 已有成员,新用户作为普通 member
+    ]) as never;
+    vi.mocked(db).insert = makeInsertMock() as never;
+
+    const result = await joinTeamByName("user-2", "Acme");
+    expect(result).toEqual(existingTeam);
+    expect(insertValuesMock).toHaveBeenCalledWith(
+      expect.objectContaining({ role: "member" })
+    );
+  });
+});
+
+describe("removeTeamMember", () => {
+  const member = { role: "member", joinedAt: new Date() };
+  const admin = { role: "admin", joinedAt: new Date() };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("非团队成员尝试移除时被拒绝", async () => {
+    const { db } = await import("@/lib/db");
+    // 目标查询无结果
+    vi.mocked(db).select = makeSelectMock([[]]) as never;
+
+    await expect(
+      removeTeamMember({
+        teamId: "team-1",
+        actorUserId: "actor",
+        actorIsSuperAdmin: false,
+        targetUserId: "ghost",
+      })
+    ).rejects.toThrow("目标用户不是本团队正式成员");
+  });
+
+  it("普通成员(非团队管理员)不能移除成员", async () => {
+    const { db } = await import("@/lib/db");
+    // select 顺序:目标成员 → 操作者角色
+    vi.mocked(db).select = makeSelectMock([
+      [member],
+      [{ role: "member" }],
+    ]) as never;
+
+    await expect(
+      removeTeamMember({
+        teamId: "team-1",
+        actorUserId: "actor",
+        actorIsSuperAdmin: false,
+        targetUserId: "target",
+      })
+    ).rejects.toThrow("仅团队管理员可移除成员");
+  });
+
+  it("团队管理员不能移除团队管理员", async () => {
+    const { db } = await import("@/lib/db");
+    // 目标角色为 admin
+    vi.mocked(db).select = makeSelectMock([
+      [admin],
+      [{ role: "admin" }],
+    ]) as never;
+
+    await expect(
+      removeTeamMember({
+        teamId: "team-1",
+        actorUserId: "team-admin",
+        actorIsSuperAdmin: false,
+        targetUserId: "other-admin",
+      })
+    ).rejects.toThrow("不能移除团队管理员");
+  });
+
+  it("团队管理员移除加入未满一周的成员时被拒绝", async () => {
+    const { db } = await import("@/lib/db");
+    vi.mocked(db).select = makeSelectMock([
+      [{ role: "member", joinedAt: new Date() }], // 刚加入
+      [{ role: "admin" }], // 操作者为团队管理员
+    ]) as never;
+
+    await expect(
+      removeTeamMember({
+        teamId: "team-1",
+        actorUserId: "team-admin",
+        actorIsSuperAdmin: false,
+        targetUserId: "new-member",
+      })
+    ).rejects.toThrow("该成员加入未满一周");
+  });
+
+  it("团队管理员可移除加入满一周的普通成员", async () => {
+    const { db } = await import("@/lib/db");
+    const joinedOverWeek = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
+    vi.mocked(db).select = makeSelectMock([
+      [{ role: "member", joinedAt: joinedOverWeek }],
+      [{ role: "admin" }],
+    ]) as never;
+    const deleteWhereMock = vi.fn();
+    vi.mocked(db).delete = vi.fn().mockReturnValue({ where: deleteWhereMock }) as never;
+
+    await removeTeamMember({
+      teamId: "team-1",
+      actorUserId: "team-admin",
+      actorIsSuperAdmin: false,
+      targetUserId: "old-member",
+    });
+    expect(deleteWhereMock).toHaveBeenCalled();
+  });
+
+  it("超级管理员可随时移除成员,不受一周限制", async () => {
+    const { db } = await import("@/lib/db");
+    // 目标刚加入(未满一周),但操作者为超管,应放行
+    vi.mocked(db).select = makeSelectMock([
+      [{ role: "member", joinedAt: new Date() }],
+    ]) as never;
+    const deleteWhereMock = vi.fn();
+    vi.mocked(db).delete = vi.fn().mockReturnValue({ where: deleteWhereMock }) as never;
+
+    await removeTeamMember({
+      teamId: "team-1",
+      actorUserId: "super-admin",
+      actorIsSuperAdmin: true,
+      targetUserId: "new-member",
+    });
+    expect(deleteWhereMock).toHaveBeenCalled();
+  });
+
+  it("无法移除自己", async () => {
+    const { db } = await import("@/lib/db");
+
+    await expect(
+      removeTeamMember({
+        teamId: "team-1",
+        actorUserId: "actor",
+        actorIsSuperAdmin: true,
+        targetUserId: "actor",
+      })
+    ).rejects.toThrow("不能移除自己");
+    expect(db.delete).not.toHaveBeenCalled();
   });
 });

@@ -123,14 +123,18 @@
       "rows": {
         "purchaseType": "Purchase type",
         "monthlyPrice": "Monthly price",
-        "bestFor": "Best for"
+        "bestFor": "Best for",
+        "teamUsers": "Team users limit"
       },
       "values": {
         "subscription": "Subscription",
         "tba": "TBA",
         "bestForFree": "For individual users getting started",
         "bestForPro": "For small to medium teams",
-        "bestForMax": "For large teams and heavy usage"
+        "bestForMax": "For large teams and heavy usage",
+        "teamUsersFree": "5 users (excluding Guests)",
+        "teamUsersPro": "50 users (excluding Guests)",
+        "teamUsersMax": "150 users (excluding Guests)"
       }
     },
     "tiers": {
@@ -142,6 +146,7 @@
         "features": [
           "Basic feature access",
           "For individual users",
+          "Team users limit: 5 (excluding Guests)",
           "Specifics finalized after MVP phase"
         ]
       },
@@ -153,6 +158,7 @@
         "features": [
           "Higher usage limits",
           "For small to medium teams",
+          "Team users limit: 50 (excluding Guests)",
           "Specifics finalized after MVP phase"
         ]
       },
@@ -164,6 +170,7 @@
         "features": [
           "Maximum usage limits",
           "For large teams",
+          "Team users limit: 150 (excluding Guests)",
           "Specifics finalized after MVP phase"
         ]
       }
@@ -494,13 +501,14 @@
     },
     "usage": {
       "title": "Usage Summary",
-      "description": "Per-team plan quota usage (Quiz / potential customers / daily inquiries / monthly alerts) with limits, aligned with the key metrics on the pricing page.",
+      "description": "Per-team plan quota usage (Quiz / potential customers / team users / daily inquiries / monthly alerts) with limits, aligned with the key metrics on the pricing page.",
       "columns": {
         "team": "Team",
         "admin": "Admin",
         "plan": "Plan",
         "quizUsage": "Quizzes used / limit",
         "customerUsage": "Customers used / limit",
+        "teamUsersUsage": "Team users used / limit",
         "dailyInquiryUsage": "Daily inquiries used / limit",
         "monthlyWarningUsage": "Monthly alerts used / limit",
         "status": "Status"

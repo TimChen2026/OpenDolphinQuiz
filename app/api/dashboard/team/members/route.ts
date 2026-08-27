@@ -26,22 +26,84 @@
 // 超级管理员:可通过查询参数 teamId 指定任意团队
 
 import { NextRequest, NextResponse } from "next/server";
-import { requireTeamAccess } from "@/lib/rbac";
-import { getTeamMembersList } from "@/lib/teams";
+import { requireTeamAccess, isSuperAdminEmail } from "@/lib/rbac";
+import { getTeamMembersList, removeTeamMember } from "@/lib/teams";
 
 export async function GET(request: NextRequest) {
   try {
     // 超级管理员可通过查询参数 teamId 指定任意团队
     const targetTeamId = request.nextUrl.searchParams.get("teamId") ?? undefined;
-    const { teamId } = await requireTeamAccess(targetTeamId);
+    const { user: actor, teamId } = await requireTeamAccess(targetTeamId);
 
     const members = await getTeamMembersList(teamId);
 
-    return NextResponse.json({ members });
+    // 操作者上下文:用于团队界面控制"移除成员"按钮的可用性
+    const actorIsSuperAdmin = isSuperAdminEmail(actor.email);
+    let actorIsTeamAdmin = false;
+    if (!actorIsSuperAdmin) {
+      actorIsTeamAdmin = members.some(
+        (m) => m.id === actor.id && m.isTeamAdmin
+      );
+    }
+
+    return NextResponse.json({
+      members,
+      actor: {
+        id: actor.id,
+        isSuperAdmin: actorIsSuperAdmin,
+        isTeamAdmin: actorIsTeamAdmin,
+      },
+    });
   } catch (error) {
     console.error("team-members GET 错误:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "获取团队成员失败" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * 移除团队正式成员
+ *
+ * 权限(服务端强制):
+ * - 超级管理员(S-Admin):可随时移除任意正式成员,不受"满一周"限制、可移除团队管理员
+ * - 团队管理员(T-Admin):仅可移除加入满一周的普通成员
+ * - 前端隐藏按钮只是交互优化,最终以本端点校验为准
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const targetTeamId = request.nextUrl.searchParams.get("teamId") ?? undefined;
+    const body = await request.json();
+    const { userId } = body as { userId?: string };
+    if (!userId) {
+      return NextResponse.json(
+        { error: "缺少要移除的用户 ID" },
+        { status: 400 }
+      );
+    }
+
+    const { user: actor, teamId } = await requireTeamAccess(targetTeamId);
+    if (!teamId) {
+      return NextResponse.json(
+        { error: "缺少团队 ID" },
+        { status: 400 }
+      );
+    }
+
+    const actorIsSuperAdmin = isSuperAdminEmail(actor.email);
+    await removeTeamMember({
+      teamId,
+      actorUserId: actor.id,
+      actorIsSuperAdmin,
+      targetUserId: userId,
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("team-members DELETE 错误:", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "移除成员失败" },
       { status: 500 }
     );
   }

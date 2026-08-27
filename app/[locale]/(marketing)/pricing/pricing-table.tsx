@@ -58,6 +58,14 @@ export function PricingTable() {
         max: t("comparison.values.bestForMax"),
       },
     },
+    {
+      title: t("comparison.rows.teamUsers"),
+      values: {
+        free: t("comparison.values.teamUsersFree"),
+        pro: t("comparison.values.teamUsersPro"),
+        max: t("comparison.values.teamUsersMax"),
+      },
+    },
   ];
 
   return (
