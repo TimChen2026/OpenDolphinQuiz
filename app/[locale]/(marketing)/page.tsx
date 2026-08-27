@@ -109,8 +109,14 @@ async function loadQuizDemoData() {
   }
 }
 
-export default async function Home() {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
   const demoData = await loadQuizDemoData();
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   return (
     <div className="relative">
@@ -121,20 +127,20 @@ export default async function Home() {
             {/* 左侧文字 */}
             <div className="flex flex-col gap-8 py-8 lg:py-12">
               <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight tracking-tight font-display text-primary">
-                双闭环驱动增长，而且免费！
+                {t('heroH1')}
               </h1>
               <p className="text-xl lg:text-2xl leading-relaxed text-muted-foreground">
-                i. 即时销售响应 ii. 实时管理洞察
+                {t('heroSubtitle')}
               </p>
               <p className="text-base leading-relaxed text-muted-foreground/70">
-                让流量和广告的价值充分体现
+                {t('heroSubNote')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/signup"
                   className="inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold rounded-lg transition-all hover:opacity-90 bg-primary text-primary-foreground"
                 >
-                  免费开始使用
+                  {t('cta')}
                 </Link>
                 {/* 介绍短片按钮:点击弹出 Mux 视频播放,不影响页面布局 */}
                 <VideoDemoModal />
@@ -157,7 +163,7 @@ export default async function Home() {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
-                      Quiz 演示暂不可用,请稍后再试
+                      {t('demoUnavailable')}
                     </div>
                   )}
                 </div>
@@ -176,13 +182,13 @@ export default async function Home() {
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4 font-display text-foreground">
-              我们专注于教育，针对性进行数据分析
+              {t('painTitle')}
             </h2>
             <p className="text-lg max-w-2xl mx-auto text-muted-foreground">
-              ★ 释放数据潜力，指导和优化工作，提供决策参考
+              {t('painSub1')}
             </p>
             <p className="text-lg max-w-2xl mx-auto text-muted-foreground">
-              ★ 为 Pro 和 Max 用户提供多达 10 种图表分析，以及每月、每季、每年的分析报告，物超所值！
+              {t('painSub2')}
             </p>
           </div>
           {/* 痛点区域：用图表图片替换原三张卡片，图片四周柔化过渡与网页自然融合 */}
@@ -190,7 +196,7 @@ export default async function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={PAIN_POINT_IMAGE}
-              alt="教育机构经营痛点图表"
+              alt={t('painImageAlt')}
               className="w-full h-full object-cover"
             />
           </div>
@@ -202,17 +208,17 @@ export default async function Home() {
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4 font-display text-foreground">
-              免费! 您就可以获得24小时服务
+              {t('serviceTitle')}
             </h2>
             <p className="text-lg max-w-2xl mx-auto text-muted-foreground">
-              DolphinQuiz大大减轻客户服务团队的压力，而且不间断
+              {t('serviceSub')}
             </p>
           </div>
           <div className="relative overflow-hidden rounded-2xl">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={SERVICE_IMAGE}
-              alt="双闭环管理服务流程图"
+              alt={t('serviceImageAlt')}
               className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
             />
           </div>
@@ -224,7 +230,7 @@ export default async function Home() {
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4 font-display text-foreground">
-              开源与社区共建，让先进生产力惠及每一个人
+              {t('ossTitle')}
             </h2>
           </div>
           {/* 开源社区区域：用图片替换原三步卡片，四周柔化过渡与网页自然融合 */}
@@ -232,7 +238,7 @@ export default async function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={OPEN_SOURCE_IMAGE}
-              alt="开源与社区共建"
+              alt={t('ossImageAlt')}
               className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
             />
           </div>
@@ -244,10 +250,10 @@ export default async function Home() {
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4 font-display text-foreground">
-              DolphinQuiz是桥梁, 连通您和我
+              {t('bridgeTitle')}
             </h2>
             <p className="text-lg max-w-2xl mx-auto text-muted-foreground">
-              通过DolphinQuiz, 我们更加了解客户, 沟通更加顺畅有效;
+              {t('bridgeSub')}
             </p>
           </div>
           {/* 数据分析区域：用图表图片替换原四卡片，四周柔化过渡与网页自然融合 */}
@@ -255,7 +261,7 @@ export default async function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={ANALYTICS_IMAGE}
-              alt="数据分析优化经营工作"
+              alt={t('analyticsImageAlt')}
               className="w-full h-full object-cover [mask-image:radial-gradient(ellipse_at_center,black_70%,transparent_100%)]"
             />
           </div>
@@ -266,13 +272,13 @@ export default async function Home() {
       <section className="py-24 bg-primary">
         <Container className="max-w-4xl text-center">
           <h2 className="text-3xl lg:text-4xl font-bold mb-10 font-display text-primary-foreground">
-            准备好让每个商机都转化为成交了吗？
+            {t('ctaTitle')}
           </h2>
           <Link
             href="/signup"
             className="inline-flex items-center justify-center px-10 py-4 text-lg font-semibold rounded-lg transition-all hover:opacity-90 bg-accent text-primary"
           >
-            免费开始使用
+            {t('cta')}
           </Link>
         </Container>
       </section>

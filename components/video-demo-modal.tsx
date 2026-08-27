@@ -21,6 +21,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 
 // Mux 视频嵌入地址(Playback ID 由用户提供,更换视频时替换此 ID 即可)
@@ -32,6 +33,7 @@ const MUX_PLAYBACK_URL =
 // 弹窗为 fixed 悬浮层,不改变页面原有布局;关闭时卸载 iframe 以停止播放
 export function VideoDemoModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations("home.video");
 
   // 打开时锁定页面滚动,关闭后恢复
   useEffect(() => {
@@ -59,7 +61,7 @@ export function VideoDemoModal() {
         onClick={() => setIsOpen(true)}
         className="inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold rounded-lg border-2 transition-all hover:opacity-80 border-primary text-primary"
       >
-        介绍短片
+        {t("open")}
       </button>
 
       {/* 视频弹窗:点击遮罩关闭,点击内容区阻止冒泡 */}
@@ -69,7 +71,7 @@ export function VideoDemoModal() {
           onClick={() => setIsOpen(false)}
           role="dialog"
           aria-modal="true"
-          aria-label="介绍短片视频"
+          aria-label={t("ariaVideoLabel")}
         >
           <div
             className="relative w-full max-w-4xl"
@@ -80,7 +82,7 @@ export function VideoDemoModal() {
               type="button"
               onClick={() => setIsOpen(false)}
               className="absolute -top-12 right-0 flex h-10 w-10 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-              aria-label="关闭视频"
+              aria-label={t("ariaClose")}
             >
               <X className="h-7 w-7" />
             </button>
@@ -88,7 +90,7 @@ export function VideoDemoModal() {
             <div className="aspect-video w-full overflow-hidden rounded-lg bg-black shadow-2xl">
               <iframe
                 src={`${MUX_PLAYBACK_URL}?autoplay=true`}
-                title="DolphinQuiz 介绍短片"
+                title={t("title")}
                 className="h-full w-full"
                 allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
               />

@@ -13,6 +13,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { CircleCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 /**
@@ -57,6 +58,7 @@ const ProgressIndicator = ({
   onContinue,
   onBack,
 }: ProgressIndicatorProps) => {
+  const t = useTranslations("home.progress");
   return (
     <div
       className={cn(
@@ -119,7 +121,7 @@ const ProgressIndicator = ({
               onClick={onBack}
               className="flex w-16 flex-1 items-center justify-center rounded-full bg-gray-100 px-4 py-3 text-sm font-semibold text-black transition-colors hover:border hover:bg-gray-50"
             >
-              返回
+              {t("back")}
             </motion.button>
           )}
           <motion.button
@@ -147,7 +149,7 @@ const ProgressIndicator = ({
                   <CircleCheck size={16} />
                 </motion.div>
               )}
-              {step === 3 ? "完成" : "继续"}
+              {step === 3 ? t("done") : t("continue")}
             </div>
           </motion.button>
         </motion.div>

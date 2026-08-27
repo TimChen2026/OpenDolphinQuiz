@@ -92,6 +92,37 @@
       "close": "关闭"
     }
   },
+  "home": {
+    "heroH1": "双闭环驱动增长，而且免费！",
+    "heroSubtitle": "i. 即时销售响应 ii. 实时管理洞察",
+    "heroSubNote": "让流量和广告的价值充分体现",
+    "cta": "免费开始使用",
+    "demoUnavailable": "Quiz 演示暂不可用,请稍后再试",
+    "painTitle": "我们专注于教育，针对性进行数据分析",
+    "painSub1": "★ 释放数据潜力，指导和优化工作，提供决策参考",
+    "painSub2": "★ 为 Pro 和 Max 用户提供多达 10 种图表分析，以及每月、每季、每年的分析报告，物超所值！",
+    "painImageAlt": "教育机构经营痛点图表",
+    "serviceTitle": "免费! 您就可以获得24小时服务",
+    "serviceSub": "DolphinQuiz大大减轻客户服务团队的压力，而且不间断",
+    "serviceImageAlt": "双闭环管理服务流程图",
+    "ossTitle": "开源与社区共建，让先进生产力惠及每一个人",
+    "ossImageAlt": "开源与社区共建",
+    "bridgeTitle": "DolphinQuiz是桥梁, 连通您和我",
+    "bridgeSub": "通过DolphinQuiz, 我们更加了解客户, 沟通更加顺畅有效;",
+    "analyticsImageAlt": "数据分析优化经营工作",
+    "ctaTitle": "准备好让每个商机都转化为成交了吗？",
+    "video": {
+      "open": "介绍短片",
+      "ariaVideoLabel": "介绍短片视频",
+      "ariaClose": "关闭视频",
+      "title": "DolphinQuiz 介绍短片"
+    },
+    "progress": {
+      "back": "返回",
+      "continue": "继续",
+      "done": "完成"
+    }
+  },
   "features": {
     "title": "Vibe Coding 成功所需的一切功能",
     "subtitle": "告别在样板代码上浪费时间。专注于描述您的独特功能，DolphinQuiz 会为您处理好底层基础。借助 AI 加速产品交付。",

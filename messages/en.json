@@ -74,6 +74,37 @@
       }
     }
   },
+  "home": {
+    "heroH1": "Dual-loop growth, and it's free!",
+    "heroSubtitle": "i. Instant sales response ii. Real-time management insights",
+    "heroSubNote": "Make every visit and ad spend truly count",
+    "cta": "Start Free",
+    "demoUnavailable": "Quiz demo is temporarily unavailable. Please try again later.",
+    "painTitle": "We focus on education and make data-driven decisions",
+    "painSub1": "★ Unlock the potential of your data to guide and optimize your work, and support better decisions",
+    "painSub2": "★ Pro and Max users get up to 10 chart types, plus monthly, quarterly, and yearly analytics reports — unbeatable value!",
+    "painImageAlt": "Educational institution operational pain-point chart",
+    "serviceTitle": "Free! Access 24-hour service",
+    "serviceSub": "DolphinQuiz dramatically eases the pressure on your customer service team, around the clock",
+    "serviceImageAlt": "Dual-loop management service flow diagram",
+    "ossTitle": "Open source and community-driven, bringing advanced productivity to everyone",
+    "ossImageAlt": "Open source and community",
+    "bridgeTitle": "DolphinQuiz is the bridge that connects you and your customers",
+    "bridgeSub": "With DolphinQuiz, we understand customers better and communicate more smoothly and effectively",
+    "analyticsImageAlt": "Data analytics optimizing business operations",
+    "ctaTitle": "Ready to turn every opportunity into a closed deal?",
+    "video": {
+      "open": "Watch the intro video",
+      "ariaVideoLabel": "Intro product video",
+      "ariaClose": "Close video",
+      "title": "DolphinQuiz intro video"
+    },
+    "progress": {
+      "back": "Back",
+      "continue": "Continue",
+      "done": "Done"
+    }
+  },
   "hero": {
     "badge": "⚡ Educational Trial Class Sales Funnel Tool",
     "title": "DolphinQuiz",
