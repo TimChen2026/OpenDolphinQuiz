@@ -175,10 +175,14 @@
         "description": "For individual users exploring the product.",
         "cta": "Get Started",
         "features": [
-          "Basic feature access",
-          "For individual users",
-          "Team users limit: 5 (excluding Guests)",
-          "Specifics finalized after MVP phase"
+          "1 Quiz questionnaire",
+          "Daily customer inquiries: up to 5 times/day",
+          "Up to 30 potential customers per month",
+          "Customer information retention for 30 days",
+          "Up to 6 warning reminders per month",
+          "Weekly traffic distribution chart",
+          "Total limit of team users: 5 people (excluding Guest)",
+          "Functional Description"
         ]
       },
       "pro": {
@@ -187,10 +191,14 @@
         "description": "For small to medium teams with higher usage needs.",
         "cta": "Choose Pro",
         "features": [
-          "Higher usage limits",
-          "For small to medium teams",
-          "Team users limit: 50 (excluding Guests)",
-          "Specifics finalized after MVP phase"
+          "Up to 6 Quiz questionnaires",
+          "Up to 10000 potential customers per year",
+          "Total limit of team users: 50 people (excluding Guest)",
+          "Provide weekly, monthly, quarterly, and annual data analysis services, including statistical analysis and visualization of 10 dimensions such as customer visits, key themes, main visit times, and sales manager business situations",
+          "Provide one analysis report each month, quarter, and year",
+          "Each project has red and yellow warning services",
+          "Functional Description",
+          "Customer service and after-sales technical support"
         ]
       },
       "max": {
@@ -199,10 +207,14 @@
         "description": "For large teams and heavy usage scenarios with maximum capacity.",
         "cta": "Choose Max",
         "features": [
-          "Maximum usage limits",
-          "For large teams",
-          "Team users limit: 150 (excluding Guests)",
-          "Specifics finalized after MVP phase"
+          "Up to 12 Quiz questionnaires",
+          "Up to 30000 potential customers per year",
+          "Total limit of team users: 150 people (excluding Guest)",
+          "Provide weekly, monthly, quarterly, and annual data analysis services, including statistical analysis and visualization of 10 dimensions such as customer visits, key themes, main visit times, and sales manager business situations",
+          "Provide one analysis report each month, quarter, and year",
+          "Each project has red and yellow warning services",
+          "Functional Description",
+          "Customer service and after-sales technical support"
         ]
       }
     },
