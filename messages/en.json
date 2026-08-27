@@ -713,6 +713,12 @@
         "signupFailed": "Sign up failed, please try again.",
         "googleSignupFailed": "Google sign up failed, please try again."
       }
+    },
+    "flow": {
+      "continueButton": "Continue",
+      "confirmRestart": "Confirm & Start Over",
+      "consentPrefix": "By submitting, you agree to the",
+      "consentLink": "Quiz Operator Privacy Policy"
     }
   },
   "errors": {

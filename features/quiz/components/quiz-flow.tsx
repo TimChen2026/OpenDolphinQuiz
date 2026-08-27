@@ -22,7 +22,7 @@
 
 import { useState, useCallback, useMemo, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import ProgressIndicator from "@/components/ui/progress-indicator";
@@ -42,6 +42,8 @@ type QuizFlowProps = {
   onComplete: (result: QuizResult) => void;
   /** 选定风格 ID(如 classic/princeton/yale 等),为空时使用系统默认主题 */
   styleId?: string;
+  /** 紧凑模式(仅主页手机框演示使用):锁定标题字号并压缩标题以下间距,保证全部内容在框内完整显示;标题顶部锚点不变 */
+  compact?: boolean;
 };
 
 /**
@@ -176,10 +178,12 @@ export function QuizFlow({
   summaryTemplate,
   onComplete,
   styleId,
+  compact = false,
 }: QuizFlowProps) {
   const session = useSession();
   // 当前语言,用于构造隐私政策链接(与营销页隐私政策路由保持一致)
   const locale = useLocale();
+  const tFlow = useTranslations("quiz.flow");
   const [currentNodeId, setCurrentNodeId] = useState(template.rootNodeId);
   const [path, setPath] = useState<QuizPathEntry[]>([]);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
@@ -303,11 +307,18 @@ export function QuizFlow({
             />
           ) : (
             <>
-              <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-6 text-center">
+              {/* 紧凑模式:锁定单一字号防止英文长题干多行撑爆框体,只压缩标题下边距,上方锚点不动 */}
+              <h2
+                className={
+                  compact
+                    ? "mb-4 text-center text-xl font-semibold text-foreground"
+                    : "mb-6 text-center text-xl font-semibold text-foreground sm:text-2xl"
+                }
+              >
                 {currentNode.question}
               </h2>
 
-              <div className="grid gap-3 sm:gap-4 flex-1 auto-rows-fr">
+              <div className={cn("grid flex-1 auto-rows-fr gap-3", !compact && "sm:gap-4")}>
                 {currentNode.options.map((option) => (
                   <OptionButton
                     key={option.id}
@@ -342,7 +353,7 @@ export function QuizFlow({
                     : "bg-muted text-muted-foreground cursor-not-allowed"
                 )}
               >
-                继续
+                {tFlow("continueButton")}
               </button>
             </>
           )}
@@ -353,14 +364,14 @@ export function QuizFlow({
           依据隐私政策第 1 条,答题者信息由问卷运营方(我们的用户)作为独立控制者收集、
           我方作为处理者处理;服务条款 11.5 要求运营方在问卷中向答题者提供隐私声明。
           链接指向平台隐私政策(覆盖答题者数据处理说明),运营方隐私政策链接待配置能力上线后替换 */}
-      <div className="mt-4">
+      <div className={compact ? "mt-3" : "mt-4"}>
         <p className="text-center text-xs leading-relaxed text-muted-foreground">
-          提交即同意
+          {tFlow("consentPrefix")}
           <Link
             href={`/${locale}/privacy`}
             className="mx-1 text-primary underline underline-offset-2 hover:opacity-80"
           >
-            问卷运营方隐私政策
+            {tFlow("consentLink")}
           </Link>
         </p>
       </div>
@@ -431,6 +442,7 @@ function ResultSummary({
   /** 进度指示器(纯视觉),渲染于摘要正文与提交按钮之间,与答题页位置一致 */
   progress?: ReactNode;
 }) {
+  const tSummary = useTranslations("quiz.flow");
   // 选择路径摘要
   const pathSummary = path
     .map(
@@ -478,7 +490,7 @@ function ResultSummary({
           onClick={onSubmit}
           className="w-full max-w-xs py-3 rounded-lg text-sm font-semibold transition-all hover:opacity-90 bg-primary text-primary-foreground"
         >
-          确定并返回开始
+          {tSummary("confirmRestart")}
         </button>
       </div>
     </div>

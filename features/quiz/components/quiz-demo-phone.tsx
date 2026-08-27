@@ -47,6 +47,7 @@ export function QuizDemoPhone({
 
   return (
     // 覆盖 QuizFlow 根容器默认的整页间距,适配手机框内的紧凑布局;长内容可滚动
+    // 标题顶部锚点(!pt-4 + QuizFlow 内 mt-2)固定不动;标题以下的纵向压缩交给 compact 模式
     // QuizFlow 在此被拉伸填满容器(flex-1),多余高度由选项行(auto-rows-fr)均匀吸收;
     // 底部预留侧边框 3 倍(6px*3=18px)的内边距,让"继续"按钮下方留白,不至于太压抑
     <div className="h-[488px] overflow-y-auto flex flex-col [&>div]:!max-w-none [&>div]:!px-4 [&>div]:!pt-4 [&>div]:!pb-[18px]">
@@ -55,6 +56,7 @@ export function QuizDemoPhone({
         template={template}
         summaryTemplate={summaryTemplate}
         onComplete={() => setRestartCount((count) => count + 1)}
+        compact
       />
     </div>
   );

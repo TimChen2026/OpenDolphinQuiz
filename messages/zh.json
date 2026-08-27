@@ -725,6 +725,12 @@
         "signupFailed": "注册失败,请重试。",
         "googleSignupFailed": "Google 注册失败,请重试。"
       }
+    },
+    "flow": {
+      "continueButton": "继续",
+      "confirmRestart": "确定并返回开始",
+      "consentPrefix": "提交即同意",
+      "consentLink": "问卷运营方隐私政策"
     }
   },
   "errors": {
