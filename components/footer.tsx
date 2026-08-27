@@ -56,7 +56,31 @@ export const Footer = () => {
               <div>{t('common.brand.copyright')}</div>
               <div className="mt-2">{t('common.brand.allRightsReserved')}</div>
               <div className="mt-6 text-sm text-muted-foreground">
-                Support: DolphinQuiz.service@outlook.com
+                Support: huiting.chen@outlook.com / DolphinQuiz.service@outlook.com
+              </div>
+
+              {/* 开源/商业版本说明 */}
+              <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+                <div>
+                  {t('common.brand.openSourceDesc')}
+                  <a
+                    href={GITHUB_REPO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-1 underline underline-offset-2 transition-colors hover:text-foreground"
+                  >
+                    {t('common.brand.openSourceCta')}
+                  </a>
+                </div>
+                <div>
+                  {t('common.brand.enterpriseDesc')}
+                  <LocaleLink
+                    href="/contact"
+                    className="ml-1 underline underline-offset-2 transition-colors hover:text-foreground"
+                  >
+                    {t('common.brand.enterpriseCta')}
+                  </LocaleLink>
+                </div>
               </div>
             </div>
 

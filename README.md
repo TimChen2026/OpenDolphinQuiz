@@ -5,6 +5,8 @@ DolphinQuiz 是一款面向教育试听课营销的 SaaS 平台，基于 Next.js
 时间：2026-8-14
 开发者：DolphinQuiz 团队
 
+重要提醒：如果你用于商业 SaaS 且不想公开源码，请必须购买商业授权，否则违反 AGPL-3.0 协议。
+
 ## 技术栈
 
 - **框架**: Next.js 16.2.2 (App Router, Turbopack)

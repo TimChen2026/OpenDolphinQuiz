@@ -4,7 +4,11 @@
       "name": "DolphinQuiz",
       "tagline": "教育试听课销售漏斗工具",
       "copyright": "版权所有 © 2026 DolphinQuiz",
-      "allRightsReserved": "保留所有权利"
+      "allRightsReserved": "保留所有权利",
+      "openSourceDesc": "开源社区版：遵循 AGPL-3.0 协议",
+      "openSourceCta": "点击访问 GitHub",
+      "enterpriseDesc": "企业商业版：提供私有化部署及商业授权",
+      "enterpriseCta": "点击 联系我们"
     },
     "actions": {
       "signIn": "登录",

@@ -4,7 +4,11 @@
       "name": "DolphinQuiz",
       "tagline": "Educational Trial Class Sales Funnel Tool",
       "copyright": "Copyright © 2026 DolphinQuiz",
-      "allRightsReserved": "All rights reserved"
+      "allRightsReserved": "All rights reserved",
+      "openSourceDesc": "Open Source Community Edition: licensed under AGPL-3.0",
+      "openSourceCta": "Visit GitHub",
+      "enterpriseDesc": "Enterprise Edition: private deployment & commercial license available",
+      "enterpriseCta": "Contact Us"
     },
     "actions": {
       "signIn": "Sign in",
