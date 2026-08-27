@@ -21,6 +21,8 @@
 "use client";
 
 import { useState, useCallback, useMemo, type CSSProperties, type ReactNode } from "react";
+import Link from "next/link";
+import { useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import ProgressIndicator from "@/components/ui/progress-indicator";
@@ -176,6 +178,8 @@ export function QuizFlow({
   styleId,
 }: QuizFlowProps) {
   const session = useSession();
+  // 当前语言,用于构造隐私政策链接(与营销页隐私政策路由保持一致)
+  const locale = useLocale();
   const [currentNodeId, setCurrentNodeId] = useState(template.rootNodeId);
   const [path, setPath] = useState<QuizPathEntry[]>([]);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
@@ -344,6 +348,22 @@ export function QuizFlow({
           )}
         </motion.div>
       </AnimatePresence>
+
+      {/* 提交告知行:答题页底部固定展示。
+          依据隐私政策第 1 条,答题者信息由问卷运营方(我们的用户)作为独立控制者收集、
+          我方作为处理者处理;服务条款 11.5 要求运营方在问卷中向答题者提供隐私声明。
+          链接指向平台隐私政策(覆盖答题者数据处理说明),运营方隐私政策链接待配置能力上线后替换 */}
+      <div className="mt-4">
+        <p className="text-center text-xs leading-relaxed text-muted-foreground">
+          提交即同意
+          <Link
+            href={`/${locale}/privacy`}
+            className="mx-1 text-primary underline underline-offset-2 hover:opacity-80"
+          >
+            问卷运营方隐私政策
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

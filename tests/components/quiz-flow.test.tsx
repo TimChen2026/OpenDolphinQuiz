@@ -68,6 +68,11 @@ vi.mock("@/lib/auth-client", () => ({
   }),
 }));
 
+// next-intl mock(quiz-flow 通过 useLocale 构造隐私政策链接)
+vi.mock("next-intl", () => ({
+  useLocale: () => "zh",
+}));
+
 // 构建测试用模板:P1 → P2-A → P3-AA → P4-AAA(每个节点 2 个选项,简化测试)
 function buildTestTemplate(): QuizClientTemplate {
   return {
