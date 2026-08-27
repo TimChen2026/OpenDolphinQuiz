@@ -23,6 +23,7 @@ import { getTranslations } from 'next-intl/server';
 import type { Locale } from "@/i18n.config";
 import { LegalDocument } from "@/components/legal/legal-document";
 import { refundZhContent } from "@/components/legal/content/refund-zh";
+import { refundEnContent } from "@/components/legal/content/refund-en";
 
 export async function generateMetadata(
   props: {
@@ -41,8 +42,14 @@ export async function generateMetadata(
   };
 }
 
-export default async function RefundPage() {
-  // 中文版依据定稿《服务条款》第 5.5/6/7/8/13 条编写;
-  // 英文版待用户确认中文版后再输出,在此之前各语言暂时展示中文版
-  return <LegalDocument content={refundZhContent} />;
+export default async function RefundPage(
+  props: {
+    params: Promise<{ locale: Locale }>
+  }
+) {
+  const params = await props.params;
+  // 中英文内容分别依据《服务条款》第 5.5/6/7/8/13 条编写,与定稿协议保持一致
+  const content = params.locale === 'zh' ? refundZhContent : refundEnContent;
+
+  return <LegalDocument content={content} />;
 }

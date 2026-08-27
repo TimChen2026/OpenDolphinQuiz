@@ -23,6 +23,7 @@ import { getTranslations } from 'next-intl/server';
 import type { Locale } from "@/i18n.config";
 import { LegalDocument } from "@/components/legal/legal-document";
 import { cookiesZhContent } from "@/components/legal/content/cookies-zh";
+import { cookiesEnContent } from "@/components/legal/content/cookies-en";
 
 export async function generateMetadata(
   props: {
@@ -41,8 +42,14 @@ export async function generateMetadata(
   };
 }
 
-export default async function CookiesPage() {
-  // 中文版依据定稿《隐私政策》第 4 条编写;
-  // 英文版待用户确认中文版后再输出,在此之前各语言暂时展示中文版
-  return <LegalDocument content={cookiesZhContent} />;
+export default async function CookiesPage(
+  props: {
+    params: Promise<{ locale: Locale }>
+  }
+) {
+  const params = await props.params;
+  // 中英文内容分别依据《隐私政策》第 4 条编写,与定稿协议保持一致
+  const content = params.locale === 'zh' ? cookiesZhContent : cookiesEnContent;
+
+  return <LegalDocument content={content} />;
 }
