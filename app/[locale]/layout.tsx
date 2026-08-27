@@ -74,7 +74,7 @@ export default async function LocaleLayout(
       suppressHydrationWarning
     >
       <head>
-        <meta name="waffo-verify" content="599e391737a7ddd76b5e9c7045bd17df" />
+        <meta name="waffo-verify" content="6dae455ecbfd3ed359a7d221c9d8a2b0" />
       </head>
       <body
         className={cn(
