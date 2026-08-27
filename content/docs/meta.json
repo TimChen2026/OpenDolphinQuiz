@@ -3,15 +3,16 @@
   "pages": [
     "index",
     "quickstart",
-    "project-structure",
-    "environment",
-    "---Getting Started---",
-    "auth",
-    "email",
-    "admin",
     "---Guides---",
-    "deployment",
-    "customization",
+    "kanban",
+    "interaction",
+    "logic",
+    "report-templates",
+    "team",
+    "email-settings",
+    "template-link",
+    "database",
+    "analytics",
     "troubleshooting"
   ]
 }

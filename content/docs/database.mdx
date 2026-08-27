@@ -1,0 +1,45 @@
+---
+title: Database
+description: Search and maintain project data, review audit logs, and manage backups.
+---
+
+## Overview
+
+The Database module provides search, export, and maintenance for project data, with three tabs: **Project Data**, **Audit Logs**, and **Backup Management**.
+
+> 📷 Screenshot placeholder: save a screenshot as `public/docs/database.png`, then update the `src` below to display it.
+
+<img src="/docs/database.png" alt="Database interface" />
+
+## Project Data
+
+A table of all projects (inquiries) with support for:
+
+- **Search**: quickly locate by customer name, project number, etc.
+- **Filter**: filter by status, theme, sales manager, and more
+- **Inline editing**: edit the project **amount** and **notes** directly in the table
+- **Export**: export project data with one click (CSV, etc.)
+- **Refresh settings**: customize the auto-refresh interval and refresh manually anytime
+
+## Audit Logs
+
+Tracks key actions by team members (status changes, template edits, access grants, etc.), including:
+
+- Action type and description
+- Actor, IP address, and time
+- Detail snapshot
+
+Used for traceability and security auditing.
+
+## Backup Management
+
+- **Create backup**: take a snapshot of the current data
+- **Restore**: recover data from a historical backup
+- Back up regularly to protect against accidental data loss
+
+> Note: backup and restore affect the whole team's data — proceed with care.
+
+## Related Topics
+
+- How projects are created and tracked: [Project Board](./kanban)
+- Charts and statistics: [Analytics](./analytics)

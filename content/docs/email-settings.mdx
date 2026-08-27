@@ -1,0 +1,34 @@
+---
+title: Email Settings
+description: Set yellow and red warning trigger hours so no inquiry is missed.
+---
+
+## How Warnings Work
+
+When an inquiry project is **not responded to within the configured time**, the system automatically sends warning emails to remind the sales team and prevent lost prospects.
+
+## Warning Thresholds
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Yellow warning threshold | ≥ 24 hours | Warns when a project is unresponded for this long |
+| Red warning threshold | ≥ 48 hours | Escalates when a project is unresponded for this long |
+
+> 📷 Screenshot placeholder: save a screenshot as `public/docs/email-settings.png`, then update the `src` below to display it.
+
+<img src="/docs/email-settings.png" alt="Email settings" />
+
+## How to Configure
+
+1. Change the yellow/red thresholds (in hours)
+2. Validation: yellow must be ≥ 1 hour; red must be greater than yellow
+3. Click **Save** to write to the database — applied immediately
+
+## Warning Email Content
+
+The subject and body of warning emails are edited in **Report Templates** (yellow warning / red warning). They go to the responsible sales manager and CC the sales director.
+
+## Related Topics
+
+- Edit warning email content: [Report Templates](./report-templates)
+- Manager and theme assignment: [Team](./team)

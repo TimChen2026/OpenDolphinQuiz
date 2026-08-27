@@ -58,19 +58,20 @@ describe("docs content", () => {
       readFileSync(path.join(docsRoot, "meta.json"), "utf8"),
     ) as { pages: string[] };
 
-    // Phase 0 清理：已移除 payments 和 ai 模块
+    // 12 章使用指南:简介/快速开始 + 仪表盘 9 大模块 + 故障排查
     expect(meta.pages).toEqual([
       "index",
       "quickstart",
-      "project-structure",
-      "environment",
-      "---Getting Started---",
-      "auth",
-      "email",
-      "admin",
       "---Guides---",
-      "deployment",
-      "customization",
+      "kanban",
+      "interaction",
+      "logic",
+      "report-templates",
+      "team",
+      "email-settings",
+      "template-link",
+      "database",
+      "analytics",
       "troubleshooting",
     ]);
   });

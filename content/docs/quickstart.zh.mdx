@@ -1,111 +1,52 @@
 ---
 title: 快速开始
-description: 几分钟内启动你的 DolphinQuiz 项目。
+description: 注册登录并完成第一个问卷链接的 4 步上手流程。
 ---
 
-## 前提条件
+## 1. 注册与登录
 
-### 1. Node.js
+访问网站首页，点击右上角**登录**或**注册**：
 
-Node.js 用于运行 Next.js 开发服务器、本地构建脚本和项目工具链。
+- 支持**邮箱 + 密码**注册，注册后需要验证邮箱
+- 支持 **Google 账号**一键登录（首次登录需填写团队/机构名称）
 
-如果尚未安装，请从 [Node.js 官网](https://nodejs.org/) 下载并安装 `20.9+` 版本。
+登录后即可进入仪表盘。
 
-```bash
-# 检查是否已安装 Node.js
-node --version
-```
+## 2. 首次使用
 
-### 2. pnpm
+新账户会自动生成一份**教育培训参考问卷**（含 P1–P4 完整决策树），无需从零搭建即可体验完整流程。
 
-项目使用 `pnpm` 作为包管理器，当前仓库锁定的是 `pnpm 10`。
+您也可以随时在**模板与链接**模块点击「使用参考模板」一键载入该问卷。
 
-如果尚未安装 `pnpm`，请先安装 Node.js，再执行：
+## 3. 四步上手
 
-```bash
-# 安装 pnpm
-npm install -g pnpm
+### 第一步：编辑问卷
 
-# 检查 pnpm 版本
-pnpm --version
-```
+进入**交互界面**，以手机预览方式修改问题与选项，为每个选项填写**主题词**，并选择问卷**风格**（Oxford 深蓝、Princeton 橙、MIT 科技等 7 种），点击「保存」与「确定」生效。
 
-### 3. PostgreSQL 连接信息
+### 第二步：生成链接
 
-PostgreSQL 数据库（推荐 Supabase、Neon 或 Vercel Postgres）
+进入**模板与链接**，点击「检查问卷信息」，通过后点击「生成链接」获得问卷链接，可复制分享给客户。
 
-## 安装步骤
+### 第三步：客户完成问卷
 
-### 1. 获取项目代码
+客户打开链接完成 P1→P2→P3→P4 问答，在结果页确认后，系统自动生成项目编号并发送**内部告知邮件**给对应销售经理。
 
-如果你已经从课程社区拿到源码压缩包，先解压并进入项目目录即可。
+### 第四步：跟进询盘
 
-如果你打算通过 Git 获取源码，可以运行：
+在**项目看板**查看新项目，跟进并将状态流转为**获单**或**失单**。
 
-```bash
-git clone https://github.com/Idea-To-Business/DolphinQuiz.git
-cd DolphinQuiz
-```
+## 4. 套餐说明
 
-### 2. 安装依赖
+| 套餐 | 说明 |
+|------|------|
+| 免费版 Free | 个人体验，1 个问卷、每月少量询盘额度 |
+| 专业版 Pro | 中小团队，更多问卷与询盘额度，含完整数据分析 |
+| 旗舰版 Max | 大型团队，最高配额与优先支持 |
 
-```bash
-pnpm install
-```
-
-### 3. 配置环境变量
-
-把示例环境文件复制成本地环境文件：
-
-```bash
-cp .env.example .env.local
-```
-
-然后编辑 `.env.local`，填入你的配置。
-
-最少需要以下配置：
-
-```ini
-DATABASE_URL="postgresql://user:password@host/db?sslmode=require"
-BETTER_AUTH_SECRET="至少32字符的随机密钥"
-BETTER_AUTH_URL="http://localhost:3000"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
-
-完整列表请查看[环境变量](./environment)。
-
-### 4. 初始化数据库
-
-```bash
-pnpm db:push
-```
-
-生产环境建议使用迁移：
-
-```bash
-pnpm db:generate
-pnpm db:migrate
-```
-
-### 5. 启动开发服务器
-
-```bash
-pnpm dev
-```
-
-访问 `http://localhost:3000`，先用你要设为管理员的邮箱注册账号。
-
-### 6. 将账号提升为管理员
-
-```bash
-ADMIN_EMAIL=admin@example.com pnpm admin:setup
-```
-
-把 `admin@example.com` 替换成你刚刚注册使用的邮箱。
+> 具体配额与价格以 [定价页面](/pricing) 为准。询盘接近或达到上限时，项目看板顶部会显示升级提示。
 
 ## 下一步
 
-- [项目结构](./project-structure) — 了解代码布局
-- [认证系统](./auth) — 配置登录方式
-- [支付系统](./payments) — 设置计费和订阅
-- [AI 功能](./ai) — 配置 AI 集成
+- 深入配置问卷：[交互界面](./interaction)
+- 了解项目跟进：[项目看板](./kanban)
