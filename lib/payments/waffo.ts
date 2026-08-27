@@ -17,6 +17,9 @@ export function isPaidPlan(value: string): value is PaidPlanId {
   return (PAID_PLANS as readonly string[]).includes(value);
 }
 
+// 计费周期:月度/年度在 Waffo 中是两个独立商品
+export type BillingInterval = "monthly" | "yearly";
+
 let cachedClient: WaffoPancake | null = null;
 
 function readRequiredEnv(name: string): string {
@@ -56,14 +59,19 @@ export function getWaffoExpectedMode(): "test" | "prod" {
 }
 
 /**
- * 查询付费档位对应的 Waffo 商品 ID
- * 返回 null 表示商品尚未在 Dashboard 创建并回填(env 中留空),
+ * 查询付费档位+计费周期对应的 Waffo 商品 ID(共 4 个商品)
+ * 月度:WAFFO_PRODUCT_ID_PRO / WAFFO_PRODUCT_ID_MAX
+ * 年度:WAFFO_PRODUCT_ID_PRO_Yearly / WAFFO_PRODUCT_ID_MAX_Yearly
+ * 返回 null 表示该商品尚未在 Dashboard 创建并回填(env 中留空),
  * 由调用方对用户呈现"暂不可购买"而不是报错
  */
-export function getPlanProductId(plan: PaidPlanId): string | null {
-  const key =
-    plan === "pro"
-      ? ("WAFFO_PRODUCT_ID_PRO" as const)
-      : ("WAFFO_PRODUCT_ID_MAX" as const);
-  return process.env[key]?.trim() || null;
+export function getPlanProductId(
+  plan: PaidPlanId,
+  interval: BillingInterval
+): string | null {
+  const planKey = plan === "pro" ? "PRO" : "MAX";
+  const intervalSuffix = interval === "yearly" ? "_Yearly" : "";
+  return (
+    process.env[`WAFFO_PRODUCT_ID_${planKey}${intervalSuffix}`]?.trim() || null
+  );
 }

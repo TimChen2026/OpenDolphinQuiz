@@ -15,6 +15,7 @@ import {
 // 仅支持站点现有语言集合;其余取值在边界层直接拒绝
 const checkoutRequestSchema = z.object({
   plan: z.enum(["pro", "max"]),
+  interval: z.enum(["monthly", "yearly"]).default("monthly"),
   locale: z.enum(["en", "zh"]).default("en"),
 });
 
@@ -30,14 +31,14 @@ export async function POST(request: Request) {
   if (!parsedBody.success) {
     return Response.json({ error: "invalid_request" }, { status: 400 });
   }
-  const { plan, locale } = parsedBody.data;
+  const { plan, interval, locale } = parsedBody.data;
 
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session?.user) {
     return Response.json({ error: "unauthenticated" }, { status: 401 });
   }
 
-  const productId = getPlanProductId(plan);
+  const productId = getPlanProductId(plan, interval);
   // 商品尚未在 Waffo Dashboard 创建回填时温和提示,而不是抛内部错误
   if (!productId) {
     return Response.json({ error: "plan_unavailable" }, { status: 503 });
@@ -64,7 +65,7 @@ export async function POST(request: Request) {
   } catch (error) {
     // 转换型异常:上游 SDK 错误序列化后返回,原始上下文进 WARN+ 日志
     console.error(
-      `[waffo] 结账创建失败 plan=${plan} user=${session.user.id}`,
+      `[waffo] 结账创建失败 plan=${plan} interval=${interval} user=${session.user.id}`,
       error instanceof WaffoPancakeError
         ? `status=${error.status} errors=${JSON.stringify(error.errors)}`
         : error

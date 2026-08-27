@@ -22,8 +22,9 @@
 
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 // 套餐 ID 列表（需求文档 1.5：免费版、Pro 版、Max 版）
@@ -44,7 +45,51 @@ type BillingPeriod = (typeof BILLING_PERIODS)[number];
 
 export function Pricing() {
   const t = useTranslations("pricing");
+  const locale = useLocale();
   const [billing, setBilling] = useState<BillingPeriod>("monthly");
+  // 发起中的结账请求,粒度到 档位:周期,四张购买入口互不干扰
+  const [pendingCheckout, setPendingCheckout] = useState<string | null>(null);
+
+  // 发起 Waffo 结账:未登录先跳登录页,成功后整页跳转收银台
+  async function startCheckout(plan: "pro" | "max", interval: BillingPeriod) {
+    if (pendingCheckout) {
+      return;
+    }
+    setPendingCheckout(`${plan}:${interval}`);
+    try {
+      const response = await fetch("/api/payments/waffo/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan, interval, locale }),
+      });
+      if (response.status === 401) {
+        // 未登录:先完成登录,回来后再购买
+        window.location.href = `/${locale}/login`;
+        return;
+      }
+      // 商品未在 Waffo 回填时温和提示,其余失败统一走失败文案
+      if (response.status === 503) {
+        toast.error(t("checkout.unavailable"));
+        return;
+      }
+      if (!response.ok) {
+        toast.error(t("checkout.failed"));
+        return;
+      }
+      const { checkoutUrl } = (await response.json()) as {
+        checkoutUrl?: string;
+      };
+      if (!checkoutUrl) {
+        toast.error(t("checkout.failed"));
+        return;
+      }
+      window.location.href = checkoutUrl;
+    } catch {
+      toast.error(t("checkout.failed"));
+    } finally {
+      setPendingCheckout(null);
+    }
+  }
 
   return (
     <div className="relative z-20 mx-auto mt-4">
@@ -63,7 +108,7 @@ export function Pricing() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {period === "monthly" ? "Monthly" : "Yearly −30%"}
+              {t(period === "monthly" ? "billing.monthly" : "billing.yearly")}
             </button>
           ))}
         </div>
@@ -172,17 +217,28 @@ export function Pricing() {
                   ))}
                 </ul>
               </div>
-              {/* 支付功能后续使用 Waffo Pancake 实现，MVP 阶段暂不提供购买按钮 */}
-              <div
-                className={cn(
-                  "mt-8 block w-full rounded-full px-3.5 py-2.5 text-center text-sm font-semibold sm:mt-10",
-                  featured
-                    ? "bg-background text-foreground"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                {t(`tiers.${tierId}.cta`)}
-              </div>
+              {tierId === "free" ? (
+                // 免费版无需购买,仅作占位展示
+                <div className="mt-8 block w-full rounded-full bg-muted px-3.5 py-2.5 text-center text-sm font-semibold text-muted-foreground sm:mt-10">
+                  {t(`tiers.${tierId}.cta`)}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  disabled={pendingCheckout !== null}
+                  onClick={() => startCheckout(tierId, billing)}
+                  className={cn(
+                    "mt-8 block w-full rounded-full px-3.5 py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:mt-10",
+                    featured
+                      ? "bg-background text-foreground"
+                      : "bg-primary text-primary-foreground"
+                  )}
+                >
+                  {pendingCheckout === `${tierId}:${billing}`
+                    ? t("checkout.loading")
+                    : t(`tiers.${tierId}.cta`)}
+                </button>
+              )}
             </div>
           );
         })}

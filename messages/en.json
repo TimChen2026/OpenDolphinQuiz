@@ -218,6 +218,10 @@
         ]
       }
     },
+    "billing": {
+      "monthly": "Monthly",
+      "yearly": "Yearly −30%"
+    },
     "checkout": {
       "loading": "Redirecting to checkout…",
       "failed": "Unable to start checkout right now. Please try again later.",
