@@ -205,6 +205,11 @@
           "Specifics finalized after MVP phase"
         ]
       }
+    },
+    "checkout": {
+      "loading": "Redirecting to checkout…",
+      "failed": "Unable to start checkout right now. Please try again later.",
+      "unavailable": "This plan is not open for purchase yet. Stay tuned!"
     }
   },
   "testimonials": {

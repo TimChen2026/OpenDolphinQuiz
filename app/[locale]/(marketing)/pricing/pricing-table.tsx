@@ -20,15 +20,62 @@
 
 "use client";
 
-import React from "react";
-import { useTranslations } from "next-intl";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Button } from "@/components/button";
 
 // 套餐 ID 列表
 // 需求文档 1.5：免费版、Pro版、Max版，具体内容 MVP 阶段后敲定
 const TIER_IDS = ["free", "pro", "max"] as const;
 
+type TierId = (typeof TIER_IDS)[number];
+
+// 可发起购买的付费档位(免费档只展示引导文案)
+const PAID_TIERS: readonly TierId[] = ["pro", "max"];
+
 export function PricingTable() {
   const t = useTranslations("pricing");
+  const locale = useLocale();
+  const router = useRouter();
+  const [pendingTier, setPendingTier] = useState<TierId | null>(null);
+
+  async function startCheckout(tierId: TierId) {
+    setPendingTier(tierId);
+    try {
+      const response = await fetch("/api/payments/waffo/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: tierId, locale }),
+      });
+
+      if (response.status === 401) {
+        // 未登录先去登录页,登录后再回来购买
+        router.push(`/${locale}/login`);
+        return;
+      }
+
+      if (response.status === 503) {
+        // 该档位商品尚未在 Waffo Dashboard 配置上架
+        toast.error(t("checkout.unavailable"));
+        return;
+      }
+
+      const data = await response.json().catch(() => null);
+      if (!response.ok || typeof data?.checkoutUrl !== "string") {
+        toast.error(t("checkout.failed"));
+        return;
+      }
+
+      // 收银台地址含 #token 片段且回跳依赖整站会话,使用当前窗口整页跳转
+      window.location.href = data.checkoutUrl;
+    } catch {
+      toast.error(t("checkout.failed"));
+    } finally {
+      setPendingTier(null);
+    }
+  }
 
   const tableRows: Array<{
     title: string;
@@ -105,6 +152,31 @@ export function PricingTable() {
                   </tr>
                 ))}
               </tbody>
+              <tfoot>
+                <tr>
+                  {TIER_IDS.map((tierId) => (
+                    <td key={`cta-${tierId}`} className="px-3 py-6 text-center">
+                      {PAID_TIERS.includes(tierId) ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={pendingTier !== null}
+                          onClick={() => startCheckout(tierId)}
+                          className="pointer-events-auto disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {pendingTier === tierId
+                            ? t("checkout.loading")
+                            : t(`tiers.${tierId}.cta`)}
+                        </Button>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">
+                          {t(`tiers.${tierId}.cta`)}
+                        </span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              </tfoot>
             </table>
           </div>
         </div>
