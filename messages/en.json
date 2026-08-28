@@ -577,6 +577,8 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome back",
+    "paymentSuccessTitle": "Payment successful",
+    "paymentSuccessDescription": "Your plan has been upgraded. The change takes effect within a few seconds.",
     "cards": {
       "personalInfo": {
         "title": "Personal Info",

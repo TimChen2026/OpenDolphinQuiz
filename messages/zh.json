@@ -577,6 +577,8 @@
   "dashboard": {
     "title": "仪表盘",
     "welcome": "欢迎回来",
+    "paymentSuccessTitle": "支付成功",
+    "paymentSuccessDescription": "您的套餐已升级，变更将在几秒内生效。",
     "cards": {
       "personalInfo": {
         "title": "个人信息",

@@ -27,6 +27,9 @@
 //
 // 个人信息编辑保留在 /settings 与 /profile 页面
 
+import { useEffect, useRef } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import { Container } from "@/components/container";
@@ -36,6 +39,33 @@ import { DashboardShell } from "@/features/dashboard/components/dashboard-shell"
 export default function DashboardPage() {
   const session = useSession();
   const t = useTranslations("dashboard");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // 支付完成回跳(Waffo successUrl 携带 upgrade=success):提示并刷新套餐展示
+  const isUpgradeReturn = searchParams.get("upgrade") === "success";
+  // 只处理一次:防止 StrictMode 双调用重复弹提示
+  const upgradeHandledRef = useRef(false);
+
+  useEffect(() => {
+    if (!isUpgradeReturn || upgradeHandledRef.current) return;
+    upgradeHandledRef.current = true;
+    toast.success(t("paymentSuccessTitle"), {
+      description: t("paymentSuccessDescription"),
+    });
+    // 立即刷新会话,个人菜单等读取会话套餐的位置马上更新
+    void session.refetch();
+    // 清理 URL 参数,避免刷新页面时重复提示
+    router.replace(pathname, { scroll: false });
+    // webhook 稍晚到达时的兜底:延迟再刷一次会话与服务端组件
+    const delayedRefetch = setTimeout(() => {
+      void session.refetch();
+      router.refresh();
+    }, 3000);
+    // 有意不做 cleanup 清除定时器:replace 移除参数触发重渲染后仍需保住这次延迟刷新
+    return undefined;
+  }, [isUpgradeReturn, pathname, router, session.refetch, t]);
 
   const user = session.data?.user;
   const displayName = user?.name || user?.email || "";
