@@ -65,13 +65,19 @@ export function getWaffoExpectedMode(): "test" | "prod" {
  * 返回 null 表示该商品尚未在 Dashboard 创建并回填(env 中留空),
  * 由调用方对用户呈现"暂不可购买"而不是报错
  */
+// 档位+周期对应的环境变量名(读取与缺失日志共用,避免拼写分叉)
+export function getPlanProductEnvName(
+  plan: PaidPlanId,
+  interval: BillingInterval
+): string {
+  const planKey = plan === "pro" ? "PRO" : "MAX";
+  const intervalSuffix = interval === "yearly" ? "_Yearly" : "";
+  return `WAFFO_PRODUCT_ID_${planKey}${intervalSuffix}`;
+}
+
 export function getPlanProductId(
   plan: PaidPlanId,
   interval: BillingInterval
 ): string | null {
-  const planKey = plan === "pro" ? "PRO" : "MAX";
-  const intervalSuffix = interval === "yearly" ? "_Yearly" : "";
-  return (
-    process.env[`WAFFO_PRODUCT_ID_${planKey}${intervalSuffix}`]?.trim() || null
-  );
+  return process.env[getPlanProductEnvName(plan, interval)]?.trim() || null;
 }

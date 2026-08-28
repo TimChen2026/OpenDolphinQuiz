@@ -4,11 +4,16 @@
  */
 
 import { z } from "zod";
-import { WaffoPancakeError, type CashierLanguage } from "@waffo/pancake-ts";
+import {
+  WaffoPancakeError,
+  type CashierLanguage,
+  type WaffoPancake,
+} from "@waffo/pancake-ts";
 import { auth } from "@/lib/auth";
 import {
   getWaffoClient,
   getPlanProductId,
+  getPlanProductEnvName,
   WAFFO_CHECKOUT_CURRENCY,
 } from "@/lib/payments/waffo";
 
@@ -38,9 +43,25 @@ export async function POST(request: Request) {
     return Response.json({ error: "unauthenticated" }, { status: 401 });
   }
 
-  const productId = getPlanProductId(plan, interval);
+  // 配置解析前置:环境变量缺失必须与上游支付失败区分开,
+  // 否则服务器漏配会被吞成笼统的 checkout_failed,线上无从定位
+  let client: WaffoPancake;
+  try {
+    client = getWaffoClient();
+  } catch (error) {
+    console.error(
+      "[waffo] 支付配置缺失:",
+      error instanceof Error ? error.message : error
+    );
+    return Response.json({ error: "payment_unconfigured" }, { status: 503 });
+  }
+
   // 商品尚未在 Waffo Dashboard 创建回填时温和提示,而不是抛内部错误
+  const productId = getPlanProductId(plan, interval);
   if (!productId) {
+    console.error(
+      `[waffo] 商品 ID 未配置: ${getPlanProductEnvName(plan, interval)}`
+    );
     return Response.json({ error: "plan_unavailable" }, { status: 503 });
   }
 
@@ -52,7 +73,7 @@ export async function POST(request: Request) {
   try {
     // authenticated 模式:SDK 内部先签发买家会话再创建结账单;
     // metadata 会原样随 Webhook 返回(event.data.orderMetadata),用于回调时定位用户与套餐
-    const checkout = await getWaffoClient().checkout.authenticated.create({
+    const checkout = await client.checkout.authenticated.create({
       productId,
       currency: WAFFO_CHECKOUT_CURRENCY,
       buyerIdentity: session.user.id,
