@@ -395,6 +395,13 @@
         "googleSignupFailed": "Google 注册失败，请重试。"
       }
     },
+    "legal": {
+      "prefix": "登录即表示您已理解并同意我们的",
+      "terms": "《服务条款》",
+      "middle": "和",
+      "privacy": "《隐私政策》",
+      "suffix": "。"
+    },
     "social": {
       "googleSignIn": "使用 Google 继续",
       "or": "或者继续使用"

@@ -32,6 +32,7 @@ import Password from "@/components/password";
 import { FormShell } from "@/features/forms/components/form-shell";
 import { FormTextField } from "@/features/forms/components/form-text-field";
 import { SocialAuthButtons } from "@/features/auth/components/social-auth-buttons";
+import { LegalConsentLine } from "@/features/auth/components/legal-consent-line";
 import { LoginInput, loginSchema } from "@/features/auth/schemas";
 
 interface LoginFormProps {
@@ -106,12 +107,15 @@ export function LoginForm({ showGoogleAuth = true }: LoginFormProps) {
       isLoading={isLoading}
       error={error}
       footer={
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          {t('noAccount')}{" "}
-          <Link href={`/${locale}/signup`} className="text-foreground hover:underline">
-            {t('signUpLink')}
-          </Link>
-        </p>
+        <>
+          <LegalConsentLine />
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            {t('noAccount')}{" "}
+            <Link href={`/${locale}/signup`} className="text-foreground hover:underline">
+              {t('signUpLink')}
+            </Link>
+          </p>
+        </>
       }
       socialSlot={
         showGoogleAuth ? (

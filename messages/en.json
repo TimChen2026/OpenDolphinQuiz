@@ -395,6 +395,13 @@
         "googleSignupFailed": "Google sign up failed. Please try again."
       }
     },
+    "legal": {
+      "prefix": "By signing in, you understand and agree to our",
+      "terms": "Terms of Service",
+      "middle": "and",
+      "privacy": "Privacy Policy",
+      "suffix": "."
+    },
     "social": {
       "googleSignIn": "Continue with Google",
       "or": "Or continue with"

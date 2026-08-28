@@ -33,6 +33,7 @@ import { Button } from "@/components/button";
 import Password from "@/components/password";
 import { FormTextField } from "@/features/forms/components/form-text-field";
 import { SocialAuthButtons } from "@/features/auth/components/social-auth-buttons";
+import { LegalConsentLine } from "@/features/auth/components/legal-consent-line";
 import { TurnstileWidget } from "@/features/auth/components/turnstile";
 import { QuizRegisterInput, quizRegisterSchema } from "@/features/auth/schemas";
 
@@ -253,6 +254,8 @@ export function QuizRegisterCard({ onRegistered, templateId }: QuizRegisterCardP
             <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading ? t("signingUp") : t("signUpButton")}
             </Button>
+
+            <LegalConsentLine />
           </form>
         </Form>
 

@@ -32,6 +32,7 @@ import Password from "@/components/password";
 import { FormShell } from "@/features/forms/components/form-shell";
 import { FormTextField } from "@/features/forms/components/form-text-field";
 import { SocialAuthButtons } from "@/features/auth/components/social-auth-buttons";
+import { LegalConsentLine } from "@/features/auth/components/legal-consent-line";
 import { TurnstileWidget } from "@/features/auth/components/turnstile";
 import { SignupInput, signupSchema } from "@/features/auth/schemas";
 
@@ -156,12 +157,15 @@ export function SignupForm({ showGoogleAuth = true }: SignupFormProps) {
       isLoading={isLoading}
       error={error}
       footer={
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          {t('hasAccount')}{" "}
-          <Link href={`/${locale}/login`} className="text-foreground hover:underline">
-            {t('signInLink')}
-          </Link>
-        </p>
+        <>
+          <LegalConsentLine />
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            {t('hasAccount')}{" "}
+            <Link href={`/${locale}/login`} className="text-foreground hover:underline">
+              {t('signInLink')}
+            </Link>
+          </p>
+        </>
       }
       socialSlot={
         showGoogleAuth ? (

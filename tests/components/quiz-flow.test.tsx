@@ -68,9 +68,17 @@ vi.mock("@/lib/auth-client", () => ({
   }),
 }));
 
-// next-intl mock(quiz-flow 通过 useLocale 构造隐私政策链接)
+// next-intl mock(quiz-flow 通过 useLocale 构造隐私政策链接;
+// 组件自引入 useTranslations 后 mock 必须提供它,否则渲染即抛错——固定译文与断言文案自洽)
 vi.mock("next-intl", () => ({
   useLocale: () => "zh",
+  useTranslations: () => (key: string) =>
+    ({
+      continueButton: "继续",
+      confirmRestart: "确定并返回开始",
+      consentPrefix: "提交即同意",
+      consentLink: "问卷运营方隐私政策",
+    })[key] ?? key,
 }));
 
 // 构建测试用模板:P1 → P2-A → P3-AA → P4-AAA(每个节点 2 个选项,简化测试)

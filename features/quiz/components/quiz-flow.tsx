@@ -360,21 +360,23 @@ export function QuizFlow({
         </motion.div>
       </AnimatePresence>
 
-      {/* 提交告知行:答题页底部固定展示。
+      {/* 提交告知行:仅结果页(Quiz Summary,提交前最后一步)展示,答题过程页面不展示以保持简洁。
           依据隐私政策第 1 条,答题者信息由问卷运营方(我们的用户)作为独立控制者收集、
           我方作为处理者处理;服务条款 11.5 要求运营方在问卷中向答题者提供隐私声明。
           链接指向平台隐私政策(覆盖答题者数据处理说明),运营方隐私政策链接待配置能力上线后替换 */}
-      <div className={compact ? "mt-3" : "mt-4"}>
-        <p className="text-center text-xs leading-relaxed text-muted-foreground">
-          {tFlow("consentPrefix")}
-          <Link
-            href={`/${locale}/privacy`}
-            className="mx-1 text-primary underline underline-offset-2 hover:opacity-80"
-          >
-            {tFlow("consentLink")}
-          </Link>
-        </p>
-      </div>
+      {isResultNode && (
+        <div className={compact ? "mt-3" : "mt-4"}>
+          <p className="text-center text-xs leading-relaxed text-muted-foreground">
+            {tFlow("consentPrefix")}
+            <Link
+              href={`/${locale}/privacy`}
+              className="mx-1 text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              {tFlow("consentLink")}
+            </Link>
+          </p>
+        </div>
+      )}
     </div>
   );
 }
