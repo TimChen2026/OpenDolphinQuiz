@@ -45,7 +45,7 @@ export type LinkCheckIssue = {
 };
 
 // 占位符前缀(模板初始化的默认文本)
-const PLACEHOLDER_PREFIXES = ["请输入", "P4-"];
+const PLACEHOLDER_PREFIXES = ["请输入"];
 
 function isPlaceholder(text: string): boolean {
   const trimmed = text.trim();
@@ -75,7 +75,10 @@ export async function checkTemplateReadiness(
   const issues: LinkCheckIssue[] = [];
 
   for (const node of nodes) {
-    // 1. 节点问题非占位符
+    // 1. 节点问题非占位符(P4 结果节点内容由父级选项派生且编辑器只读,跳过校验)
+    if (node.level === "P4") {
+      continue;
+    }
     if (isPlaceholder(node.question)) {
       issues.push({
         nodeId: node.id,

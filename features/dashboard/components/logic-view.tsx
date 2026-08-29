@@ -48,6 +48,28 @@ const LEVEL_COLORS: Record<string, string> = {
   P4: "#7c3aed", // 紫
 };
 
+/**
+ * P4 结果节点的内容从父级(P3)选项文本派生:
+ * 运行时结果页展示的是答题路径上的选项文本,并不展示 P4 的 question 字段,
+ * 因此编辑器对 P4 只读展示父级选项文本,避免用户重复输入;
+ * 找不到父选项时回退节点自身 question
+ */
+function getParentOptionText(
+  nodes: EditableNodeData[],
+  node: EditableNodeData
+): string {
+  if (node.parentId) {
+    const parent = nodes.find((n) => n.id === node.parentId);
+    const incomingEdge = parent?.options.find(
+      (o) => o.targetNodeId === node.id
+    );
+    if (incomingEdge && incomingEdge.optionText.trim()) {
+      return incomingEdge.optionText;
+    }
+  }
+  return node.question;
+}
+
 // 递归构建 ECharts tree 数据
 function buildTreeData(
   nodes: EditableNodeData[],
@@ -75,8 +97,12 @@ function buildTreeData(
     children.push(child);
   }
 
+  // P4 结果为叶子,其内容由父级(P3)选项文本派生,故决策树叶子展示派生文本而非 question
+  const label =
+    node.level === "P4" ? getParentOptionText(nodes, node) : node.question;
+
   return {
-    name: `${node.level} ${node.question}`,
+    name: `${node.level} ${label}`,
     itemStyle: { color: LEVEL_COLORS[node.level] ?? "#64748b" },
     nodeId: node.id,
     ...(children.length > 0 ? { children } : {}),
@@ -100,6 +126,10 @@ function validateTemplate(
   }
   const issues: string[] = [];
   for (const node of template.nodes) {
+    // P4 结果节点内容由父级选项派生且编辑器只读,跳过问题文本与选项校验
+    if (node.level === "P4") {
+      continue;
+    }
     const label = t("check.nodeLabel", {
       level: node.level,
       question: node.question.trim() || t("check.noQuestion"),
@@ -107,7 +137,7 @@ function validateTemplate(
     if (!node.question.trim()) {
       issues.push(t("check.questionEmpty", { label }));
     }
-    if (node.level !== "P4" && node.options.length === 0) {
+    if (node.options.length === 0) {
       issues.push(t("check.noOptions", { label }));
     }
     for (const opt of node.options) {
@@ -466,6 +496,8 @@ export function LogicView({
   const selectedNode = selectedNodeId
     ? (template.nodes.find((n) => n.id === selectedNodeId) ?? null)
     : null;
+  // guard 后 template.nodes 非空,提取供 JSX 内多次取用,避免重复判空
+  const nodes = template.nodes;
 
   return (
     <div className="space-y-6">
@@ -521,14 +553,21 @@ export function LogicView({
                 {selectedNode.id.slice(-10)}
               </span>
             </div>
-            <input
-              value={selectedNode.question}
-              onChange={(e) =>
-                updateNodeQuestion(selectedNode.id, e.target.value)
-              }
-              className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
-              placeholder={t("questionPlaceholder")}
-            />
+            {/* P4 结果节点:内容由父级选项派生,只读展示,禁止编辑;其余层级可编辑问题文本 */}
+            {selectedNode.level === "P4" ? (
+              <div className="mt-2 w-full rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-foreground">
+                {getParentOptionText(nodes, selectedNode)}
+              </div>
+            ) : (
+              <input
+                value={selectedNode.question}
+                onChange={(e) =>
+                  updateNodeQuestion(selectedNode.id, e.target.value)
+                }
+                className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+                placeholder={t("questionPlaceholder")}
+              />
+            )}
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {selectedNode.options.map((option) => (
                 <div key={option.id} className="flex items-center gap-2">
@@ -635,12 +674,19 @@ export function LogicView({
                 </span>
               </div>
 
-              <input
-                value={node.question}
-                onChange={(e) => updateNodeQuestion(node.id, e.target.value)}
-                className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
-                placeholder={t("questionPlaceholder")}
-              />
+              {/* P4 结果节点:只读展示父级选项派生的内容;其余层级可编辑问题文本 */}
+              {node.level === "P4" ? (
+                <div className="mt-2 w-full rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-foreground">
+                  {getParentOptionText(nodes, node)}
+                </div>
+              ) : (
+                <input
+                  value={node.question}
+                  onChange={(e) => updateNodeQuestion(node.id, e.target.value)}
+                  className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+                  placeholder={t("questionPlaceholder")}
+                />
+              )}
 
               <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {node.options.map((option) => (
