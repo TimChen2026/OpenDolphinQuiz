@@ -190,9 +190,10 @@ async function sendInquiryLimitEmail(
   // 查询销售负责人(销售总监)用于抄送(按团队隔离)
   const director = await getSalesDirector(tenantId);
 
+  // 变量键与模板英文 token 对应(@TodayInquiryCount / @PricingLink),由 renderTemplate 字面替换
   const variables = {
-    今日询盘次数: count,
-    定价页链接: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/pricing`,
+    TodayInquiryCount: count,
+    PricingLink: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/pricing`,
   };
 
   const subject = renderTemplate(template.subject, variables);

@@ -25,7 +25,7 @@
 // - 按 template_type 更新或插入模板
 // - 提供默认模板内容(首次使用、或用户删除后兜底)
 //
-// 模板正文使用 @变量 占位符,如 @客户名、@项目编号 等,
+// 模板正文使用 @变量 占位符,如 @ProjectNo、@CustomerName 等(英文驼峰 token),
 // 由具体发送场景渲染时替换
 
 import { eq, and } from "drizzle-orm";
@@ -52,69 +52,93 @@ export type EmailTemplateData = {
 const DEFAULT_TEMPLATES: Record<string, EmailTemplateData> = {
   [EMAIL_TEMPLATE_TYPES.SUMMARY]: {
     templateType: EMAIL_TEMPLATE_TYPES.SUMMARY,
-    name: "Summary 摘要模板",
-    subject: "Quiz 结果摘要 - @项目编号",
+    name: "Summary digest",
+    subject: "Quiz Summary",
     body:
-      "感谢您完成 Quiz 问卷!\n\n" +
-      "项目编号:@项目编号\n" +
-      "选择路径:\n@选择路径\n\n" +
-      "关联主题:@主题\n\n@用户 团队",
+      "Thank you for consulting with us!\n\n" +
+      "We understand that you are interested in the following:\n" +
+      "@SelectedPath\n\n" +
+      "Our sales manager will contact you as soon as possible for detailed communication.\n\n" +
+      "Best regards\n" +
+      "@Team",
   },
   [EMAIL_TEMPLATE_TYPES.INTERNAL]: {
     templateType: EMAIL_TEMPLATE_TYPES.INTERNAL,
-    name: "内部告知邮件",
-    subject: "[新询盘] @项目编号 - @主题",
+    name: "Internal notification email",
+    subject: "[New Inquiry] @ProjectNo - @Topic",
     body:
-      "尊敬的@销售经理,\n\n" +
-      "您收到一条新的客户询盘,请尽快跟进回复。\n" +
-      "客户姓名:@客户名\n联系电话:@客户电话\n客户邮箱:@客户邮箱\n" +
-      "项目编号:@项目编号\n关联主题:@主题\n询盘时间:@询盘时间\n\n" +
-      "客户 Quiz 选择路径:\n@选择路径\n\n@用户 团队",
+      "Dear @SalesManager,\n\n" +
+      "You have received a new customer inquiry. Please follow up and reply as soon as possible.\n\n" +
+      "Customer Name: @CustomerName\n" +
+      "Phone Number: @CustomerPhone\n" +
+      "Customer Email: @CustomerEmail\n" +
+      "Project Number: @ProjectNo\n" +
+      "Related Topic: @Topic\n" +
+      "Inquiry Time: @InquiryTime\n\n" +
+      "Customer quiz selection path:\n" +
+      "@SelectedPath\n\n" +
+      "@Team",
   },
   [EMAIL_TEMPLATE_TYPES.WARNING_YELLOW]: {
     templateType: EMAIL_TEMPLATE_TYPES.WARNING_YELLOW,
-    name: "黄色预警邮件",
-    subject: "【重要】项目跟进提醒(黄色预警) - @项目编号",
+    name: "Yellow warning email",
+    subject: "[Important] Project follow-up reminder (Yellow warning) - @ProjectNo",
     body:
-      "尊敬的@销售经理,\n\n" +
-      "【重要提醒】项目@项目编号自询盘以来已持续 @持续时间 小时," +
-      "尚未收到您的回复确认,请尽快跟进客户。\n\n" +
-      "客户姓名:@客户名\n联系电话:@客户电话\n客户邮箱:@客户邮箱\n" +
-      "关联主题:@主题\n\n此邮件已抄送销售总监。\n\n@用户 团队",
+      "Dear @SalesManager,\n\n" +
+      "[Important Reminder] This project has been ongoing since the inquiry and we have not\n" +
+      "received your confirmation reply yet. Please follow up with the customer as soon as possible.\n\n" +
+      "Project: @ProjectNo\n" +
+      "Duration: @Duration\n" +
+      "Customer: @CustomerName\n" +
+      "Phone Number: @CustomerPhone\n" +
+      "Email: @CustomerEmail\n" +
+      "Related Topic: @Topic\n\n" +
+      "This email has been copied to the sales director.\n\n" +
+      "@Team",
   },
   [EMAIL_TEMPLATE_TYPES.WARNING_RED]: {
     templateType: EMAIL_TEMPLATE_TYPES.WARNING_RED,
-    name: "红色预警邮件",
-    subject: "【紧急】项目跟进提醒(红色预警) - @项目编号",
+    name: "Red warning email",
+    subject: "[Important] Project follow-up reminder (Red warning) - @ProjectNo",
     body:
-      "尊敬的@销售经理,\n\n" +
-      "【紧急提醒】项目@项目编号自询盘以来已持续 @持续时间 小时," +
-      "超过红色预警阈值,请立即跟进处理!\n\n" +
-      "客户姓名:@客户名\n联系电话:@客户电话\n客户邮箱:@客户邮箱\n" +
-      "关联主题:@主题\n\n此邮件已抄送销售总监。\n\n@用户 团队",
+      "Dear @SalesManager,\n\n" +
+      "[Important Reminder] This project has been ongoing since the inquiry and we have not\n" +
+      "received your confirmation reply yet. Please follow up with the customer immediately!\n\n" +
+      "Project: @ProjectNo\n" +
+      "Duration: @Duration\n" +
+      "Customer: @CustomerName\n" +
+      "Phone Number: @CustomerPhone\n" +
+      "Email: @CustomerEmail\n" +
+      "Related Topic: @Topic\n\n" +
+      "This email has been copied to the sales director.\n\n" +
+      "@Team",
   },
   [EMAIL_TEMPLATE_TYPES.INQUIRY_NEAR_LIMIT]: {
     templateType: EMAIL_TEMPLATE_TYPES.INQUIRY_NEAR_LIMIT,
-    name: "询盘接近上限提醒",
-    subject: "【重要】今日询盘次数已达 @今日询盘次数 次,接近免费套餐上限",
+    name: "Inquiry near limit reminder",
+    subject: "[Important] Today's inquiries @TodayInquiryCount have reached the near-free-plan limit",
     body:
-      "管理员您好,\n\n" +
-      "由于今天市场十分活跃,到目前为止,客户询盘已达 @今日询盘次数 次," +
-      "已接近免费套餐每日 5 次的上限。\n" +
-      "为了不影响团队顺利承接业务,扩大贵司市场份额,建议您考虑升级套餐,详见:@定价页链接。\n\n" +
-      "DolphinQuiz 社区:https://dolphinquiz.discourse.group/\n\n@用户 团队",
+      "Dear Administrator,\n\n" +
+      "The market is very active today. So far today's customer inquiries have reached\n" +
+      "@TodayInquiryCount, approaching the free plan daily limit of 5.\n" +
+      "To keep receiving business smoothly and grow your market share, please consider\n" +
+      "upgrading your plan. See: @PricingLink.\n\n" +
+      "DolphinQuiz Community: https://dolphinquiz.discourse.group/\n\n" +
+      "@Team",
   },
   [EMAIL_TEMPLATE_TYPES.INQUIRY_REACH_LIMIT]: {
     templateType: EMAIL_TEMPLATE_TYPES.INQUIRY_REACH_LIMIT,
-    name: "询盘达到上限提醒",
-    subject: "【紧急】今日询盘次数已达上限(5次/天)",
+    name: "Inquiry limit reached reminder",
+    subject: "[Important] Today's inquiries have reached the limit (5/day)",
     body:
-      "管理员您好,\n\n" +
-      "由于今天市场十分活跃,到目前为止,客户询盘已达 @今日询盘次数 次," +
-      "已达到免费套餐每日 5 次的上限。\n" +
-      "客户访问 Quiz 时将看到上限提示,将影响业务承接。\n" +
-      "为了不影响团队顺利承接业务,扩大贵司市场份额,建议您考虑升级套餐,详见:@定价页链接。\n\n" +
-      "DolphinQuiz 社区:https://dolphinquiz.discourse.group/\n\n@用户 团队",
+      "Dear Administrator,\n\n" +
+      "The market is very active today. So far today's customer inquiries have reached\n" +
+      "@TodayInquiryCount, hitting the free plan daily limit of 5.\n" +
+      "Customers visiting the quiz will see the limit notice, which may affect business.\n" +
+      "To keep receiving business smoothly and grow your market share, please consider\n" +
+      "upgrading your plan. See: @PricingLink.\n\n" +
+      "DolphinQuiz Community: https://dolphinquiz.discourse.group/\n\n" +
+      "@Team",
   },
 };
 

@@ -210,14 +210,14 @@ export async function processTenantWarnings(
     }
 
     const variables = {
-      销售经理: manager[0].name,
-      项目编号: project.projectNumber,
-      主题: project.theme ?? "未指定",
-      客户名: project.customerName,
-      客户电话: project.phone ?? "未填写",
-      客户邮箱: project.email ?? "未填写",
-      持续时间: Math.round(durationHours ?? 0),
-      询盘时间: project.inquiryDatetime.toISOString(),
+      SalesManager: manager[0].name,
+      ProjectNo: project.projectNumber,
+      Topic: project.theme ?? "Unspecified",
+      CustomerName: project.customerName,
+      CustomerPhone: project.phone ?? "Not provided",
+      CustomerEmail: project.email ?? "Not provided",
+      Duration: Math.round(durationHours ?? 0),
+      InquiryTime: project.inquiryDatetime.toISOString(),
     };
 
     const subject = renderTemplate(template.subject, variables);

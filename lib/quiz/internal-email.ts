@@ -78,17 +78,17 @@ type BuildInquiryEmailContentParams = {
 /**
  * 生成邮件主题
  *
- * 格式:[新询盘] {项目编号} - {主题}
- * 主题为 null 时:[新询盘] {项目编号}
+ * 格式:[New Inquiry] {项目编号} - {主题}
+ * 主题为 null 时:[New Inquiry] {项目编号}
  */
 export function buildEmailSubject({
   projectName,
   theme,
 }: EmailSubjectParams): string {
   if (theme) {
-    return `[新询盘] ${projectName} - ${theme}`;
+    return `[New Inquiry] ${projectName} - ${theme}`;
   }
-  return `[新询盘] ${projectName}`;
+  return `[New Inquiry] ${projectName}`;
 }
 
 /**
@@ -172,9 +172,10 @@ export type EmailTemplateVars = {
 /**
  * 替换模板中的 @变量 占位符
  *
- * 支持的变量(与 Dashboard 报告模板页可用变量一致,全部 11 个):
- * @项目编号 / @客户名 / @主题 / @客户电话 / @客户邮箱 / @询盘时间 /
- * @持续时间 / @销售经理 / @选择路径 / @今日询盘次数 / @定价页链接
+ * 支持的变量(与 Dashboard 报告模板页可用变量一致,全部英文驼峰 token):
+ * @ProjectNo / @CustomerName / @Topic / @CustomerPhone / @CustomerEmail /
+ * @InquiryTime / @Duration / @SalesManager / @SelectedPath /
+ * @TodayInquiryCount / @PricingLink(另有 @Team 团队名)
  */
 export function renderTemplateVars(
   text: string,
@@ -185,18 +186,18 @@ export function renderTemplateVars(
     `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/pricing`;
 
   const replacements: Record<string, string> = {
-    项目编号: vars.projectName,
-    客户名: vars.customerName,
-    主题: vars.theme ?? "",
-    客户电话: vars.customerPhone,
-    客户邮箱: vars.customerEmail,
-    询盘时间: vars.inquiryTimeIso,
-    持续时间: vars.durationHours != null ? String(vars.durationHours) : "",
-    销售经理: vars.managerName ?? "",
-    选择路径: vars.pathSummary,
-    今日询盘次数: vars.inquiryCount != null ? String(vars.inquiryCount) : "",
-    定价页链接: pricingUrl,
-    用户: vars.teamName ?? "DolphinQuiz",
+    ProjectNo: vars.projectName,
+    CustomerName: vars.customerName,
+    Topic: vars.theme ?? "",
+    CustomerPhone: vars.customerPhone,
+    CustomerEmail: vars.customerEmail,
+    InquiryTime: vars.inquiryTimeIso,
+    Duration: vars.durationHours != null ? String(vars.durationHours) : "",
+    SalesManager: vars.managerName ?? "",
+    SelectedPath: vars.pathSummary,
+    TodayInquiryCount: vars.inquiryCount != null ? String(vars.inquiryCount) : "",
+    PricingLink: pricingUrl,
+    Team: vars.teamName ?? "DolphinQuiz",
   };
 
   let result = text;
@@ -236,11 +237,11 @@ export function renderInternalEmailFromTemplate(
   const confirmButton = confirmUrl
     ? `<p style="margin:24px 0;text-align:center;">
         <a href="${confirmUrl}" style="display:inline-block;background-color:#000;color:#fff;border-radius:6px;font-size:14px;font-weight:600;text-decoration:none;padding:12px 24px;">
-          确认收到询盘
+          Confirm receipt of inquiry
         </a>
       </p>
       <p style="color:#898989;font-size:12px;line-height:20px;margin:10px 0 0;text-align:center;">
-        点击上方按钮确认您已收到此询盘通知,系统将记录您的确认时间。
+        Click the button above to confirm you have received this inquiry; the system will record your confirmation time.
       </p>`
     : "";
 
@@ -253,7 +254,7 @@ export function renderInternalEmailFromTemplate(
         ${confirmButton}
         <hr style="border-color:#e6e6e6;margin:20px 0;" />
         <p style="color:#898989;font-size:12px;line-height:20px;margin:10px 0 0;">
-          此邮件由 DolphinQuiz 系统自动发送,请勿直接回复。
+          This email was sent automatically by DolphinQuiz. Please do not reply to this email.
         </p>
       </div>
     `,

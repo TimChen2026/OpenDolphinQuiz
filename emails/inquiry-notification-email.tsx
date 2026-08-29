@@ -33,7 +33,7 @@ import {
 import * as React from "react";
 import type { InquiryEmailContent } from "@/lib/quiz/internal-email";
 
-// 询盘通知邮件(Internal Email)组件
+// 询盘通知邮件(Internal Email)组件(兜底,无自定义模板时使用)
 // 用于客户完成 Quiz 后通知销售经理,含客户信息、项目编号、Quiz 路径摘要
 
 interface InquiryNotificationEmailProps {
@@ -51,47 +51,48 @@ export const InquiryNotificationEmail = ({
       <Preview>{content.subject}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>新询盘通知</Heading>
+          <Heading style={h1}>New inquiry notification</Heading>
 
           <Text style={text}>
-            您收到一条新的客户询盘,请尽快跟进回复。
+            You have received a new customer inquiry. Please follow up and reply
+            as soon as possible.
           </Text>
 
           <Hr style={hr} />
 
-          {/* 客户信息 */}
+          {/* 客户信息 Customer information */}
           <Section style={section}>
-            <Heading style={h2}>客户信息</Heading>
+            <Heading style={h2}>Customer information</Heading>
             <Text style={text}>
-              <strong>客户姓名:</strong> {content.customerName}
+              <strong>Customer name:</strong> {content.customerName}
             </Text>
             <Text style={text}>
-              <strong>联系电话:</strong> {content.customerPhone}
+              <strong>Phone number:</strong> {content.customerPhone}
             </Text>
             <Text style={text}>
-              <strong>邮箱地址:</strong> {content.customerEmail}
+              <strong>Email:</strong> {content.customerEmail}
             </Text>
           </Section>
 
-          {/* 项目信息 */}
+          {/* 项目信息 Project information */}
           <Section style={section}>
-            <Heading style={h2}>项目信息</Heading>
+            <Heading style={h2}>Project information</Heading>
             <Text style={text}>
-              <strong>项目编号:</strong> {content.projectName}
+              <strong>Project number:</strong> {content.projectName}
             </Text>
             <Text style={text}>
-              <strong>询盘时间(UTC):</strong> {content.inquiryTimeIso}
+              <strong>Inquiry time (UTC):</strong> {content.inquiryTimeIso}
             </Text>
             {content.theme && (
               <Text style={text}>
-                <strong>关联主题:</strong> {content.theme}
+                <strong>Related topic:</strong> {content.theme}
               </Text>
             )}
           </Section>
 
-          {/* Quiz 选择路径 */}
+          {/* Quiz 选择路径 Selected path */}
           <Section style={section}>
-            <Heading style={h2}>客户 Quiz 选择路径</Heading>
+            <Heading style={h2}>Customer quiz selection path</Heading>
             {pathLines.map((line, index) => (
               <Text key={index} style={pathLine}>
                 {line}
@@ -99,29 +100,30 @@ export const InquiryNotificationEmail = ({
             ))}
           </Section>
 
-          {/* 销售经理信息 */}
+          {/* 销售经理信息 Sales manager information */}
           {content.managerName && (
             <Section style={section}>
-              <Heading style={h2}>负责人信息</Heading>
+              <Heading style={h2}>Responsible person</Heading>
               <Text style={text}>
-                <strong>销售经理:</strong> {content.managerName}
+                <strong>Sales manager:</strong> {content.managerName}
               </Text>
               {content.managerEmail && (
                 <Text style={text}>
-                  <strong>经理邮箱:</strong> {content.managerEmail}
+                  <strong>Manager email:</strong> {content.managerEmail}
                 </Text>
               )}
             </Section>
           )}
 
-          {/* 确认回复按钮 */}
+          {/* 确认回复按钮 Confirm reply button */}
           {content.confirmUrl && (
             <Section style={buttonContainer}>
               <Button style={button} href={content.confirmUrl}>
-                确认收到询盘
+                Confirm receipt of inquiry
               </Button>
               <Text style={footer}>
-                点击上方按钮确认您已收到此询盘通知,系统将记录您的确认时间。
+                Click the button above to confirm you have received this
+                inquiry; the system will record your confirmation time.
               </Text>
             </Section>
           )}
@@ -129,8 +131,9 @@ export const InquiryNotificationEmail = ({
           <Hr style={hr} />
 
           <Text style={footer}>
-            此邮件由 DolphinQuiz 系统自动发送,请勿直接回复。
-            如有任何问题,请联系销售总监。
+            This email was sent automatically by DolphinQuiz. Please do not
+            reply directly. If you have any questions, please contact the sales
+            director.
           </Text>
         </Container>
       </Body>

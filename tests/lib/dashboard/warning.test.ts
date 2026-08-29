@@ -150,21 +150,21 @@ describe("computeDuration", () => {
 describe("renderTemplate", () => {
   it("替换占位符变量", () => {
     const result = renderTemplate(
-      "项目@项目编号,客户@客户名",
-      { 项目编号: "张三-2026-08-10", 客户名: "张三" }
+      "Project @ProjectNo, customer @CustomerName",
+      { ProjectNo: "张三-2026-08-10", CustomerName: "张三" }
     );
-    expect(result).toBe("项目张三-2026-08-10,客户张三");
+    expect(result).toBe("Project 张三-2026-08-10, customer 张三");
   });
 
   it("未提供的变量保持原样", () => {
-    const result = renderTemplate("主题:@主题", { 项目编号: "x" });
-    expect(result).toBe("主题:@主题");
+    const result = renderTemplate("Topic:@Topic", { ProjectNo: "x" });
+    expect(result).toBe("Topic:@Topic");
   });
 
   it("支持数字值替换", () => {
-    const result = renderTemplate("持续 @持续时间 小时", {
-      持续时间: 24,
+    const result = renderTemplate("Duration @Duration hours", {
+      Duration: 24,
     });
-    expect(result).toBe("持续 24 小时");
+    expect(result).toBe("Duration 24 hours");
   });
 });

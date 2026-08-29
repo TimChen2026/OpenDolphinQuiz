@@ -41,21 +41,23 @@ describe("getDefaultTemplate", () => {
   it("返回黄色预警默认模板(含重要标识)", () => {
     const template = getDefaultTemplate(EMAIL_TEMPLATE_TYPES.WARNING_YELLOW);
     expect(template).not.toBeNull();
-    expect(template?.subject).toContain("重要");
-    expect(template?.body).toContain("@销售经理");
-    expect(template?.body).toContain("@项目编号");
+    expect(template?.subject).toContain("Important");
+    expect(template?.subject).toContain("@ProjectNo");
+    expect(template?.body).toContain("@SalesManager");
+    expect(template?.body).toContain("@ProjectNo");
   });
 
   it("返回红色预警默认模板(含紧急标识)", () => {
     const template = getDefaultTemplate(EMAIL_TEMPLATE_TYPES.WARNING_RED);
     expect(template).not.toBeNull();
-    expect(template?.subject).toContain("紧急");
+    expect(template?.subject).toContain("Important");
+    expect(template?.subject).toContain("Red warning");
   });
 
   it("返回内部告知邮件默认模板(含路径占位符)", () => {
     const template = getDefaultTemplate(EMAIL_TEMPLATE_TYPES.INTERNAL);
-    expect(template?.body).toContain("@选择路径");
-    expect(template?.body).toContain("@客户电话");
+    expect(template?.body).toContain("@SelectedPath");
+    expect(template?.body).toContain("@CustomerPhone");
   });
 
   it("未知类型返回 null", () => {

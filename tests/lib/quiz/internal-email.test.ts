@@ -201,7 +201,7 @@ describe("renderTemplateVars(验收修订 2.1.7.4-b:变量自动替换)", () => 
 
   it("替换全部 11 个可用变量", () => {
     const text =
-      "@项目编号 @客户名 @主题 @客户电话 @客户邮箱 @询盘时间 @持续时间 @销售经理 @选择路径 @今日询盘次数 @定价页链接";
+      "@ProjectNo @CustomerName @Topic @CustomerPhone @CustomerEmail @InquiryTime @Duration @SalesManager @SelectedPath @TodayInquiryCount @PricingLink";
     const rendered = renderTemplateVars(text, {
       ...baseVars,
       durationHours: 26,
@@ -225,17 +225,17 @@ describe("renderTemplateVars(验收修订 2.1.7.4-b:变量自动替换)", () => 
   });
 
   it("未提供的可选变量替换为空(不残留占位符)", () => {
-    const rendered = renderTemplateVars("@持续时间@今日询盘次数", baseVars);
-    expect(rendered).not.toContain("@持续时间");
-    expect(rendered).not.toContain("@今日询盘次数");
+    const rendered = renderTemplateVars("@Duration@TodayInquiryCount", baseVars);
+    expect(rendered).not.toContain("@Duration");
+    expect(rendered).not.toContain("@TodayInquiryCount");
   });
 });
 
 describe("renderInternalEmailFromTemplate", () => {
   it("按模板渲染 HTML 邮件并追加确认按钮", () => {
     const { subject, html } = renderInternalEmailFromTemplate(
-      "[新询盘] @项目编号 - @主题",
-      "尊敬的@销售经理,\n客户@客户名已提交询盘。",
+      "[New Inquiry] @ProjectNo - @Topic",
+      "Dear @SalesManager,\nCustomer @CustomerName has submitted an inquiry.",
       {
         projectName: "张三-2026-08-12-143025",
         customerName: "张三",
@@ -249,12 +249,12 @@ describe("renderInternalEmailFromTemplate", () => {
       "https://example.com/confirm?token=abc"
     );
 
-    expect(subject).toBe("[新询盘] 张三-2026-08-12-143025 - 数学");
-    expect(html).toContain("尊敬的李经理");
+    expect(subject).toBe("[New Inquiry] 张三-2026-08-12-143025 - 数学");
+    expect(html).toContain("Dear 李经理");
     expect(html).toContain("张三");
-    expect(html).toContain("确认收到询盘");
+    expect(html).toContain("Confirm receipt of inquiry");
     expect(html).toContain("https://example.com/confirm?token=abc");
-    expect(html).not.toContain("@客户名");
+    expect(html).not.toContain("@CustomerName");
   });
 
   it("无确认链接时不渲染确认按钮", () => {
@@ -273,6 +273,6 @@ describe("renderInternalEmailFromTemplate", () => {
       },
       null
     );
-    expect(html).not.toContain("确认收到询盘");
+    expect(html).not.toContain("Confirm receipt of inquiry");
   });
 });

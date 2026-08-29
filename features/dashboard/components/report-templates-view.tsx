@@ -75,19 +75,19 @@ const TEMPLATE_ORDER: {
   },
 ];
 
-// 可用变量提示(@变量为数据契约,后端按中文字面替换,禁止改动)
+// 可用变量提示(@变量为数据契约,后端按英文 token 字面替换(/lib/quiz/internal-email.ts))
 const AVAILABLE_VARS = [
-  "@项目编号",
-  "@客户名",
-  "@主题",
-  "@客户电话",
-  "@客户邮箱",
-  "@询盘时间",
-  "@持续时间",
-  "@销售经理",
-  "@选择路径",
-  "@今日询盘次数",
-  "@定价页链接",
+  "@ProjectNo",
+  "@CustomerName",
+  "@Topic",
+  "@CustomerPhone",
+  "@CustomerEmail",
+  "@InquiryTime",
+  "@Duration",
+  "@SalesManager",
+  "@SelectedPath",
+  "@TodayInquiryCount",
+  "@PricingLink",
 ];
 
 export function ReportTemplatesView() {
