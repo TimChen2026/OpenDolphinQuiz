@@ -43,19 +43,19 @@ export async function GET(request: NextRequest) {
     const parsed = projectQuerySchema.safeParse({ project: project ?? "" });
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "缺少项目编号参数" }, { status: 400 });
+      return NextResponse.json({ error: "Missing project number parameter" }, { status: 400 });
     }
 
     const data = await getConfirmReplyData(parsed.data.project);
     if (!data) {
-      return NextResponse.json({ error: "项目不存在" }, { status: 404 });
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
     return NextResponse.json({ data });
   } catch (error) {
-    console.error("quiz confirm GET 错误:", error);
+    console.error("quiz confirm GET error:", error);
     return NextResponse.json(
-      { error: "获取确认信息失败" },
+      { error: "Failed to retrieve confirmation info" },
       { status: 500 }
     );
   }
@@ -69,27 +69,27 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = confirmSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "缺少项目编号参数" },
+        { error: "Missing project number parameter" },
         { status: 400 }
       );
     }
 
     const success = await confirmProjectReply(parsed.data.project);
     if (!success) {
-      return NextResponse.json({ error: "项目不存在" }, { status: 404 });
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, message: "回复确认成功" });
+    return NextResponse.json({ success: true, message: "Reply confirmed successfully" });
   } catch (error) {
-    console.error("quiz confirm POST 错误:", error);
+    console.error("quiz confirm POST error:", error);
     return NextResponse.json(
-      { error: "确认回复失败,请重试" },
+      { error: "Failed to record confirmation, please try again" },
       { status: 500 }
     );
   }

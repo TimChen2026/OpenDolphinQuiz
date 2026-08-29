@@ -92,7 +92,7 @@ export function QuizFlowContainer({
         | null;
 
       if (!response.ok || !data) {
-        setSubmitError(data?.error ?? "询盘提交失败,请重试");
+        setSubmitError(data?.error ?? "Failed to submit inquiry, please try again");
         setSubmitState("error");
         return;
       }
@@ -100,7 +100,7 @@ export function QuizFlowContainer({
       setSubmitResult(data);
       setSubmitState("success");
     } catch {
-      setSubmitError("网络异常,请重试");
+      setSubmitError("Network error, please try again");
       setSubmitState("error");
     }
   };
@@ -122,7 +122,7 @@ export function QuizFlowContainer({
   // 提交失败:回到 Quiz 起点并提示(重新进入 P4 后可再次提交)
   // 当错误为询盘上限时,显示醒目的警示样式
   const isInquiryLimitError =
-    submitError === "今日询盘次数已达上限,请明日再试";
+    submitError === "Today's inquiry limit has been reached, please try again tomorrow";
   if (submitState === "error" && quizResult) {
     return (
       <div>
@@ -154,7 +154,8 @@ export function QuizFlowContainer({
           </p>
           {isInquiryLimitError && (
             <p className="mt-2 text-xs text-orange-600">
-              如需提升询盘次数上限,请联系管理员升级套餐。
+              To increase your inquiry limit, please contact your administrator to
+              upgrade your plan.
             </p>
           )}
         </div>

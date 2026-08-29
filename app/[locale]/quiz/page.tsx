@@ -63,10 +63,10 @@ export default async function QuizPage({
       <Container className="py-20 sm:py-32">
         <div className="text-center max-w-xl mx-auto">
           <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">
-            Quiz 暂未开放
+            Quiz not available yet
           </h1>
           <p className="mt-4 text-muted-foreground">
-            当前没有可用的 Quiz 模板,请稍后再试。
+            There is currently no available Quiz template. Please try again later.
           </p>
         </div>
       </Container>

@@ -44,8 +44,8 @@ export type LinkCheckIssue = {
   message: string;
 };
 
-// 占位符前缀(模板初始化的默认文本)
-const PLACEHOLDER_PREFIXES = ["请输入"];
+// 占位符前缀(模板初始化的默认文本,英文)
+const PLACEHOLDER_PREFIXES = ["Please enter"];
 
 function isPlaceholder(text: string): boolean {
   const trimmed = text.trim();
@@ -68,7 +68,7 @@ export async function checkTemplateReadiness(
   if (!nodes) {
     return {
       ok: false,
-      issues: [{ nodeId: "", level: "-", message: "Quiz 模板不存在" }],
+      issues: [{ nodeId: "", level: "-", message: "Quiz template does not exist" }],
     };
   }
 
@@ -83,7 +83,7 @@ export async function checkTemplateReadiness(
       issues.push({
         nodeId: node.id,
         level: node.level,
-        message: `${node.level} 节点问题${node.question ? `(${node.question})` : ""} 未填写`,
+        message: `${node.level} node question${node.question ? ` (${node.question})` : ""} has not been filled in`,
       });
     }
 
@@ -93,7 +93,7 @@ export async function checkTemplateReadiness(
         issues.push({
           nodeId: node.id,
           level: node.level,
-          message: `${node.level} 节点选项 ${option.optionLabel} 文本未填写`,
+          message: `${node.level} node option ${option.optionLabel} text has not been filled in`,
         });
       }
     }
@@ -105,14 +105,14 @@ export async function checkTemplateReadiness(
           issues.push({
             nodeId: node.id,
             level: node.level,
-            message: `P3 节点选项 ${option.optionLabel} 未关联主题词`,
+            message: `P3 node option ${option.optionLabel} has no topic assigned`,
           });
         }
         if (!option.resultManagerId) {
           issues.push({
             nodeId: node.id,
             level: node.level,
-            message: `P3 节点选项 ${option.optionLabel} 未关联销售经理`,
+            message: `P3 node option ${option.optionLabel} has no sales manager assigned`,
           });
         }
       }

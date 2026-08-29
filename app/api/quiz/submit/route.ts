@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     });
     if (!session?.user) {
       return NextResponse.json(
-        { error: "请先注册后再提交询盘" },
+        { error: "Please register before submitting an inquiry" },
         { status: 401 }
       );
     }
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => null);
     if (!body) {
       return NextResponse.json(
-        { error: "请求体格式错误" },
+        { error: "Invalid request body" },
         { status: 400 }
       );
     }
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         {
-          error: "提交数据校验失败",
+          error: "Submission data validation failed",
           details: parsed.error.flatten(),
         },
         { status: 400 }
@@ -149,14 +149,14 @@ export async function POST(request: NextRequest) {
       .limit(1);
     const targetUser = userRows[0];
     if (!targetUser) {
-      return NextResponse.json({ error: "用户不存在" }, { status: 401 });
+      return NextResponse.json({ error: "User not found" }, { status: 401 });
     }
 
     // 3.1 询盘归属团队:按问卷模板所属团队(tenant_id = team.id)归属,
     // 而非提交者本人,保证团队仪表盘可见全部客户询盘
     const teamId = await getTemplateTenantId(parsed.data.templateId);
     if (!teamId) {
-      return NextResponse.json({ error: "问卷模板不存在" }, { status: 404 });
+      return NextResponse.json({ error: "Quiz template not found" }, { status: 404 });
     }
 
     // 3.2 客户自动归属该团队(客户可属于多个团队;团队成员自测问卷不受影响)
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
     );
     if (limitStatus.isLimited) {
       return NextResponse.json(
-        { error: "今日询盘次数已达上限,请明日再试" },
+        { error: "Today's inquiry limit has been reached, please try again tomorrow" },
         { status: 403 }
       );
     }
@@ -184,10 +184,10 @@ export async function POST(request: NextRequest) {
     );
     if (customerLimit.isLimited) {
       const periodLabel =
-        customerLimit.period === "year" ? "今年" : "本月";
+        customerLimit.period === "year" ? "this year" : "this month";
       return NextResponse.json(
         {
-          error: `当前套餐潜在客户数量已达上限(${periodLabel}最多 ${customerLimit.limit} 个),请联系服务商升级套餐`,
+          error: `Your current plan's potential customer limit has been reached (${periodLabel} maximum ${customerLimit.limit}). Please contact your service provider to upgrade your plan.`,
         },
         { status: 403 }
       );
@@ -232,9 +232,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, ...outcome });
   } catch (error) {
     // 边界层统一异常处理:记录完整上下文
-    console.error("quiz submit 错误:", error);
+    console.error("quiz submit error:", error);
     return NextResponse.json(
-      { error: "询盘提交失败,请重试" },
+      { error: "Failed to submit inquiry, please try again" },
       { status: 500 }
     );
   }

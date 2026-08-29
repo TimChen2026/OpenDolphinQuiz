@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "缺少 tenantId 参数" },
+        { error: "Missing tenantId parameter" },
         { status: 400 }
       );
     }
@@ -56,9 +56,9 @@ export async function GET(request: NextRequest) {
     );
     return NextResponse.json({ ...status });
   } catch (error) {
-    console.error("quiz limit 错误:", error);
+    console.error("quiz limit error:", error);
     return NextResponse.json(
-      { error: "查询询盘次数失败" },
+      { error: "Failed to query inquiry count" },
       { status: 500 }
     );
   }

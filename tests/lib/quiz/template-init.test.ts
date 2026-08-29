@@ -36,8 +36,8 @@ describe("buildDefaultQuizTemplateData", () => {
       expect(data.template.tenantId).toBe(tenantId);
     });
 
-    it("默认模板名称为'默认 Quiz 模板'", () => {
-      expect(data.template.name).toBe("默认 Quiz 模板");
+    it("默认模板名称为'Default Quiz Template'", () => {
+      expect(data.template.name).toBe("Default Quiz Template");
     });
 
     it("默认状态为 draft", () => {
@@ -153,7 +153,7 @@ describe("buildDefaultQuizTemplateData", () => {
     });
 
     it("P4 节点 resultTheme 继承其 P3 选项主题", () => {
-      const validThemes = ["数学", "语文", "英语", "绘画"];
+      const validThemes = ["Math", "Chinese", "English", "Art"];
       p4Nodes.forEach((p4) => {
         expect(validThemes).toContain(p4.resultTheme);
       });
@@ -273,8 +273,8 @@ describe("buildDefaultQuizTemplateData", () => {
       });
     });
 
-    it("P3 选项的主题为 数学/语文/英语/绘画 之一", () => {
-      const validThemes = ["数学", "语文", "英语", "绘画"];
+    it("P3 选项的主题为 Math/Chinese/English/Art 之一", () => {
+      const validThemes = ["Math", "Chinese", "English", "Art"];
       p3Nodes.forEach((p3) => {
         const p3Edges = data.edges.filter((e) => e.nodeId === p3.id);
         p3Edges.forEach((edge) => {
@@ -284,7 +284,7 @@ describe("buildDefaultQuizTemplateData", () => {
     });
 
     it("每个 P3 节点的 4 个选项分别对应 4 种主题", () => {
-      const validThemes = ["数学", "语文", "英语", "绘画"].sort();
+      const validThemes = ["Math", "Chinese", "English", "Art"].sort();
       p3Nodes.forEach((p3) => {
         const p3Edges = data.edges.filter((e) => e.nodeId === p3.id);
         const themes = p3Edges.map((e) => e.resultTheme).sort();
@@ -330,7 +330,7 @@ describe("buildDefaultQuizTemplateData", () => {
       expect(edge?.targetNodeId).toBe(p3AA?.id);
     });
 
-    it("P3-DD 选 D 跳转到 P4-DDD 结果节点(主题为绘画)", () => {
+    it("P3-DD 选 D 跳转到 P4-DDD 结果节点(主题为 Art)", () => {
       const p3DD = data.nodes.find(
         (n) => n.level === "P3" && n.question.includes("P3-DD")
       );
@@ -341,8 +341,8 @@ describe("buildDefaultQuizTemplateData", () => {
         (e) => e.nodeId === p3DD?.id && e.optionLabel === "D"
       );
       expect(edge?.targetNodeId).toBe(p4DDD?.id);
-      expect(edge?.resultTheme).toBe("绘画");
-      expect(p4DDD?.resultTheme).toBe("绘画");
+      expect(edge?.resultTheme).toBe("Art");
+      expect(p4DDD?.resultTheme).toBe("Art");
     });
   });
 });

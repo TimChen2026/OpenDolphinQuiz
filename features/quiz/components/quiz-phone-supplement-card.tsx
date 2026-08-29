@@ -41,7 +41,7 @@ const supplementPhoneSchema = z.object({
   phone: z
     .string()
     .trim()
-    .regex(PHONE_PATTERN, "请输入有效的手机号"),
+    .regex(PHONE_PATTERN, "Please enter a valid phone number"),
 });
 
 type SupplementPhoneInput = z.infer<typeof supplementPhoneSchema>;
@@ -81,13 +81,13 @@ export function QuizPhoneSupplementCard({
       } | null;
 
       if (!response.ok) {
-        setError(data?.error ?? "手机号补充失败,请重试");
+        setError(data?.error ?? "Failed to save phone number, please retry");
         return;
       }
 
       onDone();
     } catch {
-      setError("网络异常,请重试");
+      setError("Network error, please retry");
     } finally {
       setIsLoading(false);
     }
@@ -103,10 +103,11 @@ export function QuizPhoneSupplementCard({
       >
         <div className="mb-6 text-center">
           <h1 className="text-xl sm:text-2xl font-semibold text-foreground">
-            补充手机号(可选)
+            Add your phone number (optional)
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            填写手机号便于销售经理与您联系,也可稍后跳过
+            Add your phone number so our sales manager can reach you. You can
+            also skip this step.
           </p>
         </div>
 
@@ -118,8 +119,8 @@ export function QuizPhoneSupplementCard({
             <FormTextField
               control={form.control}
               name="phone"
-              label="手机号"
-              placeholder="请输入手机号"
+              label="Phone number"
+              placeholder="Enter your phone number"
               autoComplete="tel"
             />
 
@@ -134,7 +135,7 @@ export function QuizPhoneSupplementCard({
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? "保存中..." : "保存并继续"}
+              {isLoading ? "Saving..." : "Save and continue"}
             </Button>
             <Button
               className="w-full"
@@ -143,7 +144,7 @@ export function QuizPhoneSupplementCard({
               onClick={onDone}
               disabled={isLoading}
             >
-              跳过
+              Skip
             </Button>
           </form>
         </Form>

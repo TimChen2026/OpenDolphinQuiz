@@ -233,8 +233,8 @@ function buildTestTemplate(): QuizClientTemplate {
 
 // 默认 Summary 模板(测试渲染)
 const SUMMARY_TEMPLATE = {
-  subject: "Quiz 结果摘要",
-  body: "感谢您完成问卷!\n关联主题:@主题\n选择路径:\n@选择路径",
+  subject: "Quiz Summary",
+  body: "Thank you for completing the survey!\nRelated topic:@Topic\nSelected path:\n@SelectedPath",
 };
 
 /** 依次选择并点击"继续"到目标层级 */
@@ -318,8 +318,8 @@ describe("QuizFlow", () => {
     navigateTo(["A. P1 选项 A", "A. P2-A 选项 A", "A. P3-AA 选项 A"]);
 
     // summary 模板渲染:主题 + 选择路径
-    expect(screen.getByText("Quiz 结果摘要")).toBeInTheDocument();
-    expect(screen.getByText(/关联主题:数学/)).toBeInTheDocument();
+    expect(screen.getByText("Quiz Summary")).toBeInTheDocument();
+    expect(screen.getByText(/Related topic:数学/)).toBeInTheDocument();
     expect(screen.getByText(/\[P1\] P1 问题文本 → A:P1 选项 A/)).toBeInTheDocument();
   });
 
@@ -397,7 +397,7 @@ describe("QuizFlow", () => {
 
     navigateTo(["A. P1 选项 A", "A. P2-A 选项 A", "A. P3-AA 选项 A"]);
 
-    expect(screen.getByText("Quiz 结果摘要")).toBeInTheDocument();
-    expect(screen.getByText(/感谢您完成 Quiz 问卷/)).toBeInTheDocument();
+    expect(screen.getByText("Quiz Summary")).toBeInTheDocument();
+    expect(screen.getByText(/Thank you for completing the Quiz/)).toBeInTheDocument();
   });
 });

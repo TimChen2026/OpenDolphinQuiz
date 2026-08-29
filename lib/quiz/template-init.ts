@@ -21,8 +21,8 @@
 import { db } from "@/lib/db";
 import { quizTemplates, quizNodes, quizEdges } from "@/lib/db/schema";
 
-// 默认 Quiz 模板的 4 种主题(对应需求文档中的 数学/语文/英语/绘画)
-const DEFAULT_THEMES = ["数学", "语文", "英语", "绘画"] as const;
+// 默认 Quiz 模板的 4 种主题(对应需求文档中的 数学/语文/英语/绘画;面向国外用户使用英文)
+const DEFAULT_THEMES = ["Math", "Chinese", "English", "Art"] as const;
 
 // 4 个选项标签
 const OPTION_LABELS = ["A", "B", "C", "D"] as const;
@@ -79,7 +79,7 @@ export type DefaultQuizTemplateData = {
  * - P4 结果节点继承其 P3 选项的主题(用于逻辑界面展示)
  *
  * 占位符设计:
- * - 问题和选项文本使用占位符(如"请输入 P1 根节点问题"),用户在 Dashboard 编辑实际内容
+ * - 问题和选项文本使用英文占位符(如"Please enter P1 root question"),用户在 Dashboard 编辑实际内容
  * - result_manager_id 留空,待 Dashboard 关联销售经理
  *
  * @param templateId 模板 ID
@@ -91,9 +91,9 @@ export function buildDefaultQuizTemplateData(
   tenantId: string,
   options?: { name?: string; description?: string; status?: string }
 ): DefaultQuizTemplateData {
-  const name = options?.name ?? "默认 Quiz 模板";
+  const name = options?.name ?? "Default Quiz Template";
   const description =
-    options?.description ?? "85 节点决策树模板,请在 Dashboard 中编辑实际内容";
+    options?.description ?? "85-node decision tree template. Edit the actual content in the Dashboard.";
 
   const nodes: DefaultNodeRecord[] = [];
   const edges: DefaultEdgeRecord[] = [];
@@ -105,7 +105,7 @@ export function buildDefaultQuizTemplateData(
     templateId,
     parentId: null,
     level: "P1",
-    question: "请输入 P1 根节点问题",
+    question: "Please enter P1 root question",
     sortOrder: 0,
     resultTheme: null,
     resultManagerId: null,
@@ -118,7 +118,7 @@ export function buildDefaultQuizTemplateData(
       id: `${templateId}-edge-p1-${label.toLowerCase()}`,
       nodeId: p1Id,
       optionLabel: label,
-      optionText: `请输入 P1 选项 ${label} 文本`,
+      optionText: `Please enter P1 option ${label} text`,
       targetNodeId: p2Id,
       sortOrder: index,
       resultTheme: null,
@@ -148,7 +148,7 @@ export function buildDefaultQuizTemplateData(
         id: `${templateId}-edge-p2-${p2Label.toLowerCase()}-${p3Label.toLowerCase()}`,
         nodeId: p2Id,
         optionLabel: p3Label,
-        optionText: `请输入 P2-${p2Label} 选项 ${p3Label} 文本`,
+        optionText: `Please enter P2-${p2Label} option ${p3Label} text`,
         targetNodeId: p3Id,
         sortOrder: p3Index,
         resultTheme: null,
@@ -168,7 +168,7 @@ export function buildDefaultQuizTemplateData(
         templateId,
         parentId: p2Id,
         level: "P3",
-        question: `请输入 P3-${p2Label}${p3Label} 选择节点问题`,
+        question: `Please enter P3-${p2Label}${p3Label} choice question`,
         sortOrder: p2Index * 4 + p3Index,
         resultTheme: null,
         resultManagerId: null,
@@ -195,7 +195,7 @@ export function buildDefaultQuizTemplateData(
           templateId,
           parentId: p3Id,
           level: "P4",
-          question: `P4-${p2Label}${p3Label}${optionLabel} 结果节点(Summary 摘要)`,
+          question: `P4-${p2Label}${p3Label}${optionLabel} result node (Summary)`,
           sortOrder: optionIndex,
           resultTheme: DEFAULT_THEMES[optionIndex], // 继承 P3 选项主题
           resultManagerId: null,

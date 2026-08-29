@@ -66,15 +66,16 @@ export function QuizSubmitView({ result, onRestart }: QuizSubmitViewProps) {
         </div>
 
         <h1 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-2">
-          询盘已提交
+          Your inquiry has been submitted
         </h1>
         <p className="text-sm text-muted-foreground text-center mb-8">
-          您的需求已成功传递给销售团队,请保持电话畅通
+          Your request has been successfully sent to our sales team. Please keep
+          your phone line open.
         </p>
 
         {/* 项目编号 */}
         <div className="p-4 sm:p-5 rounded-2xl border border-primary/30 bg-primary/5 mb-6">
-          <p className="text-xs text-muted-foreground mb-1">您的项目编号</p>
+          <p className="text-xs text-muted-foreground mb-1">Your project number</p>
           <p className="text-lg font-medium text-foreground break-all">
             {result.projectNumber}
           </p>
@@ -88,18 +89,18 @@ export function QuizSubmitView({ result, onRestart }: QuizSubmitViewProps) {
               : "p-4 sm:p-5 rounded-2xl border border-destructive/30 bg-destructive/5 mb-8"
           }
         >
-          <p className="text-xs text-muted-foreground mb-1">通知邮件状态</p>
+          <p className="text-xs text-muted-foreground mb-1">Notification email status</p>
           <p className="text-sm font-medium text-foreground">
             {result.emailSent
-              ? "已发送给销售经理(抄送销售总监)"
-              : `邮件发送失败:${result.emailError ?? "未知原因"}`}
+              ? "Sent to sales manager (cc: sales director)"
+              : `Email failed to send: ${result.emailError ?? "Unknown reason"}`}
           </p>
         </div>
 
         {/* 返回开始 */}
         <div className="flex justify-center">
           <Button size="lg" onClick={onRestart}>
-            返回开始
+            Return to start
           </Button>
         </div>
       </motion.div>

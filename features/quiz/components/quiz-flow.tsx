@@ -453,23 +453,23 @@ function ResultSummary({
     )
     .join("\n");
 
-  // 渲染 summary 模板变量
+  // 渲染 summary 模板变量(与报告模板英文驼峰 token 一致)
   const vars: Record<string, string> = {
-    主题: theme ?? "",
-    选择路径: pathSummary,
-    客户名: customerName,
-    客户邮箱: customerEmail,
-    客户电话: "",
-    用户: "DolphinQuiz",
-    项目编号: "",
+    Topic: theme ?? "",
+    SelectedPath: pathSummary,
+    CustomerName: customerName,
+    CustomerEmail: customerEmail,
+    CustomerPhone: "",
+    Team: "DolphinQuiz",
+    ProjectNo: "",
   };
 
   const subject = summaryTemplate
     ? renderTemplate(summaryTemplate.subject, vars)
-    : "Quiz 结果摘要";
+    : "Quiz Summary";
   const body = summaryTemplate
     ? renderTemplate(summaryTemplate.body, vars)
-    : `感谢您完成 Quiz 问卷!\n\n选择路径:\n${pathSummary}\n\n关联主题:${theme ?? "-"}\n\nDolphinQuiz 团队`;
+    : `Thank you for completing the Quiz!\n\nSelected path:\n${pathSummary}\n\nRelated topic:${theme ?? "-"}\n\nDolphinQuiz Team`;
 
   return (
     <div>
