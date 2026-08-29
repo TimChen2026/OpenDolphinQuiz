@@ -682,7 +682,7 @@
       },
       "shell": {
         "tabs": {
-          "kanban": "Project Kanban",
+          "kanban": "Project Overview",
           "interaction": "Interaction",
           "logic": "Logic",
           "report": "Report Templates",
