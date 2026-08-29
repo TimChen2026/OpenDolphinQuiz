@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("team-members GET 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "获取团队成员失败" },
+      { error: error instanceof Error ? error.message : "Failed to load team members" },
       { status: 500 }
     );
   }
@@ -78,7 +78,7 @@ export async function DELETE(request: NextRequest) {
     const { userId } = body as { userId?: string };
     if (!userId) {
       return NextResponse.json(
-        { error: "缺少要移除的用户 ID" },
+        { error: "User ID to remove is required" },
         { status: 400 }
       );
     }
@@ -86,7 +86,7 @@ export async function DELETE(request: NextRequest) {
     const { user: actor, teamId } = await requireTeamAccess(targetTeamId);
     if (!teamId) {
       return NextResponse.json(
-        { error: "缺少团队 ID" },
+        { error: "Team ID is required" },
         { status: 400 }
       );
     }
@@ -103,7 +103,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     console.error("team-members DELETE 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "移除成员失败" },
+      { error: error instanceof Error ? error.message : "Failed to remove member" },
       { status: 500 }
     );
   }

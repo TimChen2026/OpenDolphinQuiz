@@ -32,12 +32,12 @@ import { saveTemplateEdits } from "@/lib/dashboard/quiz-editor";
 // 请求体校验
 const nodeSaveSchema = z.object({
   id: z.string().min(1),
-  question: z.string().min(1, "问题不能为空"),
+  question: z.string().min(1, "Question is required"),
 });
 
 const optionSaveSchema = z.object({
   id: z.string().min(1),
-  optionText: z.string().min(1, "选项文本不能为空"),
+  optionText: z.string().min(1, "Option text is required"),
   targetNodeId: z.string().nullable(),
   resultTheme: z.string().nullable(),
   resultManagerId: z.string().nullable(),
@@ -55,13 +55,13 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = saveTemplateSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "保存数据校验失败", details: parsed.error.flatten() },
+        { error: "Save data validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -72,18 +72,18 @@ export async function POST(request: NextRequest) {
     const templateTenantId = await getTemplateTenantId(templateId);
     if (templateTenantId !== teamId) {
       return NextResponse.json(
-        { error: "无权修改该模板" },
+        { error: "You are not allowed to modify this template" },
         { status: 403 }
       );
     }
 
     await saveTemplateEdits(templateId, nodes, options);
 
-    return NextResponse.json({ success: true, message: "模板已保存" });
+    return NextResponse.json({ success: true, message: "Template saved" });
   } catch (error) {
     console.error("template save 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "保存模板失败" },
+      { error: error instanceof Error ? error.message : "Failed to save template" },
       { status: 500 }
     );
   }

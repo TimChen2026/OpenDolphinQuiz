@@ -35,7 +35,7 @@ export async function GET() {
     const clientTemplate = await getActiveClientTemplate(teamId);
     if (!clientTemplate) {
       return NextResponse.json(
-        { ok: false, issues: [{ nodeId: "", level: "-", message: "当前没有激活的 Quiz 模板" }] },
+        { ok: false, issues: [{ nodeId: "", level: "-", message: "No active Quiz template" }] },
         { status: 200 }
       );
     }
@@ -46,7 +46,7 @@ export async function GET() {
   } catch (error) {
     console.error("link-check 错误:", error);
     return NextResponse.json(
-      { ok: false, issues: [{ nodeId: "", level: "-", message: "检查失败,请稍后重试" }] },
+      { ok: false, issues: [{ nodeId: "", level: "-", message: "Check failed, please try again later" }] },
       { status: 500 }
     );
   }

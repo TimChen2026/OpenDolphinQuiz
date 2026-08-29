@@ -23,6 +23,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { DashboardProject } from "@/features/dashboard/types";
 
 // 审计日志条目类型
@@ -44,7 +45,27 @@ type BackupStatus = "idle" | "loading" | "success" | "error";
 // 更新持续时间状态
 type RefreshStatus = "idle" | "refreshing" | "success" | "error";
 
+// Tab 定义(label 走 dashboard.views.database.tabs.{key} 翻译键)
+const TABS = [
+  { key: "data" },
+  { key: "audit" },
+  { key: "backup" },
+] as const;
+
+type TabKey = (typeof TABS)[number]["key"];
+
+// 审计操作类型的翻译键白名单(白名单外的值在展示处原样显示 API 返回内容)
+const ACTION_KEYS = ["login", "logout", "export", "delete", "update", "create"] as const;
+
+type ActionType = (typeof ACTION_KEYS)[number];
+
+function isActionType(value: string): value is ActionType {
+  return (ACTION_KEYS as readonly string[]).includes(value);
+}
+
 export function DatabaseView() {
+  const t = useTranslations("dashboard.views.database");
+  const tc = useTranslations("dashboard.views.common");
   const [projects, setProjects] = useState<DashboardProject[]>([]);
   const [themeManagers, setThemeManagers] = useState<Record<string, string>>({});
   const [auditLogsData, setAuditLogsData] = useState<AuditLogEntry[]>([]);
@@ -52,7 +73,7 @@ export function DatabaseView() {
   const [exportStatus, setExportStatus] = useState<ExportStatus>("idle");
   const [backupStatus, setBackupStatus] = useState<BackupStatus>("idle");
   const [refreshStatus, setRefreshStatus] = useState<RefreshStatus>("idle");
-  const [activeTab, setActiveTab] = useState<"data" | "audit" | "backup">("data");
+  const [activeTab, setActiveTab] = useState<TabKey>("data");
   const [loading, setLoading] = useState(true);
 
   // 行内编辑状态
@@ -113,9 +134,9 @@ export function DatabaseView() {
       if (!res.ok) {
         if (contentType.includes("application/json")) {
           const err = await res.json();
-          throw new Error(err.error ?? "导出失败");
+          throw new Error(err.error ?? t("exportFailed"));
         }
-        throw new Error("导出失败");
+        throw new Error(t("exportFailed"));
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -136,7 +157,7 @@ export function DatabaseView() {
     setBackupStatus("loading");
     try {
       const res = await fetch("/api/dashboard/backup", { method: "POST" });
-      if (!res.ok) throw new Error("备份失败");
+      if (!res.ok) throw new Error(t("backupFailed"));
       setBackupStatus("success");
     } catch (e) {
       console.error("备份失败", e);
@@ -153,9 +174,9 @@ export function DatabaseView() {
       if (!res.ok) {
         if (contentType.includes("application/json")) {
           const err = await res.json();
-          throw new Error(err.error ?? "刷新失败");
+          throw new Error(err.error ?? t("refreshFailed"));
         }
-        throw new Error("刷新失败");
+        throw new Error(t("refreshFailed"));
       }
       setRefreshStatus("success");
       // 刷新完成后重新加载数据
@@ -179,7 +200,7 @@ export function DatabaseView() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [field]: editingValue || null }),
       });
-      if (!res.ok) throw new Error("保存失败");
+      if (!res.ok) throw new Error(tc("saveFailed"));
       // 更新本地数据
       setProjects((prev) =>
         prev.map((p) =>
@@ -204,16 +225,6 @@ export function DatabaseView() {
     );
   });
 
-  // 操作类型中文映射
-  const actionTypeLabels: Record<string, string> = {
-    login: "登录",
-    logout: "登出",
-    export: "导出",
-    delete: "删除",
-    update: "更新",
-    create: "创建",
-  };
-
   // 渲染项目数据表格
   const renderDataTable = () => (
     <div className="space-y-4">
@@ -221,7 +232,7 @@ export function DatabaseView() {
       <div className="flex flex-wrap items-center gap-3">
         <input
           type="text"
-          placeholder="搜索项目编号/客户名/主题..."
+          placeholder={t("searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -232,13 +243,13 @@ export function DatabaseView() {
           disabled={exportStatus === "exporting"}
           className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
         >
-          {exportStatus === "exporting" ? "导出中..." : "导出 Excel"}
+          {exportStatus === "exporting" ? tc("exporting") : t("exportExcel")}
         </button>
         {exportStatus === "success" && (
-          <span className="text-xs text-green-600">导出成功</span>
+          <span className="text-xs text-green-600">{t("exportSuccess")}</span>
         )}
         {exportStatus === "error" && (
-          <span className="text-xs text-red-600">导出失败,请重试</span>
+          <span className="text-xs text-red-600">{t("exportFailedRetry")}</span>
         )}
         <button
           type="button"
@@ -246,13 +257,13 @@ export function DatabaseView() {
           disabled={refreshStatus === "refreshing"}
           className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium transition hover:bg-muted disabled:opacity-50"
         >
-          {refreshStatus === "refreshing" ? "更新中..." : "更新"}
+          {refreshStatus === "refreshing" ? tc("updating") : t("update")}
         </button>
         {refreshStatus === "success" && (
-          <span className="text-xs text-green-600">更新成功</span>
+          <span className="text-xs text-green-600">{t("updateSuccess")}</span>
         )}
         {refreshStatus === "error" && (
-          <span className="text-xs text-red-600">更新失败,请重试</span>
+          <span className="text-xs text-red-600">{t("updateFailedRetry")}</span>
         )}
       </div>
 
@@ -261,23 +272,23 @@ export function DatabaseView() {
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">项目编号</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">客户名</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">主题</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">跟踪项目经理</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">状态</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">项目金额</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">询盘时间</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">持续(h)</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">系统通知时间</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">备注</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.projectNumber")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.customerName")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.theme")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.manager")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.status")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.amount")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.inquiryTime")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.duration")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.notifyTime")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("columns.notes")}</th>
             </tr>
           </thead>
           <tbody>
             {filteredProjects.length === 0 ? (
               <tr>
                 <td colSpan={10} className="px-3 py-8 text-center text-muted-foreground">
-                  {loading ? "加载中..." : "暂无项目数据"}
+                  {loading ? tc("loading") : t("noProjects")}
                 </td>
               </tr>
             ) : (
@@ -378,7 +389,7 @@ export function DatabaseView() {
         </table>
       </div>
       <p className="text-xs text-muted-foreground">
-        共 {filteredProjects.length} 条记录
+        {t("recordCount", { count: filteredProjects.length })}
       </p>
     </div>
   );
@@ -390,17 +401,17 @@ export function DatabaseView() {
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">操作类型</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">描述</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">IP 地址</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-medium">操作时间</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("audit.actionType")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("audit.description")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("audit.ipAddress")}</th>
+              <th className="whitespace-nowrap px-3 py-2.5 font-medium">{t("audit.time")}</th>
             </tr>
           </thead>
           <tbody>
             {auditLogsData.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground">
-                  暂无审计日志数据
+                  {t("audit.empty")}
                 </td>
               </tr>
             ) : (
@@ -408,7 +419,9 @@ export function DatabaseView() {
                 <tr key={log.id} className="border-b border-border last:border-0 hover:bg-muted/30">
                   <td className="px-3 py-2">
                     <span className="inline-block rounded bg-muted px-2 py-0.5 text-xs font-medium">
-                      {actionTypeLabels[log.actionType] ?? log.actionType}
+                      {isActionType(log.actionType)
+                        ? t(`actions.${log.actionType}`)
+                        : log.actionType}
                     </span>
                   </td>
                   <td className="px-3 py-2 text-xs">{log.description}</td>
@@ -431,12 +444,12 @@ export function DatabaseView() {
   const renderBackup = () => (
     <div className="space-y-4">
       <div className="rounded-lg border border-border bg-muted/20 p-4">
-        <h4 className="text-sm font-medium">备份说明</h4>
+        <h4 className="text-sm font-medium">{t("backup.notesTitle")}</h4>
         <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
-          <li>• 数据库由 Neon 自动管理每日全量备份</li>
-          <li>• 备份保留期限由 Neon 套餐决定</li>
-          <li>• 如需手动备份,请使用 Neon 控制台操作</li>
-          <li>• 本页面提供手动触发备份记录功能</li>
+          <li>• {t("backup.note1")}</li>
+          <li>• {t("backup.note2")}</li>
+          <li>• {t("backup.note3")}</li>
+          <li>• {t("backup.note4")}</li>
         </ul>
       </div>
 
@@ -446,36 +459,27 @@ export function DatabaseView() {
         disabled={backupStatus === "loading"}
         className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
       >
-        {backupStatus === "loading" ? "处理中..." : "触发备份"}
+        {backupStatus === "loading" ? tc("processing") : t("backup.trigger")}
       </button>
       {backupStatus === "success" && (
-        <p className="text-xs text-green-600">备份请求已记录</p>
+        <p className="text-xs text-green-600">{t("backup.success")}</p>
       )}
       {backupStatus === "error" && (
-        <p className="text-xs text-red-600">备份请求失败,请重试</p>
+        <p className="text-xs text-red-600">{t("backup.failedRetry")}</p>
       )}
     </div>
   );
 
-  // Tab 导航
-  const tabs = [
-    { key: "data" as const, label: "项目数据" },
-    { key: "audit" as const, label: "日志管理" },
-    { key: "backup" as const, label: "备份管理" },
-  ];
-
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">数据库</h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          业务数据管理模块(需求 2.2):项目数据查看、Excel 导出、审计日志、备份管理
-        </p>
+        <h3 className="font-semibold text-foreground">{t("title")}</h3>
+        <p className="mt-1 text-xs text-muted-foreground">{t("description")}</p>
       </div>
 
       {/* Tab 切换 */}
       <div className="flex gap-1 rounded-lg bg-muted p-1">
-        {tabs.map((tab) => (
+        {TABS.map((tab) => (
           <button
             key={tab.key}
             type="button"
@@ -487,7 +491,7 @@ export function DatabaseView() {
                 : "text-muted-foreground hover:text-foreground")
             }
           >
-            {tab.label}
+            {t(`tabs.${tab.key}`)}
           </button>
         ))}
       </div>

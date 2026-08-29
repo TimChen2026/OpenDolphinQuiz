@@ -28,12 +28,15 @@
 // - 保存到数据库
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/button";
 import type { WarningSettings } from "@/features/dashboard/types";
 
 const DEFAULT_SETTINGS: WarningSettings = { yellowHours: 24, redHours: 48 };
 
 export function WarningSettingsView() {
+  const t = useTranslations("dashboard.views.warning");
+  const tc = useTranslations("dashboard.views.common");
   const [settings, setSettings] = useState<WarningSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -44,16 +47,16 @@ export function WarningSettingsView() {
     try {
       const res = await fetch("/api/dashboard/warning-settings");
       if (!res.ok) {
-        throw new Error("加载失败");
+        throw new Error(tc("loadFailed"));
       }
       const json = (await res.json()) as { settings: WarningSettings };
       setSettings(json.settings);
     } catch {
-      setMessage({ type: "error", text: "加载预警设置失败" });
+      setMessage({ type: "error", text: t("loadSettingsFailed") });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t, tc]);
 
   useEffect(() => {
     fetchData();
@@ -62,13 +65,13 @@ export function WarningSettingsView() {
   const handleSave = async () => {
     // 客户端校验:红色阈值须大于黄色阈值
     if (settings.yellowHours < 1) {
-      setMessage({ type: "error", text: "黄色预警阈值须 >= 1 小时" });
+      setMessage({ type: "error", text: t("yellowMinError") });
       return;
     }
     if (settings.redHours <= settings.yellowHours) {
       setMessage({
         type: "error",
-        text: "红色预警阈值须大于黄色预警阈值",
+        text: t("redGreaterThanYellowError"),
       });
       return;
     }
@@ -83,13 +86,13 @@ export function WarningSettingsView() {
       });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(json?.error ?? "保存失败");
+        throw new Error(json?.error ?? tc("saveFailed"));
       }
-      setMessage({ type: "success", text: "预警设置已保存" });
+      setMessage({ type: "success", text: t("settingsSaved") });
     } catch (err) {
       setMessage({
         type: "error",
-        text: err instanceof Error ? err.message : "保存失败,请重试",
+        text: err instanceof Error ? err.message : tc("saveFailed"),
       });
     } finally {
       setSaving(false);
@@ -97,25 +100,29 @@ export function WarningSettingsView() {
   };
 
   if (loading) {
-    return <div className="py-16 text-center text-muted-foreground">加载中...</div>;
+    return (
+      <div className="py-16 text-center text-muted-foreground">
+        {tc("loading")}
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">预警时间设置</h3>
+        <h3 className="font-semibold text-foreground">{t("title")}</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          项目持续时间达到阈值后,系统自动发送预警邮件给销售经理(抄送销售总监)
+          {t("description")}
         </p>
 
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* 黄色预警 */}
           <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
             <p className="text-sm font-medium text-amber-700">
-              黄色预警阈值
+              {t("yellowThreshold")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              项目持续超过该小时数,发送黄色预警邮件
+              {t("yellowThresholdHint")}
             </p>
             <div className="mt-3 flex items-center gap-2">
               <input
@@ -130,17 +137,17 @@ export function WarningSettingsView() {
                 }
                 className="w-24 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
               />
-              <span className="text-sm text-muted-foreground">小时</span>
+              <span className="text-sm text-muted-foreground">{t("hours")}</span>
             </div>
           </div>
 
           {/* 红色预警 */}
           <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-4">
             <p className="text-sm font-medium text-red-600">
-              红色预警阈值
+              {t("redThreshold")}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              项目持续超过该小时数,发送红色预警邮件
+              {t("redThresholdHint")}
             </p>
             <div className="mt-3 flex items-center gap-2">
               <input
@@ -155,14 +162,14 @@ export function WarningSettingsView() {
                 }
                 className="w-24 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
               />
-              <span className="text-sm text-muted-foreground">小时</span>
+              <span className="text-sm text-muted-foreground">{t("hours")}</span>
             </div>
           </div>
         </div>
 
         <div className="mt-6 flex items-center gap-4">
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? "保存中..." : "保存设置"}
+            {saving ? tc("saving") : t("saveSettings")}
           </Button>
           {message && (
             <span
@@ -180,13 +187,13 @@ export function WarningSettingsView() {
 
       {/* 预警说明 */}
       <div className="rounded-2xl border border-border bg-background p-5 text-xs text-muted-foreground">
-        <p className="mb-2 font-medium text-foreground">预警规则说明:</p>
+        <p className="mb-2 font-medium text-foreground">{t("rulesTitle")}</p>
         <ul className="list-inside list-disc space-y-1">
-          <li>预警判断前提:先判断项目是否超过 3 天,超过则不触发预警</li>
-          <li>项目状态为「获单/失单」后,不再发送预警邮件</li>
-          <li>黄色/红色预警各发送一次(DB 登记预警时间)</li>
-          <li>预警邮件发送给销售经理,抄送销售总监</li>
-          <li>预警邮件模板可在「报告模板」页编辑</li>
+          <li>{t("rule1")}</li>
+          <li>{t("rule2")}</li>
+          <li>{t("rule3")}</li>
+          <li>{t("rule4")}</li>
+          <li>{t("rule5")}</li>
         </ul>
       </div>
     </div>

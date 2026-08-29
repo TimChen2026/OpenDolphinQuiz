@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ logs, count: logs.length });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "查询失败" },
+      { error: error instanceof Error ? error.message : "Query failed" },
       { status: 500 }
     );
   }

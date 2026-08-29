@@ -30,7 +30,7 @@ import { updateUserPhone } from "@/lib/dashboard/team";
 import { assertTeamStaff } from "@/lib/teams";
 
 const updatePhoneSchema = z.object({
-  userId: z.string().min(1, "缺少用户 ID"),
+  userId: z.string().min(1, "User ID is required"),
   phone: z.string().trim(),
 });
 
@@ -40,13 +40,13 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = updatePhoneSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "参数校验失败", details: parsed.error.flatten() },
+        { error: "Validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -58,7 +58,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("team phone PUT 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "更新电话失败" },
+      { error: error instanceof Error ? error.message : "Failed to update phone" },
       { status: 500 }
     );
   }

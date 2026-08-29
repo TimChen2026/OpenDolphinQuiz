@@ -41,7 +41,7 @@ import {
 const applyReferenceSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("apply"),
-    referenceId: z.string().min(1, "缺少参考模板 ID"),
+    referenceId: z.string().min(1, "Reference template ID is required"),
   }),
   z.object({
     action: z.literal("clear"),
@@ -55,13 +55,13 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = applyReferenceSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "请求参数校验失败", details: parsed.error.flatten() },
+        { error: "Request validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
     if (!template) {
       return NextResponse.json(
-        { error: "当前没有激活的 Quiz 模板" },
+        { error: "No active Quiz template" },
         { status: 404 }
       );
     }
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       await clearTemplateContent(template.id);
       return NextResponse.json({
         success: true,
-        message: "问卷内容已清空,请重新输入",
+        message: "Questionnaire content cleared, please re-enter",
       });
     }
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     const ref = findReferenceTemplate(parsed.data.referenceId);
     if (!ref) {
       return NextResponse.json(
-        { error: "参考模板不存在" },
+        { error: "Reference template not found" },
         { status: 404 }
       );
     }
@@ -102,13 +102,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `已应用参考模板「${ref.name}」`,
+      message: `Applied reference template "${ref.name}"`,
       styleId: ref.styleId,
     });
   } catch (error) {
     console.error("apply-reference 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "应用参考模板失败" },
+      { error: error instanceof Error ? error.message : "Failed to apply reference template" },
       { status: 500 }
     );
   }

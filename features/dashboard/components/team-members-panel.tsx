@@ -30,6 +30,7 @@
 // 数据来源:/api/dashboard/team/members (GET)
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 /**
@@ -57,25 +58,28 @@ type TeamActor = {
 };
 
 /**
- * 角色标签映射:团队内角色 -> 显示文本
+ * 团队内角色 -> dashboard.views.members.roles.* 翻译键
+ * (键为后端存储的 teamRole 值,属数据契约禁止改动;显示文本渲染时经 t() 解析)
  */
-const TEAM_ROLE_LABELS: Record<string, string> = {
-  admin: "管理员",
-  member: "成员",
-  customer: "客户",
+const TEAM_ROLE_KEYS: Record<string, string> = {
+  admin: "teamAdmin",
+  member: "member",
+  customer: "customer",
 };
 
 /**
- * 系统角色标签映射
+ * 系统角色 -> dashboard.views.members.roles.* 翻译键(键为后端存储的 userRole 值)
  */
-const USER_ROLE_LABELS: Record<string, string> = {
-  admin: "超级管理员",
-  sales_director: "销售总监",
-  sales_manager: "销售经理",
-  user: "用户",
+const USER_ROLE_KEYS: Record<string, string> = {
+  admin: "superAdmin",
+  sales_director: "salesDirector",
+  sales_manager: "salesManager",
+  user: "user",
 };
 
 export function TeamMembersPanel() {
+  const t = useTranslations("dashboard.views.members");
+  const tc = useTranslations("dashboard.views.common");
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [actor, setActor] = useState<TeamActor>({
     id: "",
@@ -92,7 +96,7 @@ export function TeamMembersPanel() {
     try {
       const res = await fetch("/api/dashboard/team/members");
       if (!res.ok) {
-        throw new Error("加载团队成员失败");
+        throw new Error(t("loadMembersFailed"));
       }
       const json = (await res.json()) as {
         members: TeamMember[];
@@ -101,11 +105,11 @@ export function TeamMembersPanel() {
       setMembers(json.members);
       setActor(json.actor);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "加载失败");
+      setError(err instanceof Error ? err.message : tc("loadFailed"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t, tc]);
 
   useEffect(() => {
     fetchMembers();
@@ -116,7 +120,7 @@ export function TeamMembersPanel() {
       if (removing) {
         return;
       }
-      if (!window.confirm("确定要将该成员移出团队吗?")) {
+      if (!window.confirm(t("confirmRemove"))) {
         return;
       }
       setRemoving(true);
@@ -129,26 +133,26 @@ export function TeamMembersPanel() {
         });
         if (!res.ok) {
           const json = (await res.json()) as { error?: string };
-          throw new Error(json.error ?? "移除成员失败");
+          throw new Error(json.error ?? t("removeMemberFailed"));
         }
         setMembers((prev) =>
           prev.filter((m) => m.id !== targetUserId)
         );
       } catch (err) {
-        setError(err instanceof Error ? err.message : "移除失败");
+        setError(err instanceof Error ? err.message : t("removeFailed"));
       } finally {
         setRemoving(false);
       }
     },
-    [removing]
+    [removing, t]
   );
 
   if (loading) {
     return (
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">团队成员</h3>
+        <h3 className="font-semibold text-foreground">{t("teamMembers")}</h3>
         <div className="mt-4 py-8 text-center text-sm text-muted-foreground">
-          加载中...
+          {tc("loading")}
         </div>
       </div>
     );
@@ -157,7 +161,7 @@ export function TeamMembersPanel() {
   if (error) {
     return (
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">团队成员</h3>
+        <h3 className="font-semibold text-foreground">{t("teamMembers")}</h3>
         <div className="mt-4 py-8 text-center">
           <p className="text-sm text-destructive">{error}</p>
           <button
@@ -165,7 +169,7 @@ export function TeamMembersPanel() {
             onClick={fetchMembers}
             className="mt-2 text-sm text-primary hover:underline"
           >
-            重试
+            {tc("retry")}
           </button>
         </div>
       </div>
@@ -180,9 +184,9 @@ export function TeamMembersPanel() {
     <div className="rounded-2xl border border-border bg-background p-5">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-foreground">团队成员</h3>
+          <h3 className="font-semibold text-foreground">{t("teamMembers")}</h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            本团队共 {members.length} 位成员
+            {t("memberCount", { count: members.length })}
           </p>
         </div>
       </div>
@@ -195,7 +199,7 @@ export function TeamMembersPanel() {
 
       {members.length === 0 ? (
         <p className="mt-4 py-6 text-center text-sm text-muted-foreground">
-          暂无团队成员
+          {t("noMembers")}
         </p>
       ) : (
         <div className="mt-4">
@@ -219,7 +223,7 @@ export function TeamMembersPanel() {
             <>
               <div className="my-2 border-t border-border" />
               <p className="pt-1 text-xs font-medium text-muted-foreground">
-                客户
+                {t("customerSection")}
               </p>
               <ul className="mt-1 divide-y divide-border">
                 {customerMembers.map((member) => (
@@ -238,7 +242,7 @@ export function TeamMembersPanel() {
           {/* 提示:加入满一周才可被团队管理员移除 */}
           {!actor.isSuperAdmin && actor.isTeamAdmin && (
             <p className="mt-4 rounded-lg bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
-              提示:正式成员加入团队满一周后,团队管理员才能将其移出团队;移除团队成员请谨慎操作。
+              {t("removeHint")}
             </p>
           )}
         </div>
@@ -259,12 +263,14 @@ function MemberRow({
   onRemove: (userId: string) => void;
   removing: boolean;
 }) {
+  const t = useTranslations("dashboard.views.members");
+  const tc = useTranslations("dashboard.views.common");
   // 是否展示移除按钮(仅正式成员)
   const isStaff = member.teamRole !== "customer";
-  // 加入是否满一周
+  // 加入是否满一周（渲染期禁止直接调用 Date.now，用 useState 惰性初始化固定一次当前时间）
+  const [now] = useState(() => Date.now());
   const joinedAt = new Date(member.joinedAt).getTime();
-  const joinedOverWeek =
-    !Number.isNaN(joinedAt) && Date.now() - joinedAt >= 7 * 24 * 60 * 60 * 1000;
+  const joinedOverWeek = !Number.isNaN(joinedAt) && now - joinedAt >= 7 * 24 * 60 * 60 * 1000;
   // 超级管理员:不受一周限制、可移除团队管理员;团队管理员:仅可移除满一周的普通成员
   const canRemove =
     actor.isSuperAdmin ||
@@ -272,6 +278,9 @@ function MemberRow({
   // 团队管理员视角下,普通成员未满一周时的提示文案
   const showWeekHint =
     actor.isTeamAdmin && !actor.isSuperAdmin && isStaff && !member.isTeamAdmin && !joinedOverWeek;
+  // 角色数据值 -> 翻译键(未知值回退为原值展示)
+  const teamRoleKey = TEAM_ROLE_KEYS[member.teamRole];
+  const userRoleKey = USER_ROLE_KEYS[member.userRole];
 
   return (
     <li className="py-3">
@@ -296,7 +305,7 @@ function MemberRow({
               {/* 管理员 title 标签 */}
               {member.isTeamAdmin && (
                 <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                  管理员
+                  {t("roles.teamAdmin")}
                 </span>
               )}
             </div>
@@ -317,18 +326,18 @@ function MemberRow({
                   : "bg-secondary text-secondary-foreground"
             )}
           >
-            {TEAM_ROLE_LABELS[member.teamRole] ?? member.teamRole}
+            {teamRoleKey ? t(`roles.${teamRoleKey}`) : member.teamRole}
           </span>
           {/* 系统角色标签(如果有特殊角色) */}
           {member.userRole !== "user" && member.userRole !== "admin" && (
             <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
-              {USER_ROLE_LABELS[member.userRole] ?? member.userRole}
+              {userRoleKey ? t(`roles.${userRoleKey}`) : member.userRole}
             </span>
           )}
           {/* 未满一周提示(团队管理员视角,普通成员) */}
           {showWeekHint && (
             <span className="text-xs text-muted-foreground">
-              加入未满一周
+              {t("joinedUnderWeek")}
             </span>
           )}
           {/* 移除成员按钮 */}
@@ -339,7 +348,7 @@ function MemberRow({
               disabled={removing}
               className="text-xs font-medium text-destructive hover:underline disabled:opacity-50"
             >
-              移除
+              {tc("remove")}
             </button>
           )}
         </div>

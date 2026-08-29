@@ -29,6 +29,7 @@
 // - "增加销售经理"按钮
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
 import { TeamMembersPanel } from "@/features/dashboard/components/team-members-panel";
@@ -49,6 +50,8 @@ type TeamData = {
 };
 
 export function TeamView() {
+  const t = useTranslations("dashboard.views.team");
+  const tc = useTranslations("dashboard.views.common");
   const [data, setData] = useState<TeamData | null>(null);
   const [newManagerEmail, setNewManagerEmail] = useState("");
   const [directorEmail, setDirectorEmail] = useState("");
@@ -64,7 +67,7 @@ export function TeamView() {
     try {
       const res = await fetch("/api/dashboard/team");
       if (!res.ok) {
-        throw new Error("加载失败");
+        throw new Error(tc("loadFailed"));
       }
       const json = (await res.json()) as TeamData;
       setData(json);
@@ -78,11 +81,11 @@ export function TeamView() {
       }
       setPhoneInputs(initial);
     } catch {
-      setMessage({ type: "error", text: "加载团队数据失败" });
+      setMessage({ type: "error", text: t("loadTeamDataFailed") });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t, tc]);
 
   useEffect(() => {
     fetchData();
@@ -123,13 +126,13 @@ export function TeamView() {
       });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(json?.error ?? "保存失败");
+        throw new Error(json?.error ?? tc("saveFailed"));
       }
-      setMessage({ type: "success", text: "主题分配已保存" });
+      setMessage({ type: "success", text: t("themesSaved") });
     } catch (err) {
       setMessage({
         type: "error",
-        text: err instanceof Error ? err.message : "保存失败",
+        text: err instanceof Error ? err.message : tc("saveFailed"),
       });
     } finally {
       setSavingManagerId(null);
@@ -139,7 +142,7 @@ export function TeamView() {
   /** 添加销售经理 */
   const handleAddManager = async () => {
     if (!newManagerEmail.trim()) {
-      setMessage({ type: "error", text: "请输入销售经理邮箱" });
+      setMessage({ type: "error", text: t("managerEmailRequired") });
       return;
     }
     setMessage(null);
@@ -151,15 +154,15 @@ export function TeamView() {
       });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(json?.error ?? "添加失败");
+        throw new Error(json?.error ?? t("addFailed"));
       }
       setNewManagerEmail("");
-      setMessage({ type: "success", text: "销售经理已添加" });
+      setMessage({ type: "success", text: t("managerAdded") });
       await fetchData();
     } catch (err) {
       setMessage({
         type: "error",
-        text: err instanceof Error ? err.message : "添加失败",
+        text: err instanceof Error ? err.message : t("addFailed"),
       });
     }
   };
@@ -174,14 +177,14 @@ export function TeamView() {
       );
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(json?.error ?? "移除失败");
+        throw new Error(json?.error ?? t("removeFailed"));
       }
-      setMessage({ type: "success", text: "销售经理已移除" });
+      setMessage({ type: "success", text: t("managerRemoved") });
       await fetchData();
     } catch (err) {
       setMessage({
         type: "error",
-        text: err instanceof Error ? err.message : "移除失败",
+        text: err instanceof Error ? err.message : t("removeFailed"),
       });
     }
   };
@@ -189,7 +192,7 @@ export function TeamView() {
   /** 设置销售总监 */
   const handleSetDirector = async () => {
     if (!directorEmail.trim()) {
-      setMessage({ type: "error", text: "请输入销售总监邮箱" });
+      setMessage({ type: "error", text: t("directorEmailRequired") });
       return;
     }
     setMessage(null);
@@ -197,7 +200,7 @@ export function TeamView() {
       // 通过邮箱找到用户并设置为总监
       const res = await fetch("/api/dashboard/team");
       if (!res.ok) {
-        throw new Error("加载用户失败");
+        throw new Error(t("loadUsersFailed"));
       }
       const json = (await res.json()) as TeamData & { managers: SalesManager[] };
       const managerList = json.managers;
@@ -209,7 +212,7 @@ export function TeamView() {
         // 若不在经理列表中,尝试添加该用户为经理后设为总监
         setMessage({
           type: "error",
-          text: "未找到该用户,请先在系统中注册",
+          text: t("userNotFound"),
         });
         return;
       }
@@ -220,15 +223,15 @@ export function TeamView() {
       });
       const dirJson = await dirRes.json().catch(() => null);
       if (!dirRes.ok) {
-        throw new Error(dirJson?.error ?? "设置失败");
+        throw new Error(dirJson?.error ?? t("setFailed"));
       }
       setDirectorEmail("");
-      setMessage({ type: "success", text: "销售总监已设置" });
+      setMessage({ type: "success", text: t("directorSet") });
       await fetchData();
     } catch (err) {
       setMessage({
         type: "error",
-        text: err instanceof Error ? err.message : "设置失败",
+        text: err instanceof Error ? err.message : t("setFailed"),
       });
     }
   };
@@ -246,14 +249,14 @@ export function TeamView() {
       });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(json?.error ?? "保存失败");
+        throw new Error(json?.error ?? tc("saveFailed"));
       }
-      setMessage({ type: "success", text: "电话已保存" });
+      setMessage({ type: "success", text: t("phoneSaved") });
       await fetchData();
     } catch (err) {
       setMessage({
         type: "error",
-        text: err instanceof Error ? err.message : "保存失败",
+        text: err instanceof Error ? err.message : tc("saveFailed"),
       });
     } finally {
       setSavingPhoneId(null);
@@ -261,13 +264,13 @@ export function TeamView() {
   };
 
   if (loading) {
-    return <div className="py-16 text-center text-muted-foreground">加载中...</div>;
+    return <div className="py-16 text-center text-muted-foreground">{tc("loading")}</div>;
   }
 
   if (!data) {
     return (
       <div className="py-16 text-center text-muted-foreground">
-        暂无团队数据
+        {t("noTeamData")}
       </div>
     );
   }
@@ -278,9 +281,9 @@ export function TeamView() {
     <div className="space-y-6">
       {/* 销售总监设置(2.1.8.1:邮件抄送销售总监) */}
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">销售总监</h3>
+        <h3 className="font-semibold text-foreground">{t("director.title")}</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          销售总监将收到询盘通知与预警邮件的抄送(CC),负责管理层面跟进
+          {t("director.description")}
         </p>
 
         {director ? (
@@ -295,7 +298,7 @@ export function TeamView() {
                 </p>
               </div>
               <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                当前销售总监
+                {t("director.currentDirector")}
               </span>
             </div>
             {/* 总监电话输入框(验收修订 2.1.7.5) */}
@@ -308,7 +311,7 @@ export function TeamView() {
                     [director.id]: e.target.value,
                   }))
                 }
-                placeholder="销售总监电话"
+                placeholder={t("director.phonePlaceholder")}
                 className="flex-1 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:border-primary"
               />
               <Button
@@ -317,13 +320,13 @@ export function TeamView() {
                 disabled={savingPhoneId === director.id}
                 onClick={() => handleSavePhone(director.id)}
               >
-                {savingPhoneId === director.id ? "保存中..." : "保存电话"}
+                {savingPhoneId === director.id ? tc("saving") : t("savePhone")}
               </Button>
             </div>
           </div>
         ) : (
           <p className="mt-4 text-sm text-muted-foreground">
-            尚未设置销售总监
+            {t("director.notSet")}
           </p>
         )}
 
@@ -331,28 +334,28 @@ export function TeamView() {
           <input
             value={directorEmail}
             onChange={(e) => setDirectorEmail(e.target.value)}
-            placeholder="输入销售经理邮箱,将其设为销售总监"
+            placeholder={t("director.setEmailPlaceholder")}
             className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
           />
           <Button variant="outline" onClick={handleSetDirector}>
-            设置销售总监
+            {t("director.setButton")}
           </Button>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          注:销售总监与销售经理可为同一人,输入销售经理邮箱即可将其设为总监
+          {t("director.note")}
         </p>
       </div>
 
       {/* 销售经理列表(主题多选) */}
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">销售经理</h3>
+        <h3 className="font-semibold text-foreground">{t("managers.title")}</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          每位销售经理可负责多个主题(多选),保存后主题询盘将分配给对应经理
+          {t("managers.description")}
         </p>
 
         {data.managers.length === 0 ? (
           <p className="mt-4 text-sm text-muted-foreground">
-            暂无销售经理,请添加
+            {t("managers.empty")}
           </p>
         ) : (
           <ul className="mt-4 divide-y divide-border">
@@ -376,14 +379,14 @@ export function TeamView() {
                         disabled={savingManagerId === manager.id}
                         onClick={() => handleSaveManagerThemes(manager.id)}
                       >
-                        {savingManagerId === manager.id ? "保存中..." : "保存"}
+                        {savingManagerId === manager.id ? tc("saving") : tc("save")}
                       </Button>
                       <button
                         type="button"
                         onClick={() => handleRemoveManager(manager.id)}
                         className="rounded-full px-3 py-1 text-xs text-destructive hover:bg-destructive/10"
                       >
-                        移除
+                        {tc("remove")}
                       </button>
                     </div>
                   </div>
@@ -398,7 +401,7 @@ export function TeamView() {
                           [manager.id]: e.target.value,
                         }))
                       }
-                      placeholder="销售经理电话"
+                      placeholder={t("managers.phonePlaceholder")}
                       className="flex-1 max-w-xs rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:border-primary"
                     />
                     <Button
@@ -407,18 +410,18 @@ export function TeamView() {
                       disabled={savingPhoneId === manager.id}
                       onClick={() => handleSavePhone(manager.id)}
                     >
-                      {savingPhoneId === manager.id ? "保存中..." : "保存电话"}
+                      {savingPhoneId === manager.id ? tc("saving") : t("savePhone")}
                     </Button>
                   </div>
 
                   {/* 主题多选 */}
                   <div className="mt-3">
                     <p className="mb-2 text-xs text-muted-foreground">
-                      负责主题:
+                      {t("managers.themesLabel")}
                     </p>
                     {data.themes.length === 0 ? (
                       <p className="text-xs text-muted-foreground">
-                        暂无主题(请在逻辑界面中为 P3 选项填写主题词)
+                        {t("managers.noThemes")}
                       </p>
                     ) : (
                       <div className="flex flex-wrap gap-2">
@@ -454,15 +457,15 @@ export function TeamView() {
           <input
             value={newManagerEmail}
             onChange={(e) => setNewManagerEmail(e.target.value)}
-            placeholder="输入已注册用户邮箱"
+            placeholder={t("managers.addPlaceholder")}
             className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
           />
           <Button variant="outline" onClick={handleAddManager}>
-            增加销售经理
+            {t("managers.addButton")}
           </Button>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          注:需先让该用户在系统中注册,方可提升为销售经理
+          {t("managers.note")}
         </p>
       </div>
 

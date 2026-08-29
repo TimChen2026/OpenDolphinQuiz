@@ -29,6 +29,7 @@
 // - 交互界面下方预留其他风格模板供用户选择切换,快速预览效果
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
 import ProgressIndicator from "@/components/ui/progress-indicator";
@@ -37,57 +38,20 @@ import type {
   EditableNodeData,
 } from "@/features/dashboard/types";
 
-// 风格模板定义
+// 风格模板定义(name/description 为 UI 文案,走 dashboard.views.common.styles.{id}.* 翻译键)
 type StyleTemplate = {
   id: string;
-  name: string;
-  description: string;
   available: boolean;
 };
 
 const STYLE_TEMPLATES: StyleTemplate[] = [
-  {
-    id: "classic",
-    name: "Oxford 深蓝",
-    description: "白底卡片 + 主色按钮,当前示意图样式",
-    available: true,
-  },
-  {
-    id: "princeton",
-    name: "Princeton 橙",
-    description: "暖橙主色 + 黑色衬线,普林斯顿学院风",
-    available: true,
-  },
-  {
-    id: "yale",
-    name: "Yale 蓝",
-    description: "耶鲁深蓝 + 灰色辅色,传统学术风",
-    available: true,
-  },
-  {
-    id: "stanford",
-    name: "Stanford 红",
-    description: "斯坦福红 + 暖灰底色,加州现代风",
-    available: true,
-  },
-  {
-    id: "mit",
-    name: "MIT 科技",
-    description: "MIT 红 + 银灰辅色,极简技术风",
-    available: true,
-  },
-  {
-    id: "harvard",
-    name: "Harvard 深红",
-    description: "哈佛深红 + 黑白经典,传统名校风",
-    available: true,
-  },
-  {
-    id: "system",
-    name: "跟随系统",
-    description: "跟随操作系统深浅色模式自动切换",
-    available: true,
-  },
+  { id: "classic", available: true },
+  { id: "princeton", available: true },
+  { id: "yale", available: true },
+  { id: "stanford", available: true },
+  { id: "mit", available: true },
+  { id: "harvard", available: true },
+  { id: "system", available: true },
 ];
 
 // 各风格模板的预览样式配置
@@ -234,13 +198,15 @@ export function InteractionEditorView({
   // 风格保存状态(点击「确定」后保存到 sessionStorage,供链接生成与 Quiz 问卷读取)
   const [styleSaved, setStyleSaved] = useState(false);
   const [savingStyle, setSavingStyle] = useState(false);
+  const t = useTranslations("dashboard.views.editor");
+  const tc = useTranslations("dashboard.views.common");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/dashboard/template");
       if (!res.ok) {
-        throw new Error("加载失败");
+        throw new Error(tc("loadFailed"));
       }
       const json = (await res.json()) as { template: DashboardTemplate };
       setTemplate(json.template);
@@ -255,11 +221,11 @@ export function InteractionEditorView({
         }
       }
     } catch {
-      setSaveError("加载模板失败");
+      setSaveError(t("loadTemplatesFailed"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t, tc]);
 
   useEffect(() => {
     fetchData();
@@ -360,24 +326,28 @@ export function InteractionEditorView({
       });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(json?.error ?? "保存失败");
+        throw new Error(json?.error ?? tc("saveFailed"));
       }
-      setSaveMessage("已保存");
+      setSaveMessage(t("saved"));
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "保存失败,请重试");
+      setSaveError(err instanceof Error ? err.message : t("saveFailedRetry"));
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div className="py-16 text-center text-muted-foreground">加载中...</div>;
+    return (
+      <div className="py-16 text-center text-muted-foreground">
+        {tc("loading")}
+      </div>
+    );
   }
 
   if (!template || !template.nodes) {
     return (
       <div className="py-16 text-center text-muted-foreground">
-        暂无可用 Quiz 模板
+        {tc("noTemplates")}
       </div>
     );
   }
@@ -392,7 +362,7 @@ export function InteractionEditorView({
         {/* 手机问卷预览 */}
         <div>
           <h3 className="mb-3 text-sm font-medium text-foreground">
-            问卷效果预览(手机)
+            {t("previewTitle")}
           </h3>
           <MobilePreview node={selectedNode} styleId={selectedStyle} />
         </div>
@@ -400,7 +370,7 @@ export function InteractionEditorView({
         {/* 主题词输入 */}
         <div>
           <h3 className="mb-3 text-sm font-medium text-foreground">
-            选项主题词编辑:
+            {t("themeEditTitle")}
           </h3>
           <div className="space-y-3">
             {selectedNode.options.map((option) => (
@@ -421,21 +391,21 @@ export function InteractionEditorView({
                   onChange={(e) =>
                     updateOptionTheme(selectedNode.id, option.id, e.target.value)
                   }
-                  placeholder="主题词"
+                  placeholder={t("themePlaceholder")}
                   className="w-32 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:border-primary"
                 />
               </div>
             ))}
             {selectedNode.options.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                该节点(P4 结果层)无选项,无需编辑主题词。
+                {t("noOptionsHint")}
               </p>
             )}
           </div>
 
           <div className="mt-4 flex items-center gap-4">
             <Button onClick={handleSave} disabled={saving}>
-              {saving ? "保存中..." : "保存"}
+              {saving ? tc("saving") : tc("save")}
             </Button>
             {saveMessage && (
               <span className="text-sm text-green-600">{saveMessage}</span>
@@ -451,7 +421,7 @@ export function InteractionEditorView({
       <div className="rounded-2xl border border-border bg-background p-5">
         <div className="mb-3 flex flex-wrap items-center gap-3">
           <label className="text-sm font-medium text-foreground">
-            i.通过选项选择节点:
+            {t("selectNodeByOption")}
           </label>
           <select
             value={selectedNode.id}
@@ -468,17 +438,17 @@ export function InteractionEditorView({
         {/* 内容编辑:跳转逻辑界面,效果与点击仪表盘「逻辑界面」菜单一致 */}
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" onClick={handleGoEdit}>
-            前往编辑
+            {t("goEdit")}
           </Button>
           <span className="text-xs text-muted-foreground">
-            跳转到逻辑界面进行节点结构编辑
+            {t("goEditHint")}
           </span>
         </div>
       </div>
 
       {/* 风格模板选择(快速预览) */}
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">ii.风格模板</h3>
+        <h3 className="font-semibold text-foreground">{t("styleTemplates")}</h3>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STYLE_TEMPLATES.map((style) => (
             <button
@@ -496,16 +466,16 @@ export function InteractionEditorView({
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-foreground">
-                  {style.name}
+                  {tc(`styles.${style.id}.name`)}
                 </span>
                 {!style.available && (
                   <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                    即将上线
+                    {t("comingSoon")}
                   </span>
                 )}
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                {style.description}
+                {tc(`styles.${style.id}.description`)}
               </p>
             </button>
           ))}
@@ -517,15 +487,15 @@ export function InteractionEditorView({
             onClick={handleConfirmStyle}
             disabled={savingStyle}
           >
-            {savingStyle ? "保存中..." : "确定"}
+            {savingStyle ? tc("saving") : tc("confirm")}
           </Button>
           {styleSaved ? (
             <span className="text-sm text-green-600">
-              已保存风格:{STYLE_TEMPLATES.find((s) => s.id === selectedStyle)?.name}
+              {t("styleSaved", { name: tc(`styles.${selectedStyle}.name`) })}
             </span>
           ) : (
             <span className="text-xs text-muted-foreground">
-              点击确定后,该风格将应用到通过「链接生成」模块生成的 Quiz 问卷
+              {t("styleApplyHint")}
             </span>
           )}
         </div>
@@ -564,6 +534,7 @@ function MobilePreview({
   node: EditableNodeData;
   styleId: string;
 }) {
+  const t = useTranslations("dashboard.views.editor");
   const isSystemDark = useSystemDark();
 
   // 跟随系统:根据 OS 深浅色偏好选择样式
@@ -624,7 +595,7 @@ function MobilePreview({
             className="py-6 text-center text-sm"
             style={{ color: s.muted }}
           >
-            Summary 结果页
+            {t("summaryPage")}
           </div>
         )}
       </div>

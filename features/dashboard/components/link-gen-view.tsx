@@ -27,6 +27,7 @@
 // 2. 生成:点击"生成链接"按钮产生 Quiz 问卷链接,供用户复制提供给客户
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/button";
 
 // 检查结果类型
@@ -45,17 +46,6 @@ type CheckResult = {
 // ==================== Quiz 问卷方案保存 ====================
 // 方案 = 当前问卷完整配置(模板 ID + 全部节点/选项)+ 风格 + 保存时间。
 // 存储于浏览器 localStorage(键 dolphin_quiz_plans),还原时写回当前问卷模板。
-
-// 风格 ID → 中文名映射(与交互界面 STYLE_TEMPLATES 对齐)
-const STYLE_LABELS: Record<string, string> = {
-  classic: "Oxford 深蓝",
-  princeton: "Princeton 橙",
-  yale: "Yale 蓝",
-  stanford: "Stanford 红",
-  mit: "MIT 科技",
-  harvard: "Harvard 深红",
-  system: "跟随系统",
-};
 
 // 方案类型
 type QuizPlan = {
@@ -91,11 +81,14 @@ const MAX_PLANS = 12;
 // 点击「使用参考模板」时服务端校验 referenceId 并应用到当前模板
 const REFERENCE_EDUCATION = {
   id: "1787559939428-11p606",
-  name: "教育培训",
   styleId: "classic",
 };
 
 export function LinkGenView() {
+  const t = useTranslations("dashboard.views.link");
+  const tc = useTranslations("dashboard.views.common");
+  // 风格 ID → 显示名,经 common.styles 翻译键解析;未知 ID 由调用处以原始 ID 兜底
+  const styleLabel = (styleId: string) => tc(`styles.${styleId}.name`);
   const [checking, setChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<CheckResult | null>(null);
   const [checked, setChecked] = useState(false);
@@ -115,13 +108,13 @@ export function LinkGenView() {
     } catch {
       setCheckResult({
         ok: false,
-        issues: [{ nodeId: "", level: "-", message: "检查请求失败,请重试" }],
+        issues: [{ nodeId: "", level: "-", message: t("checkRequestFailed") }],
       });
       setChecked(true);
     } finally {
       setChecking(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     runCheck();
@@ -202,7 +195,7 @@ export function LinkGenView() {
         styleId?: string;
       };
       if (!res.ok || !json.success) {
-        throw new Error(json.error ?? "应用参考模板失败");
+        throw new Error(json.error ?? t("applyReferenceFailed"));
       }
       // 应用参考模板风格到 sessionStorage(与链接生成逻辑一致)
       try {
@@ -215,14 +208,14 @@ export function LinkGenView() {
       }
       setPlanMsg({
         type: "success",
-        text: `已应用参考模板「${REFERENCE_EDUCATION.name}」,问卷与风格已更新`,
+        text: t("referenceApplied", { name: t("referenceEducation") }),
       });
       // 应用后重新检查问卷信息
       await runCheck();
     } catch (error) {
       setPlanMsg({
         type: "error",
-        text: error instanceof Error ? error.message : "应用参考模板失败",
+        text: error instanceof Error ? error.message : t("applyReferenceFailed"),
       });
     } finally {
       setReferenceApplying(null);
@@ -245,7 +238,7 @@ export function LinkGenView() {
         message?: string;
       };
       if (!res.ok || !json.success) {
-        throw new Error(json.error ?? "新建问卷失败");
+        throw new Error(json.error ?? t("newQuizFailed"));
       }
       // 清空风格数据(后续由用户重新选择)
       try {
@@ -253,13 +246,13 @@ export function LinkGenView() {
       } catch {
         // sessionStorage 不可用时忽略
       }
-      setPlanMsg({ type: "success", text: json.message ?? "问卷已清空,请重新输入" });
+      setPlanMsg({ type: "success", text: json.message ?? t("quizCleared") });
       // 清空后重新检查
       await runCheck();
     } catch (error) {
       setPlanMsg({
         type: "error",
-        text: error instanceof Error ? error.message : "新建问卷失败",
+        text: error instanceof Error ? error.message : t("newQuizFailed"),
       });
     } finally {
       setReferenceApplying(null);
@@ -303,17 +296,17 @@ export function LinkGenView() {
     try {
       const res = await fetch("/api/dashboard/template");
       if (!res.ok) {
-        throw new Error(`获取问卷数据失败(${res.status})`);
+        throw new Error(t("fetchTemplateFailed", { status: res.status }));
       }
       const json = (await res.json()) as {
         template?: { id: string; nodes: PlanNode[] | null };
       };
       const template = json.template;
       if (!template?.id || !template.nodes) {
-        throw new Error("未能获取当前问卷模板");
+        throw new Error(t("templateNotLoaded"));
       }
 
-      const baseName = `问卷方案 ${plans.length + 1}`;
+      const baseName = t("planDefaultName", { count: plans.length + 1 });
       const plan: QuizPlan = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         name: baseName,
@@ -328,17 +321,17 @@ export function LinkGenView() {
       if (plans.length >= MAX_PLANS) {
         setPlanMsg({
           type: "error",
-          text: `方案已达${MAX_PLANS}个上限,已自动删除最旧的方案`,
+          text: t("planLimitReached", { count: MAX_PLANS }),
         });
       } else {
-        setPlanMsg({ type: "success", text: `方案「${baseName}」已保存` });
+        setPlanMsg({ type: "success", text: t("planSaved", { name: baseName }) });
       }
       persistPlans(next);
       setSelectedPlanId(plan.id);
     } catch (error) {
       setPlanMsg({
         type: "error",
-        text: error instanceof Error ? error.message : "保存方案失败",
+        text: error instanceof Error ? error.message : t("savePlanFailed"),
       });
     } finally {
       setSavingPlan(false);
@@ -375,7 +368,7 @@ export function LinkGenView() {
       });
       const json = (await res.json()) as { success?: boolean; error?: string };
       if (!res.ok || !json.success) {
-        throw new Error(json.error ?? "还原方案失败");
+        throw new Error(json.error ?? t("restorePlanFailed"));
       }
       // 应用方案风格到 sessionStorage(影响后续链接生成)
       try {
@@ -383,11 +376,11 @@ export function LinkGenView() {
       } catch {
         // sessionStorage 不可用时忽略
       }
-      setPlanMsg({ type: "success", text: `方案「${plan.name}」已还原并应用` });
+      setPlanMsg({ type: "success", text: t("planRestored", { name: plan.name }) });
     } catch (error) {
       setPlanMsg({
         type: "error",
-        text: error instanceof Error ? error.message : "还原方案失败",
+        text: error instanceof Error ? error.message : t("restorePlanFailed"),
       });
     } finally {
       setSavingPlan(false);
@@ -403,7 +396,7 @@ export function LinkGenView() {
     if (renamePlanId === planId) {
       setRenamePlanId(null);
     }
-    setPlanMsg({ type: "success", text: "方案已删除" });
+    setPlanMsg({ type: "success", text: t("planDeleted") });
   };
 
   /** 重命名方案 */
@@ -417,7 +410,7 @@ export function LinkGenView() {
       plans.map((p) => (p.id === planId ? { ...p, name } : p))
     );
     setRenamePlanId(null);
-    setPlanMsg({ type: "success", text: "方案已重命名" });
+    setPlanMsg({ type: "success", text: t("planRenamed") });
   };
 
   // 时间格式化
@@ -437,17 +430,16 @@ export function LinkGenView() {
       <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <h3 className="font-semibold text-foreground">参考模板</h3>
+            <h3 className="font-semibold text-foreground">{t("referenceTemplate")}</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              已为您准备「教育培训」参考模板,包含完整的问卷问题与 Oxford 深蓝风格,
-              可一键应用快速建立问卷;也可新建问卷重新输入
+              {t("referenceDescription", { name: t("referenceEducation") })}
             </p>
             <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-background px-3 py-1.5 text-sm">
               <span className="font-medium text-foreground">
-                {REFERENCE_EDUCATION.name}
+                {t("referenceEducation")}
               </span>
               <span className="text-xs text-muted-foreground">
-                {STYLE_LABELS[REFERENCE_EDUCATION.styleId] ?? REFERENCE_EDUCATION.styleId}
+                {styleLabel(REFERENCE_EDUCATION.styleId) ?? REFERENCE_EDUCATION.styleId}
               </span>
             </div>
           </div>
@@ -456,14 +448,14 @@ export function LinkGenView() {
               onClick={handleApplyReference}
               disabled={referenceApplying !== null}
             >
-              {referenceApplying === "apply" ? "应用中..." : "使用参考模板"}
+              {referenceApplying === "apply" ? tc("applying") : t("useReference")}
             </Button>
             <Button
               variant="outline"
               onClick={handleNewQuiz}
               disabled={referenceApplying !== null}
             >
-              {referenceApplying === "clear" ? "清空中..." : "新建问卷"}
+              {referenceApplying === "clear" ? t("clearing") : t("newQuiz")}
             </Button>
           </div>
         </div>
@@ -482,14 +474,14 @@ export function LinkGenView() {
 
       {/* 第一步:检查 */}
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">1. 检查问卷信息</h3>
+        <h3 className="font-semibold text-foreground">{t("stepCheckTitle")}</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          生成链接前,系统自动检查问卷的信息是否齐备(问题、选项、主题词、销售经理关联)
+          {t("stepCheckDescription")}
         </p>
 
         <div className="mt-4 flex items-center gap-4">
           <Button variant="outline" onClick={runCheck} disabled={checking}>
-            {checking ? "检查中..." : "重新检查"}
+            {checking ? tc("checking") : t("recheck")}
           </Button>
           {checked && checkResult && (
             <span
@@ -500,8 +492,8 @@ export function LinkGenView() {
               }
             >
               {checkResult.ok
-                ? "检查通过,问卷信息齐备"
-                : `检查未通过,共 ${checkResult.issues.length} 项待完善`}
+                ? t("checkPassed")
+                : t("checkFailedCount", { count: checkResult.issues.length })}
             </span>
           )}
         </div>
@@ -526,18 +518,18 @@ export function LinkGenView() {
 
       {/* 第二步:生成 */}
       <div className="rounded-2xl border border-border bg-background p-5">
-        <h3 className="font-semibold text-foreground">2. 生成问卷链接</h3>
+        <h3 className="font-semibold text-foreground">{t("stepGenerateTitle")}</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          检查通过后,点击「生成链接」产生 Quiz 问卷链接,可提供给客户访问
+          {t("stepGenerateDescription")}
         </p>
 
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <Button onClick={handleGenerate} disabled={!checkResult?.ok}>
-            生成链接
+            {t("generateLink")}
           </Button>
           {!checkResult?.ok && (
             <span className="text-xs text-muted-foreground">
-              请先完善上方缺失项后再生成
+              {t("fixIssuesFirst")}
             </span>
           )}
         </div>
@@ -545,13 +537,13 @@ export function LinkGenView() {
         {generatedLink && (
           <div className="mt-4 flex flex-col gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center">
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted-foreground">Quiz 问卷链接</p>
+              <p className="text-xs text-muted-foreground">{t("quizLink")}</p>
               <p className="mt-1 break-all font-mono text-sm text-foreground">
                 {generatedLink}
               </p>
             </div>
             <Button variant="outline" onClick={handleCopy}>
-              {copied ? "已复制" : "复制链接"}
+              {copied ? t("copied") : t("copyLink")}
             </Button>
           </div>
         )}
@@ -561,16 +553,16 @@ export function LinkGenView() {
       <div className="rounded-2xl border border-border bg-background p-5">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h3 className="font-semibold text-foreground">3. Quiz 问卷保存</h3>
+            <h3 className="font-semibold text-foreground">{t("stepSaveTitle")}</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              最多保存 {MAX_PLANS} 个问卷方案,页面仅展示方案名称;点击可查看保存时间与风格,支持重命名与还原
+              {t("stepSaveDescription", { count: MAX_PLANS })}
             </p>
           </div>
           <Button
             onClick={handleSavePlan}
             disabled={savingPlan || !checkResult?.ok}
           >
-            {savingPlan ? "处理中..." : "保存当前方案"}
+            {savingPlan ? tc("processing") : t("saveCurrentPlan")}
           </Button>
         </div>
 
@@ -589,14 +581,14 @@ export function LinkGenView() {
 
         {!checkResult?.ok && !checking && (
           <p className="mt-3 text-xs text-muted-foreground">
-            请先通过上方检查后再保存方案
+            {t("passCheckBeforeSave")}
           </p>
         )}
 
         {/* 方案列表 */}
         <div className="mt-4">
           {planLoaded && plans.length === 0 ? (
-            <p className="text-sm text-muted-foreground">暂无已保存的方案</p>
+            <p className="text-sm text-muted-foreground">{t("noSavedPlans")}</p>
           ) : (
             <ul className="space-y-2">
               {plans.map((plan) => (
@@ -621,21 +613,21 @@ export function LinkGenView() {
                             }
                           }}
                           className="w-full rounded-md border border-border bg-background px-2 py-1 text-sm text-foreground focus:outline-none"
-                          placeholder="输入新方案名称"
+                          placeholder={t("renamePlaceholder")}
                         />
                         <button
                           type="button"
                           onClick={() => handleRenameSubmit(plan.id)}
                           className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground"
                         >
-                          保存
+                          {tc("save")}
                         </button>
                         <button
                           type="button"
                           onClick={() => setRenamePlanId(null)}
                           className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground"
                         >
-                          取消
+                          {tc("cancel")}
                         </button>
                       </>
                     ) : (
@@ -653,22 +645,22 @@ export function LinkGenView() {
                         </button>
                         <button
                           type="button"
-                          title="重命名"
+                          title={tc("rename")}
                           onClick={() => {
                             setRenamePlanId(plan.id);
                             setRenameValue(plan.name);
                           }}
                           className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
                         >
-                          重命名
+                          {tc("rename")}
                         </button>
                         <button
                           type="button"
-                          title="删除方案"
+                          title={t("deletePlan")}
                           onClick={() => handleDeletePlan(plan.id)}
                           className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:text-red-600"
                         >
-                          删除
+                          {tc("delete")}
                         </button>
                       </>
                     )}
@@ -677,9 +669,11 @@ export function LinkGenView() {
                   {/* 选中后展开显示时间/风格 + 还原 */}
                   {selectedPlanId === plan.id && renamePlanId !== plan.id && (
                     <div className="border-t border-border px-3 py-2 text-xs text-muted-foreground">
-                      <p>保存时间:{formatPlanTime(plan.savedAt)}</p>
+                      <p>{t("savedAtLabel", { time: formatPlanTime(plan.savedAt) })}</p>
                       <p className="mt-1">
-                        风格:{STYLE_LABELS[plan.styleId] ?? plan.styleId}
+                        {t("styleLabel", {
+                          style: styleLabel(plan.styleId) ?? plan.styleId,
+                        })}
                       </p>
                       <div className="mt-2">
                         <Button
@@ -687,7 +681,7 @@ export function LinkGenView() {
                           onClick={() => handleRestorePlan(plan.id)}
                           disabled={savingPlan}
                         >
-                          还原此方案
+                          {t("restorePlan")}
                         </Button>
                       </div>
                     </div>
@@ -701,14 +695,13 @@ export function LinkGenView() {
 
       {/* 使用说明 */}
       <div className="rounded-2xl border border-border bg-background p-5 text-xs text-muted-foreground">
-        <p className="mb-2 font-medium text-foreground">使用说明:</p>
+        <p className="mb-2 font-medium text-foreground">{t("usageTitle")}</p>
         <ul className="list-inside list-disc space-y-1">
-          <li>客户点击链接后进入 Quiz 问卷,按逻辑链条 P1→P2→P3→P4 进行问答</li>
-          <li>客户在 P4 页点击「返回开始」后,系统建立项目编号并发送询盘通知邮件</li>
-          <li>问卷内容修改后,建议重新执行一次检查再分享链接</li>
+          <li>{t("usageStep1")}</li>
+          <li>{t("usageStep2")}</li>
+          <li>{t("usageStep3")}</li>
           <li>
-            如问卷涉及收集未成年人(未满 18 周岁)的信息,请确保已取得其父母或监护人的同意,
-            并在问卷开头或信息填写页向答题者提供隐私声明链接(依据服务条款 11.5)
+            {t("usageMinorPrivacy")}
           </li>
         </ul>
       </div>

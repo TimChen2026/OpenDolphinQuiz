@@ -35,6 +35,7 @@
 //   点击「逻辑界面」时滚动定位到页面下方逻辑界面区块
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { InteractionView } from "./interaction-view";
 import { InteractionEditorView } from "./interaction-editor-view";
@@ -46,22 +47,23 @@ import { LinkGenView } from "./link-gen-view";
 import { DatabaseView } from "./database-view";
 import { AnalysisView } from "./analysis-view";
 
-// Tab 定义
+// Tab 定义(label 文案走 dashboard.views.shell.tabs.{key} 翻译键)
 const TABS = [
-  { key: "kanban", label: "项目看板" },
-  { key: "interaction", label: "交互界面" },
-  { key: "logic", label: "逻辑界面" },
-  { key: "report", label: "报告模板" },
-  { key: "team", label: "团队界面" },
-  { key: "warning", label: "邮件设置" },
-  { key: "link", label: "模板与链接" },
-  { key: "database", label: "数据库" },
-  { key: "analysis", label: "数据分析" },
+  { key: "kanban" },
+  { key: "interaction" },
+  { key: "logic" },
+  { key: "report" },
+  { key: "team" },
+  { key: "warning" },
+  { key: "link" },
+  { key: "database" },
+  { key: "analysis" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
 
 export function DashboardShell() {
+  const t = useTranslations("dashboard.views.shell");
   const [activeTab, setActiveTab] = useState<TabKey>("kanban");
 
   // 「更新及检查」完成后会刷新网页,并写入提示"刷新后进入逻辑界面"的意图;
@@ -71,8 +73,8 @@ export function DashboardShell() {
     if (typeof window === "undefined") {
       return;
     }
-    const t = window.sessionStorage.getItem("dolphin_active_tab");
-    if (t === "logic") {
+    const storedTab = window.sessionStorage.getItem("dolphin_active_tab");
+    if (storedTab === "logic") {
       window.sessionStorage.removeItem("dolphin_active_tab");
       // 仅在挂载时一次性从会话还原焦点标签,非循环级联渲染,豁免校验
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -131,7 +133,7 @@ export function DashboardShell() {
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              {tab.label}
+              {t(`tabs.${tab.key}`)}
             </button>
           ))}
         </nav>
@@ -144,13 +146,13 @@ export function DashboardShell() {
             两个菜单项共用该页面,点击「逻辑界面」滚动定位到下方区块 */}
         {(activeTab === "interaction" || activeTab === "logic") && (
           <div className="space-y-8">
-            <section aria-label="交互界面">
+            <section aria-label={t("sectionInteraction")}>
               <InteractionEditorView
                 selectedNodeId={selectedNodeId}
                 onSelectNode={setSelectedNodeId}
               />
             </section>
-            <section id="logic-section" aria-label="逻辑界面" className="scroll-mt-24">
+            <section id="logic-section" aria-label={t("sectionLogic")} className="scroll-mt-24">
               <LogicView
                 selectedNodeId={selectedNodeId}
                 onSelectNode={setSelectedNodeId}

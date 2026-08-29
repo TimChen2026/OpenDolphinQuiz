@@ -29,20 +29,22 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import type {
   DashboardProject,
   InquiryLimitStatus,
 } from "@/features/dashboard/types";
 
-// 状态显示映射
-const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  跟进: { label: "跟进", className: "bg-blue-500/10 text-blue-600" },
-  获单: { label: "获单", className: "bg-green-500/10 text-green-600" },
-  失单: { label: "失单", className: "bg-red-500/10 text-red-600" },
+// 状态显示映射(中文键为 projectStatus 数据库存储值,属数据契约禁止改动;
+// labelKey 指向 dashboard.views.common 的 status.* 翻译键,渲染时解析)
+const STATUS_LABELS: Record<string, { labelKey: string; className: string }> = {
+  跟进: { labelKey: "followUp", className: "bg-blue-500/10 text-blue-600" },
+  获单: { labelKey: "won", className: "bg-green-500/10 text-green-600" },
+  失单: { labelKey: "lost", className: "bg-red-500/10 text-red-600" },
 };
 
-// 状态流转选项:当前状态 -> 可流转目标
+// 状态流转选项:当前状态 -> 可流转目标(值为数据库存储状态,数据契约)
 const STATUS_ACTIONS: Record<string, string[]> = {
   跟进: ["获单", "失单"],
   失单: ["跟进"],
@@ -68,6 +70,8 @@ type TeamMember = {
 };
 
 export function InteractionView() {
+  const t = useTranslations("dashboard.views.kanban");
+  const tc = useTranslations("dashboard.views.common");
   const [data, setData] = useState<TemplateData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,17 +84,17 @@ export function InteractionView() {
     try {
       const res = await fetch("/api/dashboard/template");
       if (!res.ok) {
-        throw new Error("加载失败");
+        throw new Error(tc("loadFailed"));
       }
       const json = (await res.json()) as TemplateData;
       setData(json);
       setError(null);
     } catch {
-      setError("加载项目数据失败,请刷新重试");
+      setError(t("loadProjectsFailed"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t, tc]);
 
   useEffect(() => {
     fetchData();
@@ -124,12 +128,12 @@ export function InteractionView() {
       });
       if (!res.ok) {
         const json = await res.json().catch(() => null);
-        alert(json?.error ?? "状态更新失败");
+        alert(json?.error ?? t("statusUpdateFailed"));
         return;
       }
       await fetchData();
     } catch {
-      alert("网络异常,请重试");
+      alert(tc("networkError"));
     } finally {
       setUpdatingId(null);
     }
@@ -149,17 +153,21 @@ export function InteractionView() {
       });
       if (!res.ok) {
         const json = await res.json().catch(() => null);
-        alert(json?.error ?? "操作失败");
+        alert(json?.error ?? t("operationFailed"));
         return;
       }
       await fetchData();
     } catch {
-      alert("网络异常,请重试");
+      alert(tc("networkError"));
     }
   };
 
   if (loading && !data) {
-    return <div className="py-16 text-center text-muted-foreground">加载中...</div>;
+    return (
+      <div className="py-16 text-center text-muted-foreground">
+        {tc("loading")}
+      </div>
+    );
   }
 
   if (error) {
@@ -178,16 +186,16 @@ export function InteractionView() {
         <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-700">
           <p className="font-medium">
             {limitStatus.isLimited
-              ? "今日询盘次数已达上限(5次/天),客户将无法继续提交询盘。"
-              : `今日询盘已达 ${limitStatus.count} 次,接近免费套餐上限(5次/天)。`}
+              ? t("limitReachedBanner")
+              : t("nearLimitBanner", { count: limitStatus.count })}
           </p>
           <p className="mt-1 text-amber-600">
-            为不影响团队顺利承接业务,建议考虑升级套餐。
+            {t("upgradeHint")}
             <Link
               href="/pricing"
               className="ml-2 underline underline-offset-2"
             >
-              查看定价
+              {t("viewPricing")}
             </Link>
           </p>
         </div>
@@ -197,7 +205,10 @@ export function InteractionView() {
       {limitStatus && limitStatus.limit !== null && (
         <div className="flex flex-wrap gap-3 text-sm">
           <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">
-            今日询盘:{limitStatus.count}/{limitStatus.limit} 次
+            {t("todayInquiries", {
+              count: limitStatus.count,
+              limit: limitStatus.limit,
+            })}
           </span>
         </div>
       )}
@@ -205,7 +216,7 @@ export function InteractionView() {
       {/* 项目列表 */}
       {projects.length === 0 ? (
         <div className="py-16 text-center text-muted-foreground">
-          暂无项目,客户完成 Quiz 后项目将显示在这里。
+          {t("noProjects")}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -220,7 +231,7 @@ export function InteractionView() {
                     {project.projectNumber}
                   </p>
                   <p className="mt-1 text-muted-foreground">
-                    客户:{project.customerName}
+                    {t("customer", { name: project.customerName })}
                     {project.theme ? ` · ${project.theme}` : ""}
                   </p>
                 </div>
@@ -231,33 +242,40 @@ export function InteractionView() {
                       "bg-muted text-muted-foreground"
                   )}
                 >
-                  {STATUS_LABELS[project.projectStatus]?.label ??
-                    project.projectStatus}
+                  {STATUS_LABELS[project.projectStatus]
+                    ? tc(
+                        `status.${STATUS_LABELS[project.projectStatus].labelKey}`
+                      )
+                    : project.projectStatus}
                 </span>
               </div>
 
               <div className="mt-3 space-y-1 text-xs text-muted-foreground">
                 <p>
-                  询盘时间:
+                  {t("inquiryTime")}
                   {project.inquiryDatetime
                     ? new Date(project.inquiryDatetime).toLocaleString()
                     : "-"}
                 </p>
                 {project.durationHours !== null && (
-                  <p>持续:{Number(project.durationHours).toFixed(2)} 小时</p>
+                  <p>
+                    {t("duration", {
+                      hours: Number(project.durationHours).toFixed(2),
+                    })}
+                  </p>
                 )}
                 {project.over3Days && (
-                  <p className="text-amber-600">已超过 3 天</p>
+                  <p className="text-amber-600">{t("overThreeDays")}</p>
                 )}
                 {project.replyDatetime && (
                   <p>
-                    回复时间:
+                    {t("replyTime")}
                     {new Date(project.replyDatetime).toLocaleString()}
                   </p>
                 )}
                 {project.notificationTime && (
                   <p>
-                    系统通知时间:
+                    {t("notificationTime")}
                     {new Date(project.notificationTime).toLocaleString()}
                   </p>
                 )}
@@ -279,7 +297,13 @@ export function InteractionView() {
                           : "bg-red-500/10 text-red-600 hover:bg-red-500/20"
                       )}
                     >
-                      {updatingId === project.id ? "更新中..." : `设为${action}`}
+                      {updatingId === project.id
+                        ? tc("updating")
+                        : tc("setTo", {
+                            action: tc(
+                              `status.${STATUS_LABELS[action]?.labelKey}`
+                            ),
+                          })}
                     </button>
                   ))}
                 </div>
@@ -290,16 +314,18 @@ export function InteractionView() {
                 <div className="mt-4 border-t border-border pt-3">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-xs text-muted-foreground">
-                      已授权经理:
+                      {t("grantedManagers")}
                       {(() => {
                         const grantedIds = projectPermissions[project.id] ?? [];
                         if (grantedIds.length === 0) {
-                          return " 无";
+                          return ` ${tc("none")}`;
                         }
                         const names = grantedIds
                           .map((id) => salesManagers.find((m) => m.id === id)?.name)
                           .filter((n): n is string => Boolean(n));
-                        return names.length > 0 ? ` ${names.join("、")}` : " 无";
+                        return names.length > 0
+                          ? ` ${names.join(t("nameSeparator"))}`
+                          : ` ${tc("none")}`;
                       })()}
                     </p>
                     <button
@@ -311,7 +337,9 @@ export function InteractionView() {
                       }
                       className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground hover:bg-hover"
                     >
-                      {grantProjectId === project.id ? "收起" : "授权给销售经理"}
+                      {grantProjectId === project.id
+                        ? tc("close")
+                        : t("grantToManagers")}
                     </button>
                   </div>
 
@@ -319,7 +347,7 @@ export function InteractionView() {
                     <div className="mt-2 space-y-1">
                       {salesManagers.length === 0 ? (
                         <p className="text-xs text-muted-foreground">
-                          暂无销售经理,请先在团队设置中添加
+                          {t("noSalesManagers")}
                         </p>
                       ) : (
                         salesManagers.map((manager) => {
@@ -345,7 +373,11 @@ export function InteractionView() {
                               )}
                             >
                               <span>{manager.name}</span>
-                              <span>{isGranted ? "已授权 · 点击撤销" : "未授权 · 点击授权"}</span>
+                              <span>
+                                {isGranted
+                                  ? t("grantedHint")
+                                  : t("notGrantedHint")}
+                              </span>
                             </button>
                           );
                         })

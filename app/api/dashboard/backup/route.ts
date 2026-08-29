@@ -46,13 +46,13 @@ export async function POST(request: NextRequest) {
     // 注意:实际备份由 Neon 自动管理,此端点仅用于触发和记录
     return NextResponse.json({
       success: true,
-      message: "备份请求已记录,数据库由 Neon 自动管理每日备份",
+      message: "Backup request recorded, daily backups are managed automatically by Neon",
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error("备份请求失败:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "备份请求失败" },
+      { error: error instanceof Error ? error.message : "Backup request failed" },
       { status: 500 }
     );
   }
@@ -65,13 +65,13 @@ export async function GET() {
     // 返回备份状态信息
     return NextResponse.json({
       success: true,
-      note: "数据库由 Neon 自动管理每日全量备份",
-      recommendation: "如需手动备份,请使用 Neon 控制台操作",
+      note: "Daily full backups are managed automatically by Neon",
+      recommendation: "For manual backups, use the Neon console",
       lastBackup: null, // 实际应由 Neon API 查询
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "查询失败" },
+      { error: error instanceof Error ? error.message : "Query failed" },
       { status: 500 }
     );
   }

@@ -610,6 +610,444 @@
           "today": "Today"
         }
       }
+    },
+    "views": {
+      "common": {
+        "loading": "Loading...",
+        "saving": "Saving...",
+        "updating": "Updating...",
+        "processing": "Processing...",
+        "applying": "Applying...",
+        "exporting": "Exporting...",
+        "checking": "Checking...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "retry": "Retry",
+        "confirm": "Confirm",
+        "close": "Close",
+        "delete": "Delete",
+        "remove": "Remove",
+        "rename": "Rename",
+        "saveFailed": "Save failed",
+        "loadFailed": "Load failed",
+        "networkError": "Network error, please try again",
+        "noTemplates": "No templates available",
+        "updateComplete": "Update complete",
+        "setTo": "Set as {action}",
+        "status": {
+          "followUp": "Following",
+          "won": "Won",
+          "lost": "Lost"
+        },
+        "styles": {
+          "classic": {
+            "name": "Oxford Navy",
+            "description": "White cards with primary color buttons, the current demo style"
+          },
+          "princeton": {
+            "name": "Princeton Orange",
+            "description": "Warm orange primary with black serif, Princeton collegiate style"
+          },
+          "yale": {
+            "name": "Yale Blue",
+            "description": "Yale deep blue with gray accents, traditional academic style"
+          },
+          "stanford": {
+            "name": "Stanford Red",
+            "description": "Stanford red with warm gray background, modern California style"
+          },
+          "mit": {
+            "name": "MIT Tech",
+            "description": "MIT red with silver gray accents, minimalist tech style"
+          },
+          "harvard": {
+            "name": "Harvard Crimson",
+            "description": "Harvard crimson with black and white, classic Ivy style"
+          },
+          "system": {
+            "name": "Follow System",
+            "description": "Automatically follows the OS light and dark mode"
+          }
+        },
+        "day": {
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday",
+          "sunday": "Sunday"
+        },
+        "none": "None"
+      },
+      "shell": {
+        "tabs": {
+          "kanban": "Project Kanban",
+          "interaction": "Interaction",
+          "logic": "Logic",
+          "report": "Report Templates",
+          "team": "Team",
+          "warning": "Email Settings",
+          "link": "Templates & Links",
+          "database": "Database",
+          "analysis": "Analytics"
+        },
+        "sectionInteraction": "Interaction Interface",
+        "sectionLogic": "Logic Interface"
+      },
+      "kanban": {
+        "loadProjectsFailed": "Failed to load project data. Please refresh and try again.",
+        "statusUpdateFailed": "Failed to update status",
+        "operationFailed": "Operation failed",
+        "limitReachedBanner": "The daily inquiry limit (5 per day) has been reached. Customers cannot submit new inquiries today.",
+        "nearLimitBanner": "Today you have reached {count} inquiries, approaching the free plan limit (5 per day).",
+        "upgradeHint": "To keep your team running smoothly, consider upgrading your plan.",
+        "viewPricing": "View pricing",
+        "todayInquiries": "Inquiries today: {count}/{limit}",
+        "noProjects": "No projects yet. Projects will appear here after customers complete the Quiz.",
+        "customer": "Customer: {name}",
+        "inquiryTime": "Inquiry time:",
+        "duration": "Duration: {hours} h",
+        "overThreeDays": "Over 3 days",
+        "replyTime": "Reply time:",
+        "notificationTime": "System notification time:",
+        "grantedManagers": "Granted managers:",
+        "none": "None",
+        "nameSeparator": ", ",
+        "grantToManagers": "Grant to sales managers",
+        "noSalesManagers": "No sales managers yet. Add one in team settings first.",
+        "grantedHint": "Granted · Click to revoke",
+        "notGrantedHint": "Not granted · Click to grant"
+      },
+      "members": {
+        "teamMembers": "Team Members",
+        "memberCount": "{count, plural, one {# member in this team} other {# members in this team}}",
+        "noMembers": "No team members yet",
+        "customerSection": "Customers",
+        "removeHint": "Note: Team admins can remove a regular member only after the member has joined for one week. Please remove members with caution.",
+        "loadMembersFailed": "Failed to load team members",
+        "confirmRemove": "Are you sure you want to remove this member from the team?",
+        "removeMemberFailed": "Failed to remove member",
+        "removeFailed": "Failed to remove",
+        "joinedUnderWeek": "Joined less than a week ago",
+        "roles": {
+          "teamAdmin": "Admin",
+          "member": "Member",
+          "customer": "Customer",
+          "superAdmin": "Super Admin",
+          "salesDirector": "Sales Director",
+          "salesManager": "Sales Manager",
+          "user": "User"
+        }
+      },
+      "warning": {
+        "title": "Warning Time Settings",
+        "description": "When a project duration reaches the threshold, the system automatically sends a warning email to the sales manager (cc the sales director).",
+        "yellowThreshold": "Yellow warning threshold",
+        "yellowThresholdHint": "When the project duration exceeds this number of hours, a yellow warning email is sent",
+        "redThreshold": "Red warning threshold",
+        "redThresholdHint": "When the project duration exceeds this number of hours, a red warning email is sent",
+        "hours": "hours",
+        "saveSettings": "Save Settings",
+        "settingsSaved": "Warning settings saved",
+        "loadSettingsFailed": "Failed to load warning settings",
+        "yellowMinError": "The yellow warning threshold must be at least 1 hour",
+        "redGreaterThanYellowError": "The red warning threshold must be greater than the yellow warning threshold",
+        "rulesTitle": "Warning rules:",
+        "rule1": "A warning is triggered only when the project has not exceeded 3 days; projects over 3 days do not trigger warnings",
+        "rule2": "No warning emails are sent after the project status becomes Won or Lost",
+        "rule3": "Yellow and red warnings are each sent once (the warning time is recorded in the database)",
+        "rule4": "Warning emails are sent to the sales manager, cc the sales director",
+        "rule5": "Warning email templates can be edited on the Report Templates page"
+      },
+      "editor": {
+        "loadTemplatesFailed": "Failed to load templates",
+        "saved": "Saved",
+        "saveFailedRetry": "Save failed. Please try again.",
+        "previewTitle": "Quiz preview (mobile)",
+        "themeEditTitle": "Edit option themes:",
+        "themePlaceholder": "Theme",
+        "noOptionsHint": "This node (P4 result layer) has no options, so there is no theme to edit.",
+        "selectNodeByOption": "i. Select a node via options:",
+        "goEdit": "Go to editor",
+        "goEditHint": "Opens the logic view to edit the node structure",
+        "styleTemplates": "ii. Style templates",
+        "comingSoon": "Coming soon",
+        "styleSaved": "Saved style: {name}",
+        "styleApplyHint": "After you click Confirm, this style will be applied to the Quiz questionnaire generated via the Link Generation module",
+        "summaryPage": "Summary"
+      },
+      "logic": {
+        "loadChartFailed": "Failed to load the node graph",
+        "saveFailedRetry": "Save failed. Please try again.",
+        "autoSaved": "Auto-saved at {time}",
+        "autoSaveFailed": "Auto-save failed: {msg}",
+        "unknownError": "Unknown error",
+        "selectNodeByGraph": "iii. Select a node via the node graph",
+        "legendP1": "P1 root node",
+        "legendP2": "P2 intermediate node",
+        "legendP3": "P3 choice node",
+        "legendP4": "P4 result node",
+        "nodeEditTable": "Node content editing table",
+        "nodeEditTableHint": "Click any node in the graph above to show its question and option texts here without scrolling down. The Update and Check button below works the same as the one in the full table.",
+        "questionPlaceholder": "Question",
+        "optionPlaceholder": "Option text",
+        "resultNodeNoOptions": "(Result node, no options)",
+        "selectNodePrompt": "Click any node in the graph above to show its question and option texts here",
+        "updateAndCheck": "Update and Check",
+        "effectPreview": "Preview",
+        "checkPassed": "✓ Check passed: the questionnaire content is complete with no gaps",
+        "foundIssues": "Found {count} missing or incomplete items:",
+        "fullEditTable": "Full questionnaire content editing table",
+        "previewTitle": "Quiz preview (select a node and click Show):",
+        "selectNodePlaceholder": "Select a node",
+        "previewHint": "↑ The above is a preview of the Quiz questionnaire for this node in the Interaction view",
+        "check": {
+          "noNodes": "The template has no nodes to check",
+          "nodeLabel": "Node [{level} {question}]",
+          "noQuestion": "(question not filled in)",
+          "questionEmpty": "{label}: question content is empty",
+          "noOptions": "{label}: decision node has no options",
+          "optionEmpty": "{label} option {optionLabel}: option text is empty",
+          "optionNotConnected": "{label} option {optionLabel} \"{optionText}\": not connected to the next node, the decision chain is broken"
+        }
+      },
+      "report": {
+        "availableVars": "Available variables (replaced automatically when sending):",
+        "sendTo": "To:",
+        "ccLabel": "CC:",
+        "subject": "Email subject",
+        "body": "Email body",
+        "templateSaved": "Template saved",
+        "types": {
+          "internal": {
+            "label": "Internal notification email",
+            "hint": "Internal notification for customer inquiries (sent when a new inquiry arrives)",
+            "to": "Sales manager (owner of the topic)",
+            "cc": "Sales director"
+          },
+          "summary": {
+            "label": "Summary digest",
+            "hint": "Shown on the Quiz summary page after the customer completes the quiz",
+            "to": "Customer (shown on page, not sent by email)"
+          },
+          "warningYellow": {
+            "label": "Yellow warning email",
+            "hint": "Triggered when a project has no reply for 24h or more",
+            "to": "Sales manager",
+            "cc": "Sales director"
+          },
+          "warningRed": {
+            "label": "Red warning email",
+            "hint": "Triggered when a project has no reply for 48h or more",
+            "to": "Sales manager",
+            "cc": "Sales director"
+          }
+        }
+      },
+      "link": {
+        "checkRequestFailed": "Check request failed, please retry",
+        "applyReferenceFailed": "Failed to apply the reference template",
+        "referenceEducation": "Education & Training",
+        "referenceApplied": "Applied reference template \"{name}\", quiz and style updated",
+        "newQuizFailed": "Failed to create a new quiz",
+        "quizCleared": "Quiz cleared, please re-enter the information",
+        "fetchTemplateFailed": "Failed to fetch quiz data (HTTP {status})",
+        "templateNotLoaded": "Could not get the current quiz template",
+        "planDefaultName": "Quiz plan {count}",
+        "planLimitReached": "Reached the limit of {count} plans, the oldest plan was removed automatically",
+        "planSaved": "Plan \"{name}\" saved",
+        "savePlanFailed": "Failed to save the plan",
+        "restorePlanFailed": "Failed to restore the plan",
+        "planRestored": "Plan \"{name}\" restored and applied",
+        "planDeleted": "Plan deleted",
+        "planRenamed": "Plan renamed",
+        "referenceTemplate": "Reference template",
+        "referenceDescription": "A ready-made \"{name}\" reference template with complete quiz questions and the Oxford Navy style. Apply it with one click to build a quiz quickly, or create a new quiz",
+        "useReference": "Use reference template",
+        "clearing": "Clearing...",
+        "newQuiz": "New quiz",
+        "stepCheckTitle": "1. Check quiz information",
+        "stepCheckDescription": "Before generating the link, the system automatically checks whether the quiz information is complete (questions, options, keywords, sales manager)",
+        "recheck": "Recheck",
+        "checkPassed": "Check passed, quiz information is complete",
+        "checkFailedCount": "Check failed, {count} items to complete",
+        "stepGenerateTitle": "2. Generate quiz link",
+        "stepGenerateDescription": "After the check passes, click \"Generate link\" to create the Quiz link for your customer",
+        "generateLink": "Generate link",
+        "fixIssuesFirst": "Complete the missing items above before generating",
+        "quizLink": "Quiz link",
+        "copied": "Copied",
+        "copyLink": "Copy link",
+        "stepSaveTitle": "3. Save quiz",
+        "stepSaveDescription": "Save up to {count} quiz plans. Only plan names are shown on the page; click a plan to view its saved time and style, and rename or restore it",
+        "saveCurrentPlan": "Save current plan",
+        "passCheckBeforeSave": "Pass the check above before saving a plan",
+        "noSavedPlans": "No saved plans",
+        "renamePlaceholder": "Enter a new plan name",
+        "deletePlan": "Delete plan",
+        "savedAtLabel": "Saved at: {time}",
+        "styleLabel": "Style: {style}",
+        "restorePlan": "Restore this plan",
+        "usageTitle": "Instructions:",
+        "usageStep1": "The customer opens the link to enter the Quiz and answers along the flow P1→P2→P3→P4",
+        "usageStep2": "After the customer clicks \"Back to start\" on P4, the system creates a project number and sends the inquiry notification email",
+        "usageStep3": "After changing quiz content, run the check again before sharing the link",
+        "usageMinorPrivacy": "If the quiz involves collecting information from minors (under 18), make sure consent from their parents or guardians has been obtained, and provide a privacy statement link at the beginning of the quiz or on the information page (see Terms of Service 11.5)"
+      },
+      "database": {
+        "tabs": {
+          "data": "Data",
+          "audit": "Audit Log",
+          "backup": "Backup"
+        },
+        "title": "Database",
+        "description": "Business data management (Req 2.2): project data view, Excel export, audit logs, and backup management",
+        "searchPlaceholder": "Search by project number, customer, or theme...",
+        "exportExcel": "Export to Excel",
+        "exportSuccess": "Export succeeded",
+        "exportFailedRetry": "Export failed. Please try again.",
+        "exportFailed": "Export failed",
+        "update": "Update",
+        "updateSuccess": "Update succeeded",
+        "updateFailedRetry": "Update failed. Please try again.",
+        "refreshFailed": "Refresh failed",
+        "backupFailed": "Backup failed",
+        "recordCount": "Total {count} records",
+        "noProjects": "No project data",
+        "columns": {
+          "projectNumber": "Project No.",
+          "customerName": "Customer",
+          "theme": "Theme",
+          "manager": "Project Manager",
+          "status": "Status",
+          "amount": "Amount",
+          "inquiryTime": "Inquiry Time",
+          "duration": "Duration (h)",
+          "notifyTime": "Notification Time",
+          "notes": "Notes"
+        },
+        "audit": {
+          "actionType": "Action",
+          "description": "Description",
+          "ipAddress": "IP Address",
+          "time": "Time",
+          "empty": "No audit log data"
+        },
+        "backup": {
+          "notesTitle": "About Backups",
+          "note1": "The database is backed up daily by Neon automatically",
+          "note2": "The backup retention period depends on your Neon plan",
+          "note3": "This page provides manual backup record triggering",
+          "note4": "For a manual backup, use the Neon console",
+          "trigger": "Trigger Backup",
+          "success": "Backup request recorded",
+          "failedRetry": "Backup request failed. Please try again."
+        },
+        "actions": {
+          "login": "Login",
+          "logout": "Logout",
+          "export": "Export",
+          "delete": "Delete",
+          "update": "Update",
+          "create": "Create"
+        }
+      },
+      "analysis": {
+        "charts": {
+          "weekly": {
+            "title": "Weekly Visits",
+            "description": "Visit counts by day of week over the past week"
+          },
+          "hourly": {
+            "title": "Visits by Time Slot",
+            "description": "Visit counts per 2-hour slot over the past week"
+          },
+          "monthly": {
+            "title": "Monthly Visits",
+            "description": "Visit counts by month over the past 13 months"
+          },
+          "quarterly": {
+            "title": "Quarterly Visits",
+            "description": "Visit counts by quarter (Q1-Q4)"
+          },
+          "yearly": {
+            "title": "Yearly Visits",
+            "description": "Visit counts by year"
+          },
+          "themeVisits": {
+            "title": "Visits by Theme",
+            "description": "Visit counts by theme over the past month"
+          },
+          "themeTimezone": {
+            "title": "Theme Visits by Time Slot",
+            "description": "12 time slots × 4 themes cross stats over the past month"
+          },
+          "managerProjects": {
+            "title": "Projects Handled by Manager",
+            "description": "Manager × status (won/lost/follow up) over the past month"
+          },
+          "managerThemes": {
+            "title": "Themes Handled by Manager",
+            "description": "Manager × theme over the past month"
+          },
+          "managerReplyTime": {
+            "title": "Manager Avg. Reply Time",
+            "description": "Average reply time (hours) per manager over the past month"
+          }
+        },
+        "avgReplyTimeTooltip": "Avg. reply time: {value} h",
+        "unitHours": "Hours",
+        "loadDataFailed": "Failed to load data",
+        "locked": {
+          "planRequired": "Available with Pro/Max plan",
+          "unlockHint": "Upgrade your plan to unlock all analysis charts",
+          "upgrade": "Upgrade Plan"
+        },
+        "banner": {
+          "freePlanTitle": "💡 You are on the free plan",
+          "freePlanDescription": "The basic chart (weekly visits) is available for free. Upgrade to the Pro/Max plan to unlock all 10 analysis charts and get deeper sales insights.",
+          "viewPlans": "View Plans"
+        }
+      },
+      "team": {
+        "loadTeamDataFailed": "Failed to load team data",
+        "noTeamData": "No team data",
+        "savePhone": "Save Phone",
+        "managerEmailRequired": "Please enter the sales manager email",
+        "directorEmailRequired": "Please enter the sales director email",
+        "userNotFound": "User not found. Please register in the system first",
+        "loadUsersFailed": "Failed to load users",
+        "themesSaved": "Theme assignment saved",
+        "phoneSaved": "Phone number saved",
+        "managerAdded": "Sales manager added",
+        "managerRemoved": "Sales manager removed",
+        "directorSet": "Sales director set",
+        "addFailed": "Failed to add",
+        "removeFailed": "Failed to remove",
+        "setFailed": "Failed to set",
+        "director": {
+          "title": "Sales Director",
+          "description": "The sales director receives CC copies of inquiry and alert emails and handles follow up at the management level",
+          "currentDirector": "Current Sales Director",
+          "phonePlaceholder": "Sales director phone",
+          "notSet": "No sales director set yet",
+          "setEmailPlaceholder": "Enter a sales manager email to set as sales director",
+          "setButton": "Set Sales Director",
+          "note": "Note: the sales director and a sales manager can be the same person. Enter the manager email to set them as director"
+        },
+        "managers": {
+          "title": "Sales Managers",
+          "description": "Each sales manager can own multiple themes (multi select). Inquiries of saved themes will be assigned to the corresponding manager",
+          "empty": "No sales managers yet. Please add one",
+          "phonePlaceholder": "Sales manager phone",
+          "themesLabel": "Assigned themes:",
+          "noThemes": "No themes yet (fill in theme words for the P3 option in the logic view)",
+          "addPlaceholder": "Enter a registered user email",
+          "addButton": "Add Sales Manager",
+          "note": "Note: the user must register in the system first before being promoted to sales manager"
+        }
+      }
     }
   },
   "profile": {

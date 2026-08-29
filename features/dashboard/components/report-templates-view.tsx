@@ -33,48 +33,49 @@
 // - "询盘接近/达到上限提醒"模板为开发团队内部使用,仅在管理后台可调整(验收修订 2.1.9-b)
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/button";
 import type { EmailTemplateData } from "@/features/dashboard/types";
 
-// 模板类型显示顺序、说明与收件人(To/CC)展示
+// 模板类型显示顺序与收件人(To/CC)展示;显示字段存翻译键,渲染时经 t() 解析
 const TEMPLATE_ORDER: {
   type: string;
-  label: string;
-  hint: string;
-  to: string;
-  cc: string | null;
+  labelKey: string;
+  hintKey: string;
+  toKey: string;
+  ccKey: string | null;
 }[] = [
   {
     type: "internal",
-    label: "内部告知邮件",
-    hint: "客户询盘内部通知(新询盘时发送)",
-    to: "销售经理(负责该主题)",
-    cc: "销售总监",
+    labelKey: "types.internal.label",
+    hintKey: "types.internal.hint",
+    toKey: "types.internal.to",
+    ccKey: "types.internal.cc",
   },
   {
     type: "summary",
-    label: "Summary 摘要",
-    hint: "客户完成 Quiz 后,展示在 Quiz 的 Summary 结果页",
-    to: "客户(页面展示,不通过邮件)",
-    cc: null,
+    labelKey: "types.summary.label",
+    hintKey: "types.summary.hint",
+    toKey: "types.summary.to",
+    ccKey: null,
   },
   {
     type: "warning_yellow",
-    label: "黄色预警邮件",
-    hint: "项目持续 >=24h 未回复时触发",
-    to: "销售经理",
-    cc: "销售总监",
+    labelKey: "types.warningYellow.label",
+    hintKey: "types.warningYellow.hint",
+    toKey: "types.warningYellow.to",
+    ccKey: "types.warningYellow.cc",
   },
   {
     type: "warning_red",
-    label: "红色预警邮件",
-    hint: "项目持续 >=48h 未回复时触发",
-    to: "销售经理",
-    cc: "销售总监",
+    labelKey: "types.warningRed.label",
+    hintKey: "types.warningRed.hint",
+    toKey: "types.warningRed.to",
+    ccKey: "types.warningRed.cc",
   },
 ];
 
-// 可用变量提示
+// 可用变量提示(@变量为数据契约,后端按中文字面替换,禁止改动)
 const AVAILABLE_VARS = [
   "@项目编号",
   "@客户名",
@@ -90,6 +91,8 @@ const AVAILABLE_VARS = [
 ];
 
 export function ReportTemplatesView() {
+  const t = useTranslations("dashboard.views.report");
+  const tc = useTranslations("dashboard.views.common");
   const [templates, setTemplates] = useState<
     Record<string, EmailTemplateData> | null
   >(null);
@@ -102,16 +105,16 @@ export function ReportTemplatesView() {
     try {
       const res = await fetch("/api/dashboard/email-templates");
       if (!res.ok) {
-        throw new Error("加载失败");
+        throw new Error(tc("loadFailed"));
       }
       const json = (await res.json()) as { templates: Record<string, EmailTemplateData> };
       setTemplates(json.templates);
     } catch {
-      setSaveMessage({ type: "error", text: "加载模板失败" });
+      setSaveMessage({ type: "error", text: tc("loadFailed") });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [tc]);
 
   useEffect(() => {
     fetchData();
@@ -148,13 +151,13 @@ export function ReportTemplatesView() {
       });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(json?.error ?? "保存失败");
+        throw new Error(json?.error ?? tc("saveFailed"));
       }
-      setSaveMessage({ type: "success", text: "模板已保存" });
+      setSaveMessage({ type: "success", text: t("templateSaved") });
     } catch (err) {
       setSaveMessage({
         type: "error",
-        text: err instanceof Error ? err.message : "保存失败,请重试",
+        text: err instanceof Error ? err.message : tc("saveFailed"),
       });
     } finally {
       setSavingType(null);
@@ -162,13 +165,13 @@ export function ReportTemplatesView() {
   };
 
   if (loading) {
-    return <div className="py-16 text-center text-muted-foreground">加载中...</div>;
+    return <div className="py-16 text-center text-muted-foreground">{tc("loading")}</div>;
   }
 
   if (!templates) {
     return (
       <div className="py-16 text-center text-muted-foreground">
-        暂无可用模板
+        {tc("noTemplates")}
       </div>
     );
   }
@@ -177,7 +180,7 @@ export function ReportTemplatesView() {
     <div className="space-y-6">
       {/* 变量提示 */}
       <div className="rounded-2xl border border-border bg-background p-4 text-xs text-muted-foreground">
-        <p className="mb-2 font-medium text-foreground">可用变量(发送时自动替换):</p>
+        <p className="mb-2 font-medium text-foreground">{t("availableVars")}</p>
         <div className="flex flex-wrap gap-2">
           {AVAILABLE_VARS.map((v) => (
             <code key={v} className="rounded bg-muted px-2 py-0.5">
@@ -187,7 +190,7 @@ export function ReportTemplatesView() {
         </div>
       </div>
 
-      {TEMPLATE_ORDER.map(({ type, label, hint, to, cc }) => {
+      {TEMPLATE_ORDER.map(({ type, labelKey, hintKey, toKey, ccKey }) => {
         const template = templates[type];
         if (!template) {
           return null;
@@ -198,20 +201,20 @@ export function ReportTemplatesView() {
             className="rounded-2xl border border-border bg-background p-5"
           >
             <div className="mb-4">
-              <h3 className="font-semibold text-foreground">{label}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+              <h3 className="font-semibold text-foreground">{t(labelKey)}</h3>
+              <p className="mt-1 text-xs text-muted-foreground">{t(hintKey)}</p>
             </div>
 
             {/* To/CC 收件人展示(2.1.2:让用户一目了然邮件设置) */}
             <div className="mb-4 flex flex-wrap gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3 text-xs">
               <span className="flex items-center gap-1.5">
-                <span className="font-medium text-foreground">发送 To:</span>
-                <span className="text-muted-foreground">{to}</span>
+                <span className="font-medium text-foreground">{t("sendTo")}</span>
+                <span className="text-muted-foreground">{t(toKey)}</span>
               </span>
-              {cc && (
+              {ccKey && (
                 <span className="flex items-center gap-1.5">
-                  <span className="font-medium text-foreground">抄送 CC:</span>
-                  <span className="text-muted-foreground">{cc}</span>
+                  <span className="font-medium text-foreground">{t("ccLabel")}</span>
+                  <span className="text-muted-foreground">{t(ccKey)}</span>
                 </span>
               )}
             </div>
@@ -219,7 +222,7 @@ export function ReportTemplatesView() {
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-sm text-muted-foreground">
-                  邮件主题
+                  {t("subject")}
                 </label>
                 <input
                   value={template.subject}
@@ -229,7 +232,7 @@ export function ReportTemplatesView() {
               </div>
               <div>
                 <label className="mb-1 block text-sm text-muted-foreground">
-                  邮件正文
+                  {t("body")}
                 </label>
                 <textarea
                   value={template.body}
@@ -247,7 +250,7 @@ export function ReportTemplatesView() {
                 onClick={() => handleSave(type)}
                 disabled={savingType === type}
               >
-                {savingType === type ? "保存中..." : "保存模板"}
+                {savingType === type ? tc("saving") : tc("save")}
               </Button>
             </div>
           </div>

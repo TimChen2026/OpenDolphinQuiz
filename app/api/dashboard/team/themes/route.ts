@@ -30,7 +30,7 @@ import { getActiveClientTemplate } from "@/lib/quiz/queries";
 import { updateManagerThemes } from "@/lib/dashboard/team";
 
 const updateThemesSchema = z.object({
-  managerId: z.string().min(1, "缺少经理 ID"),
+  managerId: z.string().min(1, "Manager ID is required"),
   themes: z.array(z.string()).default([]),
 });
 
@@ -40,13 +40,13 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = updateThemesSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "参数校验失败", details: parsed.error.flatten() },
+        { error: "Validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -55,7 +55,7 @@ export async function PUT(request: NextRequest) {
     const clientTemplate = await getActiveClientTemplate(teamId);
     if (!clientTemplate) {
       return NextResponse.json(
-        { error: "当前没有激活的 Quiz 模板" },
+        { error: "No active Quiz template" },
         { status: 404 }
       );
     }
@@ -70,7 +70,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("team themes PUT 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "更新主题失败" },
+      { error: error instanceof Error ? error.message : "Failed to update themes" },
       { status: 500 }
     );
   }

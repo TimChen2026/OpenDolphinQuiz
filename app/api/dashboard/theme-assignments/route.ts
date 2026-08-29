@@ -46,7 +46,7 @@ export async function GET() {
     const template = await getActiveClientTemplate(teamId);
     if (!template) {
       return NextResponse.json(
-        { error: "当前没有激活的 Quiz 模板" },
+        { error: "No active Quiz template" },
         { status: 404 }
       );
     }
@@ -60,7 +60,7 @@ export async function GET() {
   } catch (error) {
     console.error("theme-assignments GET 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "获取主题关联失败" },
+      { error: error instanceof Error ? error.message : "Failed to load theme assignments" },
       { status: 500 }
     );
   }
@@ -72,13 +72,13 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = putAssignmentSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "关联数据校验失败", details: parsed.error.flatten() },
+        { error: "Assignment data validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -86,18 +86,18 @@ export async function PUT(request: NextRequest) {
     const template = await getActiveClientTemplate(teamId);
     if (!template) {
       return NextResponse.json(
-        { error: "当前没有激活的 Quiz 模板" },
+        { error: "No active Quiz template" },
         { status: 404 }
       );
     }
 
     await updateThemeManager(template.id, parsed.data.theme, parsed.data.managerId);
 
-    return NextResponse.json({ success: true, message: "主题负责人已更新" });
+    return NextResponse.json({ success: true, message: "Theme owner updated" });
   } catch (error) {
     console.error("theme-assignments PUT 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "更新主题负责人失败" },
+      { error: error instanceof Error ? error.message : "Failed to update theme owner" },
       { status: 500 }
     );
   }

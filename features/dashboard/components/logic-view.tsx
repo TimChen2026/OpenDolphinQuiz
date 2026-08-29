@@ -32,6 +32,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import type { ECElementEvent } from "echarts";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/button";
 import { cn } from "@/lib/utils";
 import type {
@@ -88,29 +89,39 @@ function buildTreeData(
  * - 选项文本不能为空
  * - P1~P3 决策节点的每个选项必须连接到下一节点(targetNodeId),否则决策树中断
  * - P1~P3 决策节点必须有至少一个选项
+ * - 校验消息为 UI 文案,经传入的翻译函数 t 生成(键:dashboard.views.logic.check.*)
  */
-function validateTemplate(t: DashboardTemplate | null): string[] {
-  if (!t || !t.nodes || t.nodes.length === 0) {
-    return ["模板没有可检查的节点"];
+function validateTemplate(
+  template: DashboardTemplate | null,
+  t: ReturnType<typeof useTranslations>
+): string[] {
+  if (!template || !template.nodes || template.nodes.length === 0) {
+    return [t("check.noNodes")];
   }
   const issues: string[] = [];
-  for (const node of t.nodes) {
-    const label = `节点[${node.level} ${node.question.trim() || "(未填写问题)"}]`;
+  for (const node of template.nodes) {
+    const label = t("check.nodeLabel", {
+      level: node.level,
+      question: node.question.trim() || t("check.noQuestion"),
+    });
     if (!node.question.trim()) {
-      issues.push(`${label}:问题内容为空`);
+      issues.push(t("check.questionEmpty", { label }));
     }
     if (node.level !== "P4" && node.options.length === 0) {
-      issues.push(`${label}:决策节点没有任何选项`);
+      issues.push(t("check.noOptions", { label }));
     }
     for (const opt of node.options) {
+      const optionLabel = opt.optionLabel || "?";
       if (!opt.optionText.trim()) {
-        issues.push(
-          `${label} 选项${opt.optionLabel || "?"}:选项文本为空`
-        );
+        issues.push(t("check.optionEmpty", { label, optionLabel }));
       }
       if (node.level !== "P4" && !opt.targetNodeId) {
         issues.push(
-          `${label} 选项${opt.optionLabel || "?"}「${opt.optionText.trim() || "?"}」:未连接到下一节点,决策链路中断`
+          t("check.optionNotConnected", {
+            label,
+            optionLabel,
+            optionText: opt.optionText.trim() || "?",
+          })
         );
       }
     }
@@ -146,6 +157,8 @@ export function LogicView({
   const [autoSaveStatus, setAutoSaveStatus] = useState<string | null>(null);
   // 检查结果(null=尚未检查; 空数组=通过; 非空=遗漏清单)
   const [checkResult, setCheckResult] = useState<string[] | null>(null);
+  const t = useTranslations("dashboard.views.logic");
+  const tc = useTranslations("dashboard.views.common");
 
   const renderChart = useCallback((template: DashboardTemplate) => {
     const container = chartRef.current;
@@ -236,7 +249,7 @@ export function LogicView({
       try {
         const res = await fetch("/api/dashboard/template");
         if (!res.ok) {
-          throw new Error("加载失败");
+          throw new Error(tc("loadFailed"));
         }
         const json = (await res.json()) as { template: DashboardTemplate };
         if (!cancelled) {
@@ -245,7 +258,7 @@ export function LogicView({
         }
       } catch {
         if (!cancelled) {
-          setError("加载节点图失败");
+          setError(t("loadChartFailed"));
         }
       } finally {
         if (!cancelled) {
@@ -260,7 +273,7 @@ export function LogicView({
       chartInstanceRef.current?.dispose();
       chartInstanceRef.current = null;
     };
-  }, []);
+  }, [t, tc]);
 
   // 数据加载完成且图表容器挂载后再渲染 ECharts
   useEffect(() => {
@@ -362,9 +375,9 @@ export function LogicView({
     });
     const json = await res.json().catch(() => null);
     if (!res.ok) {
-      throw new Error(json?.error ?? "保存失败");
+      throw new Error(json?.error ?? tc("saveFailed"));
     }
-  }, []);
+  }, [tc]);
 
   /**
    * 编排自动保存:防抖 1.2s,期间不断编辑则不断重置定时器;
@@ -378,19 +391,23 @@ export function LogicView({
       try {
         await persistTemplate();
         setAutoSaveStatus(
-          `已自动保存 ${new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })}`
+          t("autoSaved", {
+            time: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            }),
+          })
         );
       } catch (err) {
         setAutoSaveStatus(
-          `自动保存失败:${err instanceof Error ? err.message : "未知错误"}`
+          t("autoSaveFailed", {
+            msg: err instanceof Error ? err.message : t("unknownError"),
+          })
         );
       }
     }, 1200);
-  }, [persistTemplate]);
+  }, [t, persistTemplate]);
 
   /** 「更新及检查」:先保存最新内容,再校验内容完整性并展示结果 */
   const handleUpdateAndCheck = async () => {
@@ -405,12 +422,12 @@ export function LogicView({
     // 先尝试保存最新内容(更新)
     try {
       await persistTemplate();
-      setSaveMessage("更新完成");
+      setSaveMessage(tc("updateComplete"));
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "保存失败,请重试");
+      setSaveError(err instanceof Error ? err.message : t("saveFailedRetry"));
     }
     // 再执行完整性检查:即使后端校验拒绝保存,遗漏清单也能照常展示,便于用户排查
-    const issues = validateTemplate(templateRef.current);
+    const issues = validateTemplate(templateRef.current, t);
     setCheckResult(issues);
     setSaving(false);
     // 更新及检查完成后:记录"刷新后进入逻辑界面"的意图并自动刷新定位,
@@ -425,7 +442,11 @@ export function LogicView({
   }, []);
 
   if (loading) {
-    return <div className="py-16 text-center text-muted-foreground">加载中...</div>;
+    return (
+      <div className="py-16 text-center text-muted-foreground">
+        {tc("loading")}
+      </div>
+    );
   }
 
   if (error) {
@@ -435,7 +456,7 @@ export function LogicView({
   if (!template || !template.nodes) {
     return (
       <div className="py-16 text-center text-muted-foreground">
-        暂无可用 Quiz 模板
+        {tc("noTemplates")}
       </div>
     );
   }
@@ -450,19 +471,25 @@ export function LogicView({
     <div className="space-y-6">
       {/* 逻辑界面(节点图,排列在上) */}
       <div>
-        <h4 className="mt-3 text-sm font-medium text-foreground">iii. 通过节点图选择节点</h4>
+        <h4 className="mt-3 text-sm font-medium text-foreground">
+          {t("selectNodeByGraph")}
+        </h4>
         <div className="mb-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <span className="h-3 w-3 rounded-full bg-blue-600" /> P1 根节点
+            <span className="h-3 w-3 rounded-full bg-blue-600" />{" "}
+            {t("legendP1")}
           </span>
           <span className="flex items-center gap-1">
-            <span className="h-3 w-3 rounded-full bg-orange-600" /> P2 中间节点
+            <span className="h-3 w-3 rounded-full bg-orange-600" />{" "}
+            {t("legendP2")}
           </span>
           <span className="flex items-center gap-1">
-            <span className="h-3 w-3 rounded-full bg-green-600" /> P3 选择节点
+            <span className="h-3 w-3 rounded-full bg-green-600" />{" "}
+            {t("legendP3")}
           </span>
           <span className="flex items-center gap-1">
-            <span className="h-3 w-3 rounded-full bg-purple-600" /> P4 结果节点
+            <span className="h-3 w-3 rounded-full bg-purple-600" />{" "}
+            {t("legendP4")}
           </span>
         </div>
         <div ref={chartRef} className="h-[560px] w-full rounded-2xl border border-border" />
@@ -471,9 +498,9 @@ export function LogicView({
       {/* 节点内容编辑表格(节点图下方,即时展示所选节点,避免往下翻) */}
       <div className="overflow-hidden rounded-2xl border border-border bg-background">
         <div className="border-b border-border px-5 py-4">
-          <h3 className="font-semibold text-foreground">节点内容编辑表格</h3>
+          <h3 className="font-semibold text-foreground">{t("nodeEditTable")}</h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            点击上方节点图中的任意节点,此处即时展示该节点的问题与选项文本,无需往下滚动;下方「更新及检查」与整体表格按钮功能一致
+            {t("nodeEditTableHint")}
           </p>
         </div>
 
@@ -500,7 +527,7 @@ export function LogicView({
                 updateNodeQuestion(selectedNode.id, e.target.value)
               }
               className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
-              placeholder="问题"
+              placeholder={t("questionPlaceholder")}
             />
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {selectedNode.options.map((option) => (
@@ -514,29 +541,29 @@ export function LogicView({
                       updateOptionText(selectedNode.id, option.id, e.target.value)
                     }
                     className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground outline-none focus:border-primary"
-                    placeholder="选项文本"
+                    placeholder={t("optionPlaceholder")}
                   />
                 </div>
               ))}
               {selectedNode.options.length === 0 && (
                 <p className="text-xs text-muted-foreground">
-                  (结果节点,无选项)
+                  {t("resultNodeNoOptions")}
                 </p>
               )}
             </div>
           </div>
         ) : (
           <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-            点击上方节点图中的任意节点,此处将显示该节点的题目与选项文本
+            {t("selectNodePrompt")}
           </div>
         )}
 
         <div className="flex items-center gap-4 border-t border-border px-5 py-4">
           <Button onClick={handleUpdateAndCheck} disabled={saving}>
-            {saving ? "更新中..." : "更新及检查"}
+            {saving ? tc("updating") : t("updateAndCheck")}
           </Button>
           <Button variant="outline" onClick={handleEffectPreview}>
-            效果预览
+            {t("effectPreview")}
           </Button>
           {saveMessage && (
             <span className="text-sm text-green-600">{saveMessage}</span>
@@ -556,12 +583,12 @@ export function LogicView({
           <div className="border-t border-border px-5 py-3">
             {checkResult.length === 0 ? (
               <p className="text-sm font-medium text-green-600">
-                ✓ 检查通过:问卷内容完整,无遗漏
+                {t("checkPassed")}
               </p>
             ) : (
               <div className="text-sm text-destructive">
                 <p className="font-medium">
-                  发现 {checkResult.length} 处遗漏/不完整:
+                  {t("foundIssues", { count: checkResult.length })}
                 </p>
                 <ul className="mt-2 list-disc space-y-1 pl-5">
                   {checkResult.map((issue, i) => (
@@ -577,7 +604,9 @@ export function LogicView({
       {/* 输入表格(排列在下,与逻辑界面共用右侧) */}
       <div className="overflow-hidden rounded-2xl border border-border bg-background">
         <div className="border-b border-border px-5 py-4">
-          <h3 className="font-semibold text-foreground">整体问卷内容编辑表格</h3>
+          <h3 className="font-semibold text-foreground">
+            {t("fullEditTable")}
+          </h3>
         </div>
 
         <div className="divide-y divide-border">
@@ -610,7 +639,7 @@ export function LogicView({
                 value={node.question}
                 onChange={(e) => updateNodeQuestion(node.id, e.target.value)}
                 className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
-                placeholder="问题"
+                placeholder={t("questionPlaceholder")}
               />
 
               <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -625,13 +654,13 @@ export function LogicView({
                         updateOptionText(node.id, option.id, e.target.value)
                       }
                       className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground outline-none focus:border-primary"
-                      placeholder="选项文本"
+                      placeholder={t("optionPlaceholder")}
                     />
                   </div>
                 ))}
                 {node.options.length === 0 && (
                   <p className="text-xs text-muted-foreground">
-                    (结果节点,无选项)
+                    {t("resultNodeNoOptions")}
                   </p>
                 )}
               </div>
@@ -641,10 +670,10 @@ export function LogicView({
 
         <div className="flex items-center gap-4 border-t border-border px-5 py-4">
           <Button onClick={handleUpdateAndCheck} disabled={saving}>
-            {saving ? "更新中..." : "更新及检查"}
+            {saving ? tc("updating") : t("updateAndCheck")}
           </Button>
           <Button variant="outline" onClick={handleEffectPreview}>
-            效果预览
+            {t("effectPreview")}
           </Button>
           {saveMessage && (
             <span className="text-sm text-green-600">{saveMessage}</span>
@@ -664,12 +693,12 @@ export function LogicView({
           <div className="border-t border-border px-5 py-3">
             {checkResult.length === 0 ? (
               <p className="text-sm font-medium text-green-600">
-                ✓ 检查通过:问卷内容完整,无遗漏
+                {t("checkPassed")}
               </p>
             ) : (
               <div className="text-sm text-destructive">
                 <p className="font-medium">
-                  发现 {checkResult.length} 处遗漏/不完整:
+                  {t("foundIssues", { count: checkResult.length })}
                 </p>
                 <ul className="mt-2 list-disc space-y-1 pl-5">
                   {checkResult.map((issue, i) => (
@@ -686,14 +715,14 @@ export function LogicView({
       <div className="rounded-2xl border border-border bg-background p-5">
         <div className="mb-3 flex flex-wrap items-center gap-3">
           <label className="text-sm font-medium text-foreground">
-            问卷效果预览(选择节点,点击「显示」):
+            {t("previewTitle")}
           </label>
           <select
             value={previewNodeId}
             onChange={(e) => setPreviewNodeId(e.target.value)}
             className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:border-primary"
           >
-            <option value="">请选择节点</option>
+            <option value="">{t("selectNodePlaceholder")}</option>
             {template.nodes
               .filter((n) => n.level !== "P4")
               .map((n) => (
@@ -728,7 +757,7 @@ export function LogicView({
               ))}
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              ↑ 以上为该节点在「交互界面」中的 Quiz 问卷效果预览
+              {t("previewHint")}
             </p>
           </div>
         )}

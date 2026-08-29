@@ -43,25 +43,25 @@ export async function GET(request: NextRequest) {
 
     // 3. 创建 Excel 工作簿
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("项目数据");
+    const worksheet = workbook.addWorksheet("Project Data");
 
     // 定义列
     worksheet.columns = [
-      { header: "项目编号", key: "projectNumber", width: 30 },
-      { header: "客户名", key: "customerName", width: 15 },
-      { header: "主题", key: "theme", width: 15 },
-      { header: "联系电话", key: "phone", width: 18 },
-      { header: "邮箱", key: "email", width: 25 },
-      { header: "询盘日期", key: "inquiryDate", width: 14 },
-      { header: "询盘时间", key: "inquiryTime", width: 12 },
-      { header: "项目状态", key: "projectStatus", width: 10 },
-      { header: "项目金额", key: "projectAmount", width: 12 },
-      { header: "持续时间(h)", key: "durationHours", width: 12 },
-      { header: "间隔时间(h)", key: "intervalHours", width: 12 },
-      { header: "是否超3天", key: "over3Days", width: 10 },
-      { header: "回复日期", key: "replyDate", width: 14 },
-      { header: "地区", key: "region", width: 12 },
-      { header: "备注", key: "notes", width: 30 },
+      { header: "Project No.", key: "projectNumber", width: 30 },
+      { header: "Customer", key: "customerName", width: 15 },
+      { header: "Theme", key: "theme", width: 15 },
+      { header: "Phone", key: "phone", width: 18 },
+      { header: "Email", key: "email", width: 25 },
+      { header: "Inquiry Date", key: "inquiryDate", width: 14 },
+      { header: "Inquiry Time", key: "inquiryTime", width: 12 },
+      { header: "Status", key: "projectStatus", width: 10 },
+      { header: "Amount", key: "projectAmount", width: 12 },
+      { header: "Duration (h)", key: "durationHours", width: 12 },
+      { header: "Interval (h)", key: "intervalHours", width: 12 },
+      { header: "Over 3 Days", key: "over3Days", width: 10 },
+      { header: "Reply Date", key: "replyDate", width: 14 },
+      { header: "Region", key: "region", width: 12 },
+      { header: "Notes", key: "notes", width: 30 },
     ];
 
     // 添加数据行
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
         projectAmount: project.projectAmount,
         durationHours: project.durationHours,
         intervalHours: project.intervalHours,
-        over3Days: project.over3Days ? "是" : "否",
+        over3Days: project.over3Days ? "Yes" : "No",
         replyDate: project.replyDate,
         region: project.region,
         notes: project.notes,
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("导出 Excel 失败:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "导出失败" },
+      { error: error instanceof Error ? error.message : "Export failed" },
       { status: 500 }
     );
   }

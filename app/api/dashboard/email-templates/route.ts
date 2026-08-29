@@ -35,8 +35,8 @@ import {
 
 const putTemplateSchema = z.object({
   templateType: z.string().min(1),
-  subject: z.string().min(1, "邮件主题不能为空"),
-  body: z.string().min(1, "邮件正文不能为空"),
+  subject: z.string().min(1, "Subject is required"),
+  body: z.string().min(1, "Body is required"),
 });
 
 export async function GET() {
@@ -47,7 +47,7 @@ export async function GET() {
   } catch (error) {
     console.error("email-templates GET 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "获取模板失败" },
+      { error: error instanceof Error ? error.message : "Failed to load templates" },
       { status: 500 }
     );
   }
@@ -59,13 +59,13 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = putTemplateSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "模板数据校验失败", details: parsed.error.flatten() },
+        { error: "Template validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -78,11 +78,11 @@ export async function PUT(request: NextRequest) {
       body: parsed.data.body,
     });
 
-    return NextResponse.json({ success: true, message: "模板已保存" });
+    return NextResponse.json({ success: true, message: "Template saved" });
   } catch (error) {
     console.error("email-templates PUT 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "保存模板失败" },
+      { error: error instanceof Error ? error.message : "Failed to save template" },
       { status: 500 }
     );
   }

@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const parsed = accessSchema.safeParse(body ?? {});
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "参数错误:缺少 projectId 或 managerId" },
+        { error: "Invalid parameters: projectId and managerId are required" },
         { status: 400 }
       );
     }
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     // 仅团队管理员可授权(团队创建者)
     if (!isTeamAdminViewer(teamId, { id: user.id, role: user.role, isDirector: user.isDirector, email: user.email })) {
       return NextResponse.json(
-        { error: "仅管理员可授权查看项目" },
+        { error: "Only team admins can grant project access" },
         { status: 403 }
       );
     }
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "授权失败" },
+      { error: error instanceof Error ? error.message : "Failed to grant access" },
       { status: 500 }
     );
   }
@@ -82,7 +82,7 @@ export async function DELETE(request: NextRequest) {
     const parsed = accessSchema.safeParse(body ?? {});
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "参数错误:缺少 projectId 或 managerId" },
+        { error: "Invalid parameters: projectId and managerId are required" },
         { status: 400 }
       );
     }
@@ -90,7 +90,7 @@ export async function DELETE(request: NextRequest) {
     const { teamId, user } = await requireTeamAccess();
     if (!isTeamAdminViewer(teamId, { id: user.id, role: user.role, isDirector: user.isDirector, email: user.email })) {
       return NextResponse.json(
-        { error: "仅管理员可撤销查看授权" },
+        { error: "Only team admins can revoke project access" },
         { status: 403 }
       );
     }
@@ -104,7 +104,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "撤销授权失败" },
+      { error: error instanceof Error ? error.message : "Failed to revoke access" },
       { status: 500 }
     );
   }

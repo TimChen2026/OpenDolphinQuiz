@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "当前套餐仅可查看基础图表,升级 Pro/Max 套餐可查看全部图表",
+            "Your plan only includes basic charts, upgrade to Pro/Max to view all charts",
         },
         { status: 403 }
       );
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("analysis API 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "查询失败" },
+      { error: error instanceof Error ? error.message : "Query failed" },
       { status: 500 }
     );
   }

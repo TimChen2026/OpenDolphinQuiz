@@ -179,9 +179,9 @@
           "每月最多30个潜在客户,客户信息保留30天",
           "团队用户总上限:5人(Guest除外)",
           "一周访问量分布图表",
-          "每个月预警提醒最多6次",  
+          "每个月预警提醒最多6次",
           "功能说明",
-          "每天客户询盘:最多5次/天"                
+          "每天客户询盘:最多5次/天"
         ]
       },
       "pro": {
@@ -194,10 +194,10 @@
           "每年最多10000个潜在客户",
           "团队用户总上限:50人（Guest除外）",
           "提供每周、每月、每季、每年的数据分析服务,包括对客户访问、关键主题、主要访问时间、销售经理业务情况等10个维度的统计分析,及可视化显示;",
-          "每月、每季、每年各提供一份分析报告",  
+          "每月、每季、每年各提供一份分析报告",
           "每个项目都具有红、黄色预警服务",
           "功能说明",
-          "客户服务与售后技术支持" 
+          "客户服务与售后技术支持"
         ]
       },
       "max": {
@@ -210,10 +210,10 @@
           "每年最多30000个潜在客户",
           "团队用户总上限:150人（Guest除外）",
           "提供每周、每月、每季、每年的数据分析服务,包括对客户访问、关键主题、主要访问时间、销售经理业务情况等10个维度的统计分析,及可视化显示;",
-          "每月、每季、每年各提供一份分析报告",  
+          "每月、每季、每年各提供一份分析报告",
           "每个项目都具有红、黄色预警服务",
           "功能说明",
-          "客户服务与售后技术支持" 
+          "客户服务与售后技术支持"
         ]
       }
     },
@@ -608,6 +608,444 @@
           "loginCount": "登录次数",
           "memberSince": "注册于",
           "today": "今天"
+        }
+      }
+    },
+    "views": {
+      "common": {
+        "loading": "加载中...",
+        "saving": "保存中...",
+        "updating": "更新中...",
+        "processing": "处理中...",
+        "applying": "应用中...",
+        "exporting": "导出中...",
+        "checking": "检查中...",
+        "save": "保存",
+        "cancel": "取消",
+        "retry": "重试",
+        "confirm": "确定",
+        "close": "关闭",
+        "delete": "删除",
+        "remove": "移除",
+        "rename": "重命名",
+        "saveFailed": "保存失败",
+        "loadFailed": "加载失败",
+        "networkError": "网络异常，请重试",
+        "noTemplates": "暂无可用模板",
+        "updateComplete": "更新完成",
+        "setTo": "设为{action}",
+        "status": {
+          "followUp": "跟进",
+          "won": "获单",
+          "lost": "失单"
+        },
+        "styles": {
+          "classic": {
+            "name": "Oxford 深蓝",
+            "description": "白底卡片 + 主色按钮,当前示意图样式"
+          },
+          "princeton": {
+            "name": "Princeton 橙",
+            "description": "暖橙主色 + 黑色衬线,普林斯顿学院风"
+          },
+          "yale": {
+            "name": "Yale 蓝",
+            "description": "耶鲁深蓝 + 灰色辅色,传统学术风"
+          },
+          "stanford": {
+            "name": "Stanford 红",
+            "description": "斯坦福红 + 暖灰底色,加州现代风"
+          },
+          "mit": {
+            "name": "MIT 科技",
+            "description": "MIT 红 + 银灰辅色,极简技术风"
+          },
+          "harvard": {
+            "name": "Harvard 深红",
+            "description": "哈佛深红 + 黑白经典,传统名校风"
+          },
+          "system": {
+            "name": "跟随系统",
+            "description": "跟随操作系统深浅色模式自动切换"
+          }
+        },
+        "day": {
+          "monday": "周一",
+          "tuesday": "周二",
+          "wednesday": "周三",
+          "thursday": "周四",
+          "friday": "周五",
+          "saturday": "周六",
+          "sunday": "周日"
+        },
+        "none": "无"
+      },
+      "shell": {
+        "tabs": {
+          "kanban": "项目看板",
+          "interaction": "交互界面",
+          "logic": "逻辑界面",
+          "report": "报告模板",
+          "team": "团队界面",
+          "warning": "邮件设置",
+          "link": "模板与链接",
+          "database": "数据库",
+          "analysis": "数据分析"
+        },
+        "sectionInteraction": "交互界面",
+        "sectionLogic": "逻辑界面"
+      },
+      "kanban": {
+        "loadProjectsFailed": "加载项目数据失败,请刷新重试",
+        "statusUpdateFailed": "状态更新失败",
+        "operationFailed": "操作失败",
+        "limitReachedBanner": "今日询盘次数已达上限(5次/天),客户将无法继续提交询盘。",
+        "nearLimitBanner": "今日询盘已达 {count} 次,接近免费套餐上限(5次/天)。",
+        "upgradeHint": "为不影响团队顺利承接业务,建议考虑升级套餐。",
+        "viewPricing": "查看定价",
+        "todayInquiries": "今日询盘:{count}/{limit} 次",
+        "noProjects": "暂无项目,客户完成 Quiz 后项目将显示在这里。",
+        "customer": "客户:{name}",
+        "inquiryTime": "询盘时间:",
+        "duration": "持续:{hours} 小时",
+        "overThreeDays": "已超过 3 天",
+        "replyTime": "回复时间:",
+        "notificationTime": "系统通知时间:",
+        "grantedManagers": "已授权经理:",
+        "none": "无",
+        "nameSeparator": "、",
+        "grantToManagers": "授权给销售经理",
+        "noSalesManagers": "暂无销售经理,请先在团队设置中添加",
+        "grantedHint": "已授权 · 点击撤销",
+        "notGrantedHint": "未授权 · 点击授权"
+      },
+      "members": {
+        "teamMembers": "团队成员",
+        "memberCount": "本团队共 {count} 位成员",
+        "noMembers": "暂无团队成员",
+        "customerSection": "客户",
+        "removeHint": "提示:正式成员加入团队满一周后,团队管理员才能将其移出团队;移除团队成员请谨慎操作。",
+        "loadMembersFailed": "加载团队成员失败",
+        "confirmRemove": "确定要将该成员移出团队吗?",
+        "removeMemberFailed": "移除成员失败",
+        "removeFailed": "移除失败",
+        "joinedUnderWeek": "加入未满一周",
+        "roles": {
+          "teamAdmin": "管理员",
+          "member": "成员",
+          "customer": "客户",
+          "superAdmin": "超级管理员",
+          "salesDirector": "销售总监",
+          "salesManager": "销售经理",
+          "user": "用户"
+        }
+      },
+      "warning": {
+        "title": "预警时间设置",
+        "description": "项目持续时间达到阈值后,系统自动发送预警邮件给销售经理(抄送销售总监)",
+        "yellowThreshold": "黄色预警阈值",
+        "yellowThresholdHint": "项目持续超过该小时数,发送黄色预警邮件",
+        "redThreshold": "红色预警阈值",
+        "redThresholdHint": "项目持续超过该小时数,发送红色预警邮件",
+        "hours": "小时",
+        "saveSettings": "保存设置",
+        "settingsSaved": "预警设置已保存",
+        "loadSettingsFailed": "加载预警设置失败",
+        "yellowMinError": "黄色预警阈值须 >= 1 小时",
+        "redGreaterThanYellowError": "红色预警阈值须大于黄色预警阈值",
+        "rulesTitle": "预警规则说明:",
+        "rule1": "预警判断前提:先判断项目是否超过 3 天,超过则不触发预警",
+        "rule2": "项目状态为「获单/失单」后,不再发送预警邮件",
+        "rule3": "黄色/红色预警各发送一次(DB 登记预警时间)",
+        "rule4": "预警邮件发送给销售经理,抄送销售总监",
+        "rule5": "预警邮件模板可在「报告模板」页编辑"
+      },
+      "editor": {
+        "loadTemplatesFailed": "加载模板失败",
+        "saved": "已保存",
+        "saveFailedRetry": "保存失败,请重试",
+        "previewTitle": "问卷效果预览(手机)",
+        "themeEditTitle": "选项主题词编辑:",
+        "themePlaceholder": "主题词",
+        "noOptionsHint": "该节点(P4 结果层)无选项,无需编辑主题词。",
+        "selectNodeByOption": "i.通过选项选择节点:",
+        "goEdit": "前往编辑",
+        "goEditHint": "跳转到逻辑界面进行节点结构编辑",
+        "styleTemplates": "ii.风格模板",
+        "comingSoon": "即将上线",
+        "styleSaved": "已保存风格:{name}",
+        "styleApplyHint": "点击确定后,该风格将应用到通过「链接生成」模块生成的 Quiz 问卷",
+        "summaryPage": "Summary 结果页"
+      },
+      "logic": {
+        "loadChartFailed": "加载节点图失败",
+        "saveFailedRetry": "保存失败,请重试",
+        "autoSaved": "已自动保存 {time}",
+        "autoSaveFailed": "自动保存失败:{msg}",
+        "unknownError": "未知错误",
+        "selectNodeByGraph": "iii. 通过节点图选择节点",
+        "legendP1": "P1 根节点",
+        "legendP2": "P2 中间节点",
+        "legendP3": "P3 选择节点",
+        "legendP4": "P4 结果节点",
+        "nodeEditTable": "节点内容编辑表格",
+        "nodeEditTableHint": "点击上方节点图中的任意节点,此处即时展示该节点的问题与选项文本,无需往下滚动;下方「更新及检查」与整体表格按钮功能一致",
+        "questionPlaceholder": "问题",
+        "optionPlaceholder": "选项文本",
+        "resultNodeNoOptions": "(结果节点,无选项)",
+        "selectNodePrompt": "点击上方节点图中的任意节点,此处将显示该节点的题目与选项文本",
+        "updateAndCheck": "更新及检查",
+        "effectPreview": "效果预览",
+        "checkPassed": "✓ 检查通过:问卷内容完整,无遗漏",
+        "foundIssues": "发现 {count} 处遗漏/不完整:",
+        "fullEditTable": "整体问卷内容编辑表格",
+        "previewTitle": "问卷效果预览(选择节点,点击「显示」):",
+        "selectNodePlaceholder": "请选择节点",
+        "previewHint": "↑ 以上为该节点在「交互界面」中的 Quiz 问卷效果预览",
+        "check": {
+          "noNodes": "模板没有可检查的节点",
+          "nodeLabel": "节点[{level} {question}]",
+          "noQuestion": "(未填写问题)",
+          "questionEmpty": "{label}:问题内容为空",
+          "noOptions": "{label}:决策节点没有任何选项",
+          "optionEmpty": "{label} 选项{optionLabel}:选项文本为空",
+          "optionNotConnected": "{label} 选项{optionLabel}「{optionText}」:未连接到下一节点,决策链路中断"
+        }
+      },
+      "report": {
+        "availableVars": "可用变量(发送时自动替换):",
+        "sendTo": "发送 To:",
+        "ccLabel": "抄送 CC:",
+        "subject": "邮件主题",
+        "body": "邮件正文",
+        "templateSaved": "模板已保存",
+        "types": {
+          "internal": {
+            "label": "内部告知邮件",
+            "hint": "客户询盘内部通知(新询盘时发送)",
+            "to": "销售经理(负责该主题)",
+            "cc": "销售总监"
+          },
+          "summary": {
+            "label": "Summary 摘要",
+            "hint": "客户完成 Quiz 后,展示在 Quiz 的 Summary 结果页",
+            "to": "客户(页面展示,不通过邮件)"
+          },
+          "warningYellow": {
+            "label": "黄色预警邮件",
+            "hint": "项目持续 >=24h 未回复时触发",
+            "to": "销售经理",
+            "cc": "销售总监"
+          },
+          "warningRed": {
+            "label": "红色预警邮件",
+            "hint": "项目持续 >=48h 未回复时触发",
+            "to": "销售经理",
+            "cc": "销售总监"
+          }
+        }
+      },
+      "link": {
+        "checkRequestFailed": "检查请求失败,请重试",
+        "applyReferenceFailed": "应用参考模板失败",
+        "referenceEducation": "教育培训",
+        "referenceApplied": "已应用参考模板「{name}」,问卷与风格已更新",
+        "newQuizFailed": "新建问卷失败",
+        "quizCleared": "问卷已清空,请重新输入",
+        "fetchTemplateFailed": "获取问卷数据失败({status})",
+        "templateNotLoaded": "未能获取当前问卷模板",
+        "planDefaultName": "问卷方案 {count}",
+        "planLimitReached": "方案已达{count}个上限,已自动删除最旧的方案",
+        "planSaved": "方案「{name}」已保存",
+        "savePlanFailed": "保存方案失败",
+        "restorePlanFailed": "还原方案失败",
+        "planRestored": "方案「{name}」已还原并应用",
+        "planDeleted": "方案已删除",
+        "planRenamed": "方案已重命名",
+        "referenceTemplate": "参考模板",
+        "referenceDescription": "已为您准备「{name}」参考模板,包含完整的问卷问题与 Oxford 深蓝风格,可一键应用快速建立问卷;也可新建问卷重新输入",
+        "useReference": "使用参考模板",
+        "clearing": "清空中...",
+        "newQuiz": "新建问卷",
+        "stepCheckTitle": "1. 检查问卷信息",
+        "stepCheckDescription": "生成链接前,系统自动检查问卷的信息是否齐备(问题、选项、主题词、销售经理关联)",
+        "recheck": "重新检查",
+        "checkPassed": "检查通过,问卷信息齐备",
+        "checkFailedCount": "检查未通过,共 {count} 项待完善",
+        "stepGenerateTitle": "2. 生成问卷链接",
+        "stepGenerateDescription": "检查通过后,点击「生成链接」产生 Quiz 问卷链接,可提供给客户访问",
+        "generateLink": "生成链接",
+        "fixIssuesFirst": "请先完善上方缺失项后再生成",
+        "quizLink": "Quiz 问卷链接",
+        "copied": "已复制",
+        "copyLink": "复制链接",
+        "stepSaveTitle": "3. Quiz 问卷保存",
+        "stepSaveDescription": "最多保存 {count} 个问卷方案,页面仅展示方案名称;点击可查看保存时间与风格,支持重命名与还原",
+        "saveCurrentPlan": "保存当前方案",
+        "passCheckBeforeSave": "请先通过上方检查后再保存方案",
+        "noSavedPlans": "暂无已保存的方案",
+        "renamePlaceholder": "输入新方案名称",
+        "deletePlan": "删除方案",
+        "savedAtLabel": "保存时间:{time}",
+        "styleLabel": "风格:{style}",
+        "restorePlan": "还原此方案",
+        "usageTitle": "使用说明:",
+        "usageStep1": "客户点击链接后进入 Quiz 问卷,按逻辑链条 P1→P2→P3→P4 进行问答",
+        "usageStep2": "客户在 P4 页点击「返回开始」后,系统建立项目编号并发送询盘通知邮件",
+        "usageStep3": "问卷内容修改后,建议重新执行一次检查再分享链接",
+        "usageMinorPrivacy": "如问卷涉及收集未成年人(未满 18 周岁)的信息,请确保已取得其父母或监护人的同意,并在问卷开头或信息填写页向答题者提供隐私声明链接(依据服务条款 11.5)"
+      },
+      "database": {
+        "tabs": {
+          "data": "项目数据",
+          "audit": "日志管理",
+          "backup": "备份管理"
+        },
+        "title": "数据库",
+        "description": "业务数据管理模块(需求 2.2):项目数据查看、Excel 导出、审计日志、备份管理",
+        "searchPlaceholder": "搜索项目编号/客户名/主题...",
+        "exportExcel": "导出 Excel",
+        "exportSuccess": "导出成功",
+        "exportFailedRetry": "导出失败,请重试",
+        "exportFailed": "导出失败",
+        "update": "更新",
+        "updateSuccess": "更新成功",
+        "updateFailedRetry": "更新失败,请重试",
+        "refreshFailed": "刷新失败",
+        "backupFailed": "备份失败",
+        "recordCount": "共 {count} 条记录",
+        "noProjects": "暂无项目数据",
+        "columns": {
+          "projectNumber": "项目编号",
+          "customerName": "客户名",
+          "theme": "主题",
+          "manager": "跟踪项目经理",
+          "status": "状态",
+          "amount": "项目金额",
+          "inquiryTime": "询盘时间",
+          "duration": "持续(h)",
+          "notifyTime": "系统通知时间",
+          "notes": "备注"
+        },
+        "audit": {
+          "actionType": "操作类型",
+          "description": "描述",
+          "ipAddress": "IP 地址",
+          "time": "操作时间",
+          "empty": "暂无审计日志数据"
+        },
+        "backup": {
+          "notesTitle": "备份说明",
+          "note1": "数据库由 Neon 自动管理每日全量备份",
+          "note2": "备份保留期限由 Neon 套餐决定",
+          "note3": "本页面提供手动触发备份记录功能",
+          "note4": "如需手动备份,请使用 Neon 控制台操作",
+          "trigger": "触发备份",
+          "success": "备份请求已记录",
+          "failedRetry": "备份请求失败,请重试"
+        },
+        "actions": {
+          "login": "登录",
+          "logout": "登出",
+          "export": "导出",
+          "delete": "删除",
+          "update": "更新",
+          "create": "创建"
+        }
+      },
+      "analysis": {
+        "charts": {
+          "weekly": {
+            "title": "每周访问量分布",
+            "description": "过去一周,按星期统计访问量"
+          },
+          "hourly": {
+            "title": "访问时区分布",
+            "description": "过去一周,每2小时一段统计访问量"
+          },
+          "monthly": {
+            "title": "每月访问量分布",
+            "description": "过去13个月,按月统计访问量"
+          },
+          "quarterly": {
+            "title": "每季访问量分布",
+            "description": "Q1-Q4季度访问量统计"
+          },
+          "yearly": {
+            "title": "每年访问量分布",
+            "description": "按年统计访问量"
+          },
+          "themeVisits": {
+            "title": "主题访问量分布",
+            "description": "过去一个月,按主题统计访问量"
+          },
+          "themeTimezone": {
+            "title": "主题访问时区分布",
+            "description": "过去一个月,12时段×4主题交叉统计"
+          },
+          "managerProjects": {
+            "title": "销售经理处理项目数量统计",
+            "description": "过去一个月,经理×状态(获单/失单/跟进)"
+          },
+          "managerThemes": {
+            "title": "销售经理处理主题数量统计",
+            "description": "过去一个月,经理×主题"
+          },
+          "managerReplyTime": {
+            "title": "销售经理平均回复时间分布",
+            "description": "过去一个月,经理平均回复时间(小时)"
+          }
+        },
+        "avgReplyTimeTooltip": "平均回复时间: {value}小时",
+        "unitHours": "小时",
+        "loadDataFailed": "数据加载失败",
+        "locked": {
+          "planRequired": "Pro/Max 套餐可用",
+          "unlockHint": "升级套餐解锁全部分析图表",
+          "upgrade": "升级套餐"
+        },
+        "banner": {
+          "freePlanTitle": "💡 当前为免费套餐",
+          "freePlanDescription": "基础图表(每周访问量分布)可免费查看。升级 Pro/Max 套餐可解锁全部 10 个分析图表, 获取更全面的销售数据分析。",
+          "viewPlans": "查看套餐"
+        }
+      },
+      "team": {
+        "loadTeamDataFailed": "加载团队数据失败",
+        "noTeamData": "暂无团队数据",
+        "savePhone": "保存电话",
+        "managerEmailRequired": "请输入销售经理邮箱",
+        "directorEmailRequired": "请输入销售总监邮箱",
+        "userNotFound": "未找到该用户,请先在系统中注册",
+        "loadUsersFailed": "加载用户失败",
+        "themesSaved": "主题分配已保存",
+        "phoneSaved": "电话已保存",
+        "managerAdded": "销售经理已添加",
+        "managerRemoved": "销售经理已移除",
+        "directorSet": "销售总监已设置",
+        "addFailed": "添加失败",
+        "removeFailed": "移除失败",
+        "setFailed": "设置失败",
+        "director": {
+          "title": "销售总监",
+          "description": "销售总监将收到询盘通知与预警邮件的抄送(CC),负责管理层面跟进",
+          "currentDirector": "当前销售总监",
+          "phonePlaceholder": "销售总监电话",
+          "notSet": "尚未设置销售总监",
+          "setEmailPlaceholder": "输入销售经理邮箱,将其设为销售总监",
+          "setButton": "设置销售总监",
+          "note": "注:销售总监与销售经理可为同一人,输入销售经理邮箱即可将其设为总监"
+        },
+        "managers": {
+          "title": "销售经理",
+          "description": "每位销售经理可负责多个主题(多选),保存后主题询盘将分配给对应经理",
+          "empty": "暂无销售经理,请添加",
+          "phonePlaceholder": "销售经理电话",
+          "themesLabel": "负责主题:",
+          "noThemes": "暂无主题(请在逻辑界面中为 P3 选项填写主题词)",
+          "addPlaceholder": "输入已注册用户邮箱",
+          "addButton": "增加销售经理",
+          "note": "注:需先让该用户在系统中注册,方可提升为销售经理"
         }
       }
     }

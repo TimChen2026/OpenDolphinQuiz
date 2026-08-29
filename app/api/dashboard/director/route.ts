@@ -29,7 +29,7 @@ import { requireTeamAccess } from "@/lib/rbac";
 import { setSalesDirector } from "@/lib/dashboard/team";
 
 const setDirectorSchema = z.object({
-  userId: z.string().min(1, "缺少用户 ID"),
+  userId: z.string().min(1, "User ID is required"),
 });
 
 export async function PUT(request: NextRequest) {
@@ -38,13 +38,13 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = setDirectorSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "参数校验失败", details: parsed.error.flatten() },
+        { error: "Validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -54,7 +54,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("director PUT 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "设置销售总监失败" },
+      { error: error instanceof Error ? error.message : "Failed to set sales director" },
       { status: 500 }
     );
   }

@@ -45,7 +45,7 @@ export async function GET() {
   } catch (error) {
     console.error("warning-settings GET 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "获取预警设置失败" },
+      { error: error instanceof Error ? error.message : "Failed to load warning settings" },
       { status: 500 }
     );
   }
@@ -57,13 +57,13 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "请求体格式错误" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
     const parsed = putSettingsSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "预警设置校验失败", details: parsed.error.flatten() },
+        { error: "Warning settings validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -74,11 +74,11 @@ export async function PUT(request: NextRequest) {
       parsed.data.redHours
     );
 
-    return NextResponse.json({ success: true, message: "预警设置已保存" });
+    return NextResponse.json({ success: true, message: "Warning settings saved" });
   } catch (error) {
     console.error("warning-settings PUT 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "保存预警设置失败" },
+      { error: error instanceof Error ? error.message : "Failed to save warning settings" },
       { status: 500 }
     );
   }

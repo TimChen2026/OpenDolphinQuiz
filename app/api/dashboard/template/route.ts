@@ -56,7 +56,7 @@ export async function GET() {
       if (quizLimit.isLimited) {
         return NextResponse.json(
           {
-            error: `当前套餐最多创建 ${quizLimit.limit} 个 Quiz 问卷,已达上限,请升级套餐`,
+            error: `Your plan allows up to ${quizLimit.limit} quizzes, limit reached, please upgrade`,
           },
           { status: 403 }
         );
@@ -66,7 +66,7 @@ export async function GET() {
     }
     if (!clientTemplate) {
       return NextResponse.json(
-        { error: "当前没有激活的 Quiz 模板" },
+        { error: "No active Quiz template" },
         { status: 404 }
       );
     }
@@ -119,7 +119,7 @@ export async function GET() {
   } catch (error) {
     console.error("dashboard template 错误:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "获取 Dashboard 数据失败" },
+      { error: error instanceof Error ? error.message : "Failed to load dashboard data" },
       { status: 500 }
     );
   }

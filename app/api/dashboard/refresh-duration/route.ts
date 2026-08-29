@@ -65,12 +65,12 @@ export async function POST() {
       success: true,
       total: allProjects.length,
       fixed: fixedCount,
-      message: `已检查 ${allProjects.length} 个项目，修正了 ${fixedCount} 个项目的持续时间`,
+      message: `Checked ${allProjects.length} projects, fixed duration for ${fixedCount} of them`,
     });
   } catch (error) {
     console.error("刷新持续时间失败:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "刷新持续时间失败" },
+      { error: error instanceof Error ? error.message : "Failed to refresh durations" },
       { status: 500 }
     );
   }
