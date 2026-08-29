@@ -72,7 +72,7 @@
                                           "optionLabel":  "C",
                                           "optionText":  "Speaking",
                                           "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-42-c",
-                                          "resultTheme":  "Classical Chinese",
+                                          "resultTheme":  "Speaking",
                                           "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
                                       },
                                       {
@@ -333,7 +333,7 @@
                                           "optionLabel":  "B",
                                           "optionText":  "Geometry",
                                           "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-b",
-                                          "resultTheme":  "Chinese",
+                                          "resultTheme":  "Geometry",
                                           "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
                                       },
                                       {
@@ -341,7 +341,7 @@
                                           "optionLabel":  "C",
                                           "optionText":  "Equations",
                                           "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-c",
-                                          "resultTheme":  "English",
+                                          "resultTheme":  "Equations",
                                           "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
                                       },
                                       {
@@ -349,7 +349,7 @@
                                           "optionLabel":  "D",
                                           "optionText":  "Applied Mathematics",
                                           "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-cf-d",
-                                          "resultTheme":  "Painting",
+                                          "resultTheme":  "Applied Mathematics",
                                           "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
                                       }
                                   ]
@@ -688,7 +688,7 @@
                                           "optionLabel":  "A",
                                           "optionText":  "Speaking",
                                           "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-a",
-                                          "resultTheme":  "Mathematics",
+                                          "resultTheme":  "Speaking",
                                           "resultManagerId":  "fe84eb29-4a6e-4357-879e-079707c40471"
                                       },
                                       {
@@ -696,7 +696,7 @@
                                           "optionLabel":  "B",
                                           "optionText":  "Reading",
                                           "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-b",
-                                          "resultTheme":  "Chinese",
+                                          "resultTheme":  "Reading",
                                           "resultManagerId":  "6a50097e-a15e-4d6d-a5de-bca49e0f1cae"
                                       },
                                       {
@@ -704,7 +704,7 @@
                                           "optionLabel":  "C",
                                           "optionText":  "Writing",
                                           "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-c",
-                                          "resultTheme":  "English",
+                                          "resultTheme":  "Writing",
                                           "resultManagerId":  "86150468-c91a-49e3-b79c-56c02c8f6bd6"
                                       },
                                       {
@@ -712,7 +712,7 @@
                                           "optionLabel":  "D",
                                           "optionText":  "Poetry",
                                           "targetNodeId":  "5047a901-3346-4c1d-8271-258b98ad29e6-p4-d6-d",
-                                          "resultTheme":  "Painting",
+                                          "resultTheme":  "Poetry",
                                           "resultManagerId":  "691dd912-6de9-4fa5-bd76-3203ac9e138f"
                                       }
                                   ]
