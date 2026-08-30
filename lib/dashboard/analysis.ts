@@ -388,7 +388,7 @@ export function computeThemeHourlyVisits(
 // ==================== 1.8 销售经理处理项目数量统计 ====================
 
 /**
- * 过去一个月,按经理×项目状态(获单/失单/跟进)统计
+ * 过去一个月,按经理×项目状态(won/lost/follow_up)统计
  * @param projects 项目列表
  * @returns 每个经理包含各状态计数
  */
@@ -406,27 +406,27 @@ export function computeManagerStatusStats(
   // 这里简化处理:按 managerId 分组,用 managerId 作为名称
   const map = new Map<
     string,
-    { 获单: number; 失单: number; 跟进: number }
+    { won: number; lost: number; follow_up: number }
   >();
 
   for (const p of filtered) {
-    // 使用 managerId 作为分组键,若无则归为"未分配"
-    const key = p.managerId ?? "未分配";
+    // 使用 managerId 作为分组键,若无则归为"Unassigned"
+    const key = p.managerId ?? "Unassigned";
     if (!map.has(key)) {
-      map.set(key, { 获单: 0, 失单: 0, 跟进: 0 });
+      map.set(key, { won: 0, lost: 0, follow_up: 0 });
     }
     const entry = map.get(key)!;
-    if (p.projectStatus === "获单") entry.获单++;
-    else if (p.projectStatus === "失单") entry.失单++;
-    else entry.跟进++;
+    if (p.projectStatus === "won") entry.won++;
+    else if (p.projectStatus === "lost") entry.lost++;
+    else entry.follow_up++;
   }
 
   return Array.from(map.entries()).map(([managerName, counts]) => ({
     managerName,
     series: [
-      { status: "获单", count: counts.获单 },
-      { status: "失单", count: counts.失单 },
-      { status: "跟进", count: counts.跟进 },
+      { status: "won", count: counts.won },
+      { status: "lost", count: counts.lost },
+      { status: "follow_up", count: counts.follow_up },
     ],
   }));
 }

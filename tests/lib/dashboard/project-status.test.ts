@@ -27,50 +27,50 @@ import {
 } from "@/lib/dashboard/project-status";
 
 describe("canTransitionStatus", () => {
-  it("跟进 → 获单 允许", () => {
-    expect(canTransitionStatus("跟进", "获单")).toBe(true);
+  it("follow_up → won 允许", () => {
+    expect(canTransitionStatus("follow_up", "won")).toBe(true);
   });
 
-  it("跟进 → 失单 允许", () => {
-    expect(canTransitionStatus("跟进", "失单")).toBe(true);
+  it("follow_up → lost 允许", () => {
+    expect(canTransitionStatus("follow_up", "lost")).toBe(true);
   });
 
-  it("跟进 → 跟进 允许(保持原状)", () => {
-    expect(canTransitionStatus("跟进", "跟进")).toBe(true);
+  it("follow_up → follow_up 允许(保持原状)", () => {
+    expect(canTransitionStatus("follow_up", "follow_up")).toBe(true);
   });
 
-  it("失单 → 跟进 允许(失单可回跟进)", () => {
-    expect(canTransitionStatus("失单", "跟进")).toBe(true);
+  it("lost → follow_up 允许(lost 可回 follow_up)", () => {
+    expect(canTransitionStatus("lost", "follow_up")).toBe(true);
   });
 
-  it("失单 → 获单 不允许", () => {
-    expect(canTransitionStatus("失单", "获单")).toBe(false);
+  it("lost → won 不允许", () => {
+    expect(canTransitionStatus("lost", "won")).toBe(false);
   });
 
-  it("获单 → 跟进 不允许(获单为终态)", () => {
-    expect(canTransitionStatus("获单", "跟进")).toBe(false);
+  it("won → follow_up 不允许(won 为终态)", () => {
+    expect(canTransitionStatus("won", "follow_up")).toBe(false);
   });
 
-  it("获单 → 失单 不允许", () => {
-    expect(canTransitionStatus("获单", "失单")).toBe(false);
+  it("won → lost 不允许", () => {
+    expect(canTransitionStatus("won", "lost")).toBe(false);
   });
 
   it("非法状态不允许流转", () => {
-    expect(canTransitionStatus("未知状态", "跟进")).toBe(false);
+    expect(canTransitionStatus("未知状态", "follow_up")).toBe(false);
   });
 });
 
 describe("isProjectEnded", () => {
-  it("获单视为项目结束", () => {
-    expect(isProjectEnded("获单")).toBe(true);
+  it("won 视为项目结束", () => {
+    expect(isProjectEnded("won")).toBe(true);
   });
 
-  it("失单视为项目结束", () => {
-    expect(isProjectEnded("失单")).toBe(true);
+  it("lost 视为项目结束", () => {
+    expect(isProjectEnded("lost")).toBe(true);
   });
 
-  it("跟进不算结束", () => {
-    expect(isProjectEnded("跟进")).toBe(false);
+  it("follow_up 不算结束", () => {
+    expect(isProjectEnded("follow_up")).toBe(false);
   });
 
   it("null 不算结束", () => {

@@ -25,7 +25,7 @@
 // 手机优先:展示项目列表与状态流转
 // - 升级提示横幅(询盘接近/达到上限时)
 // - 项目卡片:编号/客户/主题/询盘时间/状态
-// - 状态流转:跟进 → 获单/失单,失单可回跟进
+// - 状态流转:follow_up → won/lost,lost 可回 follow_up
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
@@ -36,18 +36,18 @@ import type {
   InquiryLimitStatus,
 } from "@/features/dashboard/types";
 
-// 状态显示映射(中文键为 projectStatus 数据库存储值,属数据契约禁止改动;
+// 状态显示映射(键为 projectStatus 数据库存储值(英文);
 // labelKey 指向 dashboard.views.common 的 status.* 翻译键,渲染时解析)
 const STATUS_LABELS: Record<string, { labelKey: string; className: string }> = {
-  跟进: { labelKey: "followUp", className: "bg-blue-500/10 text-blue-600" },
-  获单: { labelKey: "won", className: "bg-green-500/10 text-green-600" },
-  失单: { labelKey: "lost", className: "bg-red-500/10 text-red-600" },
+  follow_up: { labelKey: "followUp", className: "bg-blue-500/10 text-blue-600" },
+  won: { labelKey: "won", className: "bg-green-500/10 text-green-600" },
+  lost: { labelKey: "lost", className: "bg-red-500/10 text-red-600" },
 };
 
 // 状态流转选项:当前状态 -> 可流转目标(值为数据库存储状态,数据契约)
 const STATUS_ACTIONS: Record<string, string[]> = {
-  跟进: ["获单", "失单"],
-  失单: ["跟进"],
+  follow_up: ["won", "lost"],
+  lost: ["follow_up"],
 };
 
 type TemplateData = {
@@ -292,7 +292,7 @@ export function InteractionView() {
                       onClick={() => handleStatusChange(project.id, action)}
                       className={cn(
                         "rounded-full px-4 py-1.5 text-xs font-medium transition",
-                        action === "获单"
+                        action === "won"
                           ? "bg-green-500/10 text-green-600 hover:bg-green-500/20"
                           : "bg-red-500/10 text-red-600 hover:bg-red-500/20"
                       )}

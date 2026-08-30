@@ -52,7 +52,7 @@ function makeProject(overrides: Partial<DashboardProject> = {}): DashboardProjec
     email: null,
     inquiryDatetime: null,
     replyDatetime: null,
-    projectStatus: "跟进",
+    projectStatus: "follow_up",
     durationHours: null,
     over3Days: null,
     warningYellowAt: null,
@@ -307,30 +307,30 @@ describe("computeThemeHourlyVisits", () => {
 describe("computeManagerStatusStats", () => {
   it("按经理和状态正确分组", () => {
     const projects = [
-      makeProject({ managerId: "经理A", projectStatus: "获单", inquiryDatetime: dt(2026, 8, 1, 10, 0) }),
-      makeProject({ managerId: "经理A", projectStatus: "失单", inquiryDatetime: dt(2026, 8, 2, 10, 0) }),
-      makeProject({ managerId: "经理A", projectStatus: "跟进", inquiryDatetime: dt(2026, 8, 3, 10, 0) }),
-      makeProject({ managerId: "经理B", projectStatus: "获单", inquiryDatetime: dt(2026, 8, 4, 10, 0) }),
+      makeProject({ managerId: "经理A", projectStatus: "won", inquiryDatetime: dt(2026, 8, 1, 10, 0) }),
+      makeProject({ managerId: "经理A", projectStatus: "lost", inquiryDatetime: dt(2026, 8, 2, 10, 0) }),
+      makeProject({ managerId: "经理A", projectStatus: "follow_up", inquiryDatetime: dt(2026, 8, 3, 10, 0) }),
+      makeProject({ managerId: "经理B", projectStatus: "won", inquiryDatetime: dt(2026, 8, 4, 10, 0) }),
     ];
 
     const result = computeManagerStatusStats(projects);
     const managerA = result.find((r) => r.managerName === "经理A");
     expect(managerA).toBeDefined();
-    expect(managerA!.series.find((s) => s.status === "获单")?.count).toBe(1);
-    expect(managerA!.series.find((s) => s.status === "失单")?.count).toBe(1);
-    expect(managerA!.series.find((s) => s.status === "跟进")?.count).toBe(1);
+    expect(managerA!.series.find((s) => s.status === "won")?.count).toBe(1);
+    expect(managerA!.series.find((s) => s.status === "lost")?.count).toBe(1);
+    expect(managerA!.series.find((s) => s.status === "follow_up")?.count).toBe(1);
 
     const managerB = result.find((r) => r.managerName === "经理B");
     expect(managerB).toBeDefined();
-    expect(managerB!.series.find((s) => s.status === "获单")?.count).toBe(1);
+    expect(managerB!.series.find((s) => s.status === "won")?.count).toBe(1);
   });
 
-  it("managerId 为 null 时归为未分配", () => {
+  it("managerId 为 null 时归为 Unassigned", () => {
     const projects = [
-      makeProject({ managerId: null, projectStatus: "跟进", inquiryDatetime: dt(2026, 8, 1, 10, 0) }),
+      makeProject({ managerId: null, projectStatus: "follow_up", inquiryDatetime: dt(2026, 8, 1, 10, 0) }),
     ];
     const result = computeManagerStatusStats(projects);
-    expect(result.find((r) => r.managerName === "未分配")?.series[2].count).toBe(1);
+    expect(result.find((r) => r.managerName === "Unassigned")?.series[2].count).toBe(1);
   });
 });
 
@@ -468,7 +468,7 @@ describe("computeChartData", () => {
   });
 
   it("chart=8 返回经理状态统计", () => {
-    const projects = [makeProject({ managerId: "M1", projectStatus: "跟进", inquiryDatetime: dt(2026, 8, 1, 10, 0) })];
+    const projects = [makeProject({ managerId: "M1", projectStatus: "follow_up", inquiryDatetime: dt(2026, 8, 1, 10, 0) })];
     const result = computeChartData(projects, 8) as { managerName: string; series: { status: string; count: number }[] }[];
     expect(result.length).toBeGreaterThanOrEqual(1);
   });

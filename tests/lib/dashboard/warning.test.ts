@@ -37,7 +37,7 @@ function buildParams(
   overrides: Partial<ComputeWarningParams> = {}
 ): ComputeWarningParams {
   return {
-    projectStatus: "跟进",
+    projectStatus: "follow_up",
     over3Days: false,
     durationHours: 10,
     yellowHours: 24,
@@ -70,7 +70,7 @@ describe("computeWarningLevel", () => {
   it("项目结束(获单)后不预警", () => {
     expect(
       computeWarningLevel(
-        buildParams({ projectStatus: "获单", durationHours: 48 })
+        buildParams({ projectStatus: "won", durationHours: 48 })
       )
     ).toBe("none");
   });
@@ -78,7 +78,7 @@ describe("computeWarningLevel", () => {
   it("项目结束(失单)后不预警", () => {
     expect(
       computeWarningLevel(
-        buildParams({ projectStatus: "失单", durationHours: 48 })
+        buildParams({ projectStatus: "lost", durationHours: 48 })
       )
     ).toBe("none");
   });

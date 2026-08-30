@@ -53,7 +53,7 @@ describe("logAudit", () => {
     await logAudit({
       userId: "user-1",
       actionType: "export",
-      description: "导出项目数据",
+      description: "Export project data (367 records)",
       ipAddress: "127.0.0.1",
     });
 
@@ -64,7 +64,7 @@ describe("logAudit", () => {
         id: mockRandomUUID,
         userId: "user-1",
         actionType: "export",
-        description: "导出项目数据",
+        description: "Export project data (367 records)",
         details: null,
         ipAddress: "127.0.0.1",
       })

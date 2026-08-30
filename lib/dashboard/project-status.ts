@@ -22,13 +22,13 @@
 //
 // 功能:
 // - 获取项目列表(交互界面展示)
-// - 更新项目状态:跟进 → 失单/获单,失单可再次变回跟进(需求 2.2.3.14)
-// - 项目结束(获单/失单)后停止预警(Cron 判断用)
+// - 更新项目状态:follow_up → lost/won,lost 可再次变回 follow_up(需求 2.2.3.14)
+// - 项目结束(won/lost)后停止预警(Cron 判断用)
 //
 // 状态约束:
-// - 默认"跟进"
-// - 允许流转:跟进 → 失单、跟进 → 获单、失单 → 跟进
-// - 获单后不允许再变更(业务终态)
+// - 默认"follow_up"
+// - 允许流转:follow_up → lost、follow_up → won、lost → follow_up
+// - won 后不允许再变更(业务终态)
 
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
@@ -47,8 +47,8 @@ const STATUS_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
     PROJECT_STATUS.WON,
     PROJECT_STATUS.LOST,
   ],
-  [PROJECT_STATUS.LOST]: [PROJECT_STATUS.FOLLOW_UP], // 失单可回跟进
-  [PROJECT_STATUS.WON]: [], // 获单为终态
+  [PROJECT_STATUS.LOST]: [PROJECT_STATUS.FOLLOW_UP], // lost 可回 follow_up
+  [PROJECT_STATUS.WON]: [], // won 为终态
 };
 
 /**
@@ -101,7 +101,7 @@ export async function updateProjectStatus(
 ): Promise<void> {
   // 校验目标状态合法
   if (!Object.values(PROJECT_STATUS).includes(newStatus as ProjectStatus)) {
-    throw new Error(`非法项目状态: ${newStatus}`);
+    throw new Error(`Invalid project status: ${newStatus}`);
   }
 
   // 查询项目(含租户归属校验)
@@ -114,13 +114,13 @@ export async function updateProjectStatus(
     .limit(1);
 
   if (rows.length === 0) {
-    throw new Error("项目不存在或无权访问");
+    throw new Error("Project not found or access denied");
   }
 
   const current = rows[0].projectStatus;
   if (!canTransitionStatus(current, newStatus)) {
     throw new Error(
-      `不允许从状态"${current}"流转到"${newStatus}"`
+      `Cannot change status from "${current}" to "${newStatus}"`
     );
   }
 

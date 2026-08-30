@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
     await logAudit({
       userId: user.id,
       actionType: "export",
-      description: `导出项目数据(${projects.length}条记录)`,
+      description: `Export project data (${projects.length} records)`,
       ipAddress: ip,
     });
 

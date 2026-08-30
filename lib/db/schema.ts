@@ -282,11 +282,11 @@ export const quizEdges = pgTable("quiz_edges", {
 
 // ==================== 项目跟踪信息表(基于附件1 Database.xlsx 24 列) ====================
 
-// 项目状态常量
+// 项目状态常量(英文存储,与系统默认英文语言一致)
 export const PROJECT_STATUS = {
-  FOLLOW_UP: "跟进",
-  WON: "获单",
-  LOST: "失单",
+  FOLLOW_UP: "follow_up",
+  WON: "won",
+  LOST: "lost",
 } as const;
 
 // 项目业务数据表:单表存储客户信息 + 项目跟踪信息
@@ -331,7 +331,7 @@ export const projects = pgTable("projects", {
   replyTime: time("reply_time"),
   // Q: 回复日期+时间
   replyDatetime: timestamp("reply_datetime"),
-  // R: 项目状态(跟进/获单/失单)
+  // R: 项目状态(follow_up/won/lost)
   projectStatus: text("project_status").default(PROJECT_STATUS.FOLLOW_UP).notNull(),
   // S: 项目金额
   projectAmount: numeric("project_amount"),
@@ -473,7 +473,7 @@ export const auditLogs = pgTable("audit_logs", {
     .references(() => user.id, { onDelete: "cascade" }),
   // 操作类型: login/logout/export/delete/update/create
   actionType: text("action_type").notNull(),
-  // 操作描述(如"导出项目数据","删除项目 XXX")
+  // 操作描述(如"Export project data (N records)")
   description: text("description").notNull(),
   // 操作详情(JSON,可选,存储额外的上下文信息)
   details: text("details"),

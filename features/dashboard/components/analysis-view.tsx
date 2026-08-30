@@ -71,11 +71,11 @@ const DAY_KEY_MAP: Record<
   "周日": "sunday",
 };
 
-// 订单状态显示键:status 为中文匹配键,展示时映射到 dashboard.views.common.status.{key}
+// 订单状态显示键:status 为数据库存储值(英文),展示时映射到 dashboard.views.common.status.{key}
 const STATUS_KEY_MAP: Record<string, "won" | "lost" | "followUp"> = {
-  "获单": "won",
-  "失单": "lost",
-  "跟进": "followUp",
+  won: "won",
+  lost: "lost",
+  follow_up: "followUp",
 };
 
 // ==================== 图表配置构建函数 ====================
@@ -188,12 +188,12 @@ function buildChartOption(
 
   if (chartId === 8) {
     const items = data as { managerName: string; series: { status: string; count: number }[] }[];
-    // statuses 为 API 数据匹配键,保留中文;展示名经 STATUS_KEY_MAP 走翻译
-    const statuses = ["获单", "失单", "跟进"];
+    // statuses 为 API 数据匹配键(数据库存储值,英文);展示名经 STATUS_KEY_MAP 走翻译
+    const statuses = ["won", "lost", "follow_up"];
     const statusColors: Record<string, string> = {
-      "获单": "#22c55e",
-      "失单": "#ef4444",
-      "跟进": "#3b82f6",
+      won: "#22c55e",
+      lost: "#ef4444",
+      follow_up: "#3b82f6",
     };
     const statusLabels = statuses.map((s) => tc(`status.${STATUS_KEY_MAP[s]}`));
     return {

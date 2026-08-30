@@ -76,7 +76,7 @@ describe("projects schema", () => {
     expect(projects.updatedAt).toBeDefined();
   });
 
-  it("项目状态默认值为跟进", () => {
+  it("项目状态默认值为 follow_up", () => {
     expect(projects.projectStatus.default).toBe(PROJECT_STATUS.FOLLOW_UP);
   });
 });
