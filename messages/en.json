@@ -693,7 +693,9 @@
           "analysis": "Analytics"
         },
         "sectionInteraction": "Interaction Interface",
-        "sectionLogic": "Logic Interface"
+        "sectionLogic": "Logic Interface",
+        "collapseSidebar": "Collapse sidebar",
+        "expandSidebar": "Expand sidebar"
       },
       "kanban": {
         "loadProjectsFailed": "Failed to load project data. Please refresh and try again.",

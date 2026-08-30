@@ -36,6 +36,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { PanelLeft, PanelLeftOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InteractionView } from "./interaction-view";
 import { InteractionEditorView } from "./interaction-editor-view";
@@ -65,6 +66,8 @@ type TabKey = (typeof TABS)[number]["key"];
 export function DashboardShell() {
   const t = useTranslations("dashboard.views.shell");
   const [activeTab, setActiveTab] = useState<TabKey>("kanban");
+  // 侧边栏是否折叠(最小化为窄条,仅保留展开按钮)
+  const [collapsed, setCollapsed] = useState(false);
 
   // 「更新及检查」完成后会刷新网页,并写入提示"刷新后进入逻辑界面"的意图;
   // 此处在挂载后读取该意图,直接切到逻辑界面(复用下方滚动定位逻辑),
@@ -118,24 +121,47 @@ export function DashboardShell() {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 lg:flex-row">
-      {/* 侧边栏导航(桌面) */}
-      <aside className="lg:w-52 lg:flex-shrink-0">
-        <nav className="flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-24 lg:flex-col lg:overflow-visible lg:pb-0">
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                "flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition lg:rounded-xl lg:px-4 lg:py-2.5 lg:text-left",
-                activeTab === tab.key
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              {t(`tabs.${tab.key}`)}
-            </button>
-          ))}
+      {/* 侧边栏导航(桌面);折叠时收窄为仅展开按钮 */}
+      <aside className={cn("lg:flex-shrink-0 transition-all", collapsed ? "lg:w-10" : "lg:w-52")}>
+        <nav
+          className={cn(
+            "flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-24 lg:flex-col lg:overflow-visible lg:pb-0 lg:transition-opacity",
+            collapsed && "lg:items-center"
+          )}
+        >
+          {/* 折叠/展开切换按钮 */}
+          <button
+            type="button"
+            onClick={() => setCollapsed((v) => !v)}
+            aria-label={
+              collapsed ? t("expandSidebar") : t("collapseSidebar")
+            }
+            title={collapsed ? t("expandSidebar") : t("collapseSidebar")}
+            className="flex flex-shrink-0 items-center justify-center rounded-xl p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            {collapsed ? (
+              <PanelLeftOpen className="h-4 w-4" />
+            ) : (
+              <PanelLeft className="h-4 w-4" />
+            )}
+          </button>
+
+          {!collapsed &&
+            TABS.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveTab(tab.key)}
+                className={cn(
+                  "flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition lg:rounded-xl lg:px-4 lg:py-2.5 lg:text-left",
+                  activeTab === tab.key
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {t(`tabs.${tab.key}`)}
+              </button>
+            ))}
         </nav>
       </aside>
 
