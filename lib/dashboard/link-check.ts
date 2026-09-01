@@ -29,7 +29,7 @@
 // 3. P3 选项已关联主题词(result_theme 非空)
 // 4. P3 选项已关联销售经理(result_manager_id 非空)
 
-import { getEditableTemplate } from "./quiz-editor";
+import { getEditableTemplate, type EditableNode } from "./quiz-editor";
 
 // 检查结果
 export type LinkCheckResult = {
@@ -56,25 +56,48 @@ function isPlaceholder(text: string): boolean {
 }
 
 /**
- * 检查 Quiz 模板信息齐备性
+ * 从根节点出发、仅沿启用选项遍历,校验可达节点的信息齐备性。
+ * 因选项关闭而不可达的子树不参与链接生成,整体跳过校验。
  *
- * @param templateId Quiz 模板 ID
- * @returns 检查结果(ok 表示可生成链接,issues 为缺失项列表)
+ * @param nodes 模板节点列表(需含 parentId 与选项 targetNodeId/isEnabled)
+ * @returns 缺失项列表
  */
-export async function checkTemplateReadiness(
-  templateId: string
-): Promise<LinkCheckResult> {
-  const nodes = await getEditableTemplate(templateId);
-  if (!nodes) {
-    return {
-      ok: false,
-      issues: [{ nodeId: "", level: "-", message: "Quiz template does not exist" }],
-    };
-  }
-
+export function validateReachableNodes(nodes: EditableNode[]): LinkCheckIssue[] {
   const issues: LinkCheckIssue[] = [];
 
+  // 计算可达节点集合(根节点 parentId 为 null)
+  const nodesById = new Map(nodes.map((n) => [n.id, n]));
+  const reachable = new Set<string>();
+  const root = nodes.find((n) => n.parentId === null);
+  if (root) {
+    const stack: string[] = [root.id];
+    while (stack.length > 0) {
+      const nodeId = stack.pop() as string;
+      if (reachable.has(nodeId)) {
+        continue;
+      }
+      reachable.add(nodeId);
+      const node = nodesById.get(nodeId);
+      if (!node) {
+        continue;
+      }
+      for (const option of node.options) {
+        // 已关闭的选项:其下级子树整体不可达
+        if (!option.isEnabled) {
+          continue;
+        }
+        if (option.targetNodeId) {
+          stack.push(option.targetNodeId);
+        }
+      }
+    }
+  }
+
   for (const node of nodes) {
+    // 不可达节点(被关闭选项隔离的子树)跳过全部校验
+    if (root && !reachable.has(node.id)) {
+      continue;
+    }
     // 1. 节点问题非占位符(P4 结果节点内容由父级选项派生且编辑器只读,跳过校验)
     if (node.level === "P4") {
       continue;
@@ -124,6 +147,28 @@ export async function checkTemplateReadiness(
       }
     }
   }
+
+  return issues;
+}
+
+/**
+ * 检查 Quiz 模板信息齐备性
+ *
+ * @param templateId Quiz 模板 ID
+ * @returns 检查结果(ok 表示可生成链接,issues 为缺失项列表)
+ */
+export async function checkTemplateReadiness(
+  templateId: string
+): Promise<LinkCheckResult> {
+  const nodes = await getEditableTemplate(templateId);
+  if (!nodes) {
+    return {
+      ok: false,
+      issues: [{ nodeId: "", level: "-", message: "Quiz template does not exist" }],
+    };
+  }
+
+  const issues = validateReachableNodes(nodes);
 
   return { ok: issues.length === 0, issues };
 }
