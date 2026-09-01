@@ -81,6 +81,7 @@ function buildTestData(): {
       sortOrder: 0,
       resultTheme: null,
       resultManagerId: null,
+      isEnabled: true,
     },
     {
       id: "edge-p2-a-a",
@@ -91,6 +92,7 @@ function buildTestData(): {
       sortOrder: 0,
       resultTheme: null,
       resultManagerId: null,
+      isEnabled: true,
     },
     {
       id: "edge-p3-aa-a",
@@ -101,6 +103,7 @@ function buildTestData(): {
       sortOrder: 0,
       resultTheme: "数学",
       resultManagerId: "manager-001",
+      isEnabled: true,
     },
   ];
 
@@ -195,6 +198,7 @@ describe("buildClientTemplate", () => {
           sortOrder: 2,
           resultTheme: null,
           resultManagerId: null,
+          isEnabled: true,
         },
         {
           id: "edge-multi-a",
@@ -205,6 +209,7 @@ describe("buildClientTemplate", () => {
           sortOrder: 0,
           resultTheme: null,
           resultManagerId: null,
+          isEnabled: true,
         },
         {
           id: "edge-multi-b",
@@ -215,6 +220,7 @@ describe("buildClientTemplate", () => {
           sortOrder: 1,
           resultTheme: null,
           resultManagerId: null,
+          isEnabled: true,
         },
       ];
       const result = buildClientTemplate(
@@ -224,6 +230,64 @@ describe("buildClientTemplate", () => {
       );
       const options = result.nodes["node-multi"].options;
       expect(options.map((o) => o.label)).toEqual(["A", "B", "C"]);
+    });
+
+    it("已关闭的选项(isEnabled=false)不进入客户端模板", () => {
+      // 模拟客户将 C/D 开关关闭:客户端问卷不应包含这些选项
+      const toggleNodes: QuizNodeRecord[] = [
+        {
+          id: "node-toggle",
+          templateId: "tpl-004",
+          parentId: null,
+          level: "P1",
+          question: "开关节点",
+          sortOrder: 0,
+          resultTheme: null,
+          resultManagerId: null,
+        },
+      ];
+      const toggleEdges: QuizEdgeRecord[] = [
+        {
+          id: "edge-toggle-a",
+          nodeId: "node-toggle",
+          optionLabel: "A",
+          optionText: "选项 A",
+          targetNodeId: null,
+          sortOrder: 0,
+          resultTheme: null,
+          resultManagerId: null,
+          isEnabled: true,
+        },
+        {
+          id: "edge-toggle-c",
+          nodeId: "node-toggle",
+          optionLabel: "C",
+          optionText: "选项 C",
+          targetNodeId: null,
+          sortOrder: 2,
+          resultTheme: null,
+          resultManagerId: null,
+          isEnabled: false,
+        },
+        {
+          id: "edge-toggle-d",
+          nodeId: "node-toggle",
+          optionLabel: "D",
+          optionText: "选项 D",
+          targetNodeId: null,
+          sortOrder: 3,
+          resultTheme: null,
+          resultManagerId: null,
+          isEnabled: false,
+        },
+      ];
+      const result = buildClientTemplate(
+        { id: "tpl-004", name: "t", description: null },
+        toggleNodes,
+        toggleEdges
+      );
+      const labels = result.nodes["node-toggle"].options.map((o) => o.label);
+      expect(labels).toEqual(["A"]);
     });
   });
 

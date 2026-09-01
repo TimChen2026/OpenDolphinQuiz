@@ -141,6 +141,13 @@
       "when": 1788007404000,
       "tag": "0019_project_status_english",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1788234039599,
+      "tag": "0020_cuddly_chamber",
+      "breakpoints": true
     }
   ]
 }

@@ -34,9 +34,11 @@ import * as echarts from "echarts";
 import type { ECElementEvent } from "echarts";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/button";
+import { Switch } from "@/components/switch";
 import { cn } from "@/lib/utils";
 import type {
   EditableNodeData,
+  EditableOptionData,
   DashboardTemplate,
 } from "@/features/dashboard/types";
 
@@ -91,6 +93,10 @@ function buildTreeData(
     if (!option.targetNodeId) {
       continue; // P4 结果节点无子节点
     }
+    // 已关闭的选项(C/D off):其下一级节点不在节点图中显示
+    if (!option.isEnabled) {
+      continue;
+    }
     const child = buildTreeData(nodes, option.targetNodeId);
     // 将选项文本拼入子节点名
     child.name = `[${option.optionLabel}] ${child.name}`;
@@ -141,6 +147,10 @@ function validateTemplate(
       issues.push(t("check.noOptions", { label }));
     }
     for (const opt of node.options) {
+      // 已关闭的选项(C/D off)不参与问卷与链接生成,跳过完整性校验
+      if (!opt.isEnabled) {
+        continue;
+      }
       const optionLabel = opt.optionLabel || "?";
       if (!opt.optionText.trim()) {
         issues.push(t("check.optionEmpty", { label, optionLabel }));
@@ -157,6 +167,53 @@ function validateTemplate(
     }
   }
   return issues;
+}
+
+/**
+ * 选项编辑行:C/D 选项带启用开关,关闭后输入禁止且整行灰显
+ * (A/B 为必选项,不提供开关)
+ */
+function EditableOptionRow({
+  nodeId,
+  option,
+  onTextChange,
+  onEnabledChange,
+  optionPlaceholder,
+  switchTitle,
+}: {
+  nodeId: string;
+  option: EditableOptionData;
+  onTextChange: (nodeId: string, optionId: string, text: string) => void;
+  onEnabledChange: (nodeId: string, optionId: string, isEnabled: boolean) => void;
+  optionPlaceholder: string;
+  switchTitle: string;
+}) {
+  // 仅 C/D 可开关关闭;A/B 始终启用
+  const isToggleable = option.optionLabel === "C" || option.optionLabel === "D";
+  const isEnabled = option.isEnabled;
+  return (
+    <div className={cn("flex items-center gap-2", !isEnabled && "opacity-50")}>
+      <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+        {option.optionLabel}
+      </span>
+      <input
+        value={option.optionText}
+        onChange={(e) => onTextChange(nodeId, option.id, e.target.value)}
+        disabled={!isEnabled}
+        aria-label={`${option.optionLabel} ${optionPlaceholder}`}
+        className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground outline-none focus:border-primary disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-muted-foreground"
+        placeholder={optionPlaceholder}
+      />
+      {isToggleable && (
+        <span title={switchTitle}>
+          <Switch
+            checked={isEnabled}
+            setChecked={(checked) => onEnabledChange(nodeId, option.id, checked)}
+          />
+        </span>
+      )}
+    </div>
+  );
 }
 
 export function LogicView({
@@ -374,6 +431,33 @@ export function LogicView({
     scheduleAutoSave();
   };
 
+  /** 更新选项启用状态(C/D 开关,并触发自动保存) */
+  const updateOptionEnabled = (
+    nodeId: string,
+    optionId: string,
+    isEnabled: boolean
+  ) => {
+    setTemplate((prev) =>
+      prev
+        ? {
+            ...prev,
+            nodes:
+              prev.nodes?.map((n) =>
+                n.id === nodeId
+                  ? {
+                      ...n,
+                      options: n.options.map((o) =>
+                        o.id === optionId ? { ...o, isEnabled } : o
+                      ),
+                    }
+                  : n
+              ) ?? null,
+          }
+        : prev
+    );
+    scheduleAutoSave();
+  };
+
   /** 将当前 template 的最新内容写入数据库 */
   const persistTemplate = useCallback(async (): Promise<void> => {
     const current = templateRef.current;
@@ -392,6 +476,7 @@ export function LogicView({
         targetNodeId: o.targetNodeId,
         resultTheme: o.resultTheme,
         resultManagerId: o.resultManagerId,
+        isEnabled: o.isEnabled,
       }));
 
     const res = await fetch("/api/dashboard/template/save", {
@@ -570,19 +655,15 @@ export function LogicView({
             )}
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {selectedNode.options.map((option) => (
-                <div key={option.id} className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                    {option.optionLabel}
-                  </span>
-                  <input
-                    value={option.optionText}
-                    onChange={(e) =>
-                      updateOptionText(selectedNode.id, option.id, e.target.value)
-                    }
-                    className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground outline-none focus:border-primary"
-                    placeholder={t("optionPlaceholder")}
-                  />
-                </div>
+                <EditableOptionRow
+                  key={option.id}
+                  nodeId={selectedNode.id}
+                  option={option}
+                  onTextChange={updateOptionText}
+                  onEnabledChange={updateOptionEnabled}
+                  optionPlaceholder={t("optionPlaceholder")}
+                  switchTitle={t("optionSwitch")}
+                />
               ))}
               {selectedNode.options.length === 0 && (
                 <p className="text-xs text-muted-foreground">
@@ -690,19 +771,15 @@ export function LogicView({
 
               <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {node.options.map((option) => (
-                  <div key={option.id} className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                      {option.optionLabel}
-                    </span>
-                    <input
-                      value={option.optionText}
-                      onChange={(e) =>
-                        updateOptionText(node.id, option.id, e.target.value)
-                      }
-                      className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground outline-none focus:border-primary"
-                      placeholder={t("optionPlaceholder")}
-                    />
-                  </div>
+                  <EditableOptionRow
+                    key={option.id}
+                    nodeId={node.id}
+                    option={option}
+                    onTextChange={updateOptionText}
+                    onEnabledChange={updateOptionEnabled}
+                    optionPlaceholder={t("optionPlaceholder")}
+                    switchTitle={t("optionSwitch")}
+                  />
                 ))}
                 {node.options.length === 0 && (
                   <p className="text-xs text-muted-foreground">
@@ -785,7 +862,9 @@ export function LogicView({
               {previewNode.question}
             </p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {previewNode.options.map((o) => (
+              {previewNode.options
+                .filter((o) => o.isEnabled)
+                .map((o) => (
                 <div
                   key={o.id}
                   className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm text-muted-foreground"

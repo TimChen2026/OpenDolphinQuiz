@@ -53,6 +53,7 @@ async function fetchEdgesForNodes(
         sortOrder: e.sortOrder,
         resultTheme: e.resultTheme,
         resultManagerId: e.resultManagerId,
+        isEnabled: e.isEnabled,
       }))
     );
   }

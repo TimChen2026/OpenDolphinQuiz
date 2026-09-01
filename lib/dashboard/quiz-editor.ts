@@ -50,6 +50,8 @@ export type EditableOption = {
   targetNodeId: string | null;
   resultTheme: string | null;
   resultManagerId: string | null;
+  // 是否启用(C/D 可关闭):关闭后不参与问卷/节点图/链接生成
+  isEnabled: boolean;
 };
 
 // 节点保存数据
@@ -65,6 +67,8 @@ export type OptionSave = {
   targetNodeId: string | null;
   resultTheme: string | null;
   resultManagerId: string | null;
+  // 是否启用(C/D 可关闭)
+  isEnabled: boolean;
 };
 
 /**
@@ -111,6 +115,7 @@ export async function getEditableTemplate(
       targetNodeId: edge.targetNodeId,
       resultTheme: edge.resultTheme,
       resultManagerId: edge.resultManagerId,
+      isEnabled: edge.isEnabled,
     });
     edgesByNode.set(edge.nodeId, list);
   }
@@ -190,6 +195,7 @@ export async function saveTemplateEdits(
           targetNodeId: save.targetNodeId,
           resultTheme: save.resultTheme,
           resultManagerId: save.resultManagerId,
+          isEnabled: save.isEnabled,
         })
         .where(eq(quizEdges.id, save.id));
     }

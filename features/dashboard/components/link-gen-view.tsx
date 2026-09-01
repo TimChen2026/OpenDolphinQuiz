@@ -71,6 +71,8 @@ type PlanOption = {
   targetNodeId: string | null;
   resultTheme: string | null;
   resultManagerId: string | null;
+  // 是否启用(C/D 可关闭)
+  isEnabled: boolean;
 };
 
 const PLANS_STORAGE_KEY = "dolphin_quiz_plans";
@@ -355,6 +357,8 @@ export function LinkGenView() {
           targetNodeId: o.targetNodeId,
           resultTheme: o.resultTheme,
           resultManagerId: o.resultManagerId,
+          // 旧方案快照无 isEnabled 字段,兜底为启用
+          isEnabled: o.isEnabled ?? true,
         }))
       );
       const res = await fetch("/api/dashboard/template/save", {

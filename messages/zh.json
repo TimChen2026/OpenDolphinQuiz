@@ -794,6 +794,7 @@
         "nodeEditTableHint": "点击上方节点图中的任意节点,此处即时展示该节点的问题与选项文本,无需往下滚动;下方「更新及检查」与整体表格按钮功能一致",
         "questionPlaceholder": "问题",
         "optionPlaceholder": "选项文本",
+        "optionSwitch": "开启/关闭该选项:关闭后选项禁止输入,节点图中对应的下一级节点不再显示,生成链接时也不包含该选项。",
         "resultNodeNoOptions": "(结果节点,无选项)",
         "selectNodePrompt": "点击上方节点图中的任意节点,此处将显示该节点的题目与选项文本",
         "updateAndCheck": "更新及检查",

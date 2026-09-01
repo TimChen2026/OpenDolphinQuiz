@@ -135,7 +135,7 @@ export function buildDefaultQuizTemplateData(
       templateId,
       parentId: p1Id,
       level: "P2",
-      question: `请输入 P2-${p2Label} 中间节点问题`,
+      question: `Please enter P2-${p2Label} choice question`,
       sortOrder: p2Index,
       resultTheme: null,
       resultManagerId: null,
@@ -182,7 +182,7 @@ export function buildDefaultQuizTemplateData(
           id: `${templateId}-edge-p3-${p2Label.toLowerCase()}${p3Label.toLowerCase()}-${optionLabel.toLowerCase()}`,
           nodeId: p3Id,
           optionLabel: optionLabel,
-          optionText: `请输入 P3-${p2Label}${p3Label} 选项 ${optionLabel} 文本`,
+          optionText: `Please enter P3-${p2Label}${p3Label} choice ${optionLabel} text`,
           targetNodeId: p4Id, // P3 选项 → P4 结果节点
           sortOrder: optionIndex,
           resultTheme: DEFAULT_THEMES[optionIndex], // 选项级主题占位符

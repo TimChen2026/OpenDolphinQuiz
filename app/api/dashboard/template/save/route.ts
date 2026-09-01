@@ -41,6 +41,8 @@ const optionSaveSchema = z.object({
   targetNodeId: z.string().nullable(),
   resultTheme: z.string().nullable(),
   resultManagerId: z.string().nullable(),
+  // 是否启用(C/D 可关闭):关闭后不参与问卷/节点图/链接生成
+  isEnabled: z.boolean(),
 });
 
 const saveTemplateSchema = z.object({

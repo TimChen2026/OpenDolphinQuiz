@@ -794,6 +794,7 @@
         "nodeEditTableHint": "Click any node in the graph above to show its question and option texts here without scrolling down. The Update and Check button below works the same as the one in the full table.",
         "questionPlaceholder": "Question",
         "optionPlaceholder": "Option text",
+        "optionSwitch": "Turn this option on/off. When off, its text is locked, the next-level node is hidden in the graph, and it is excluded from the generated link.",
         "resultNodeNoOptions": "(Result node, no options)",
         "selectNodePrompt": "Click any node in the graph above to show its question and option texts here",
         "updateAndCheck": "Update and Check",

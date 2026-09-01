@@ -87,8 +87,11 @@ export async function checkTemplateReadiness(
       });
     }
 
-    // 2. 选项文本非占位符且非空(P4 结果节点无选项,跳过)
+    // 2. 选项文本非占位符且非空(P4 结果节点无选项,跳过;已关闭的选项不参与链接生成,跳过)
     for (const option of node.options) {
+      if (!option.isEnabled) {
+        continue;
+      }
       if (isPlaceholder(option.optionText)) {
         issues.push({
           nodeId: node.id,
@@ -98,9 +101,12 @@ export async function checkTemplateReadiness(
       }
     }
 
-    // 3/4. P3 选项需关联主题词与销售经理
+    // 3/4. P3 选项需关联主题词与销售经理(已关闭的选项跳过)
     if (node.level === "P3") {
       for (const option of node.options) {
+        if (!option.isEnabled) {
+          continue;
+        }
         if (!option.resultTheme || option.resultTheme.trim() === "") {
           issues.push({
             nodeId: node.id,

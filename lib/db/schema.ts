@@ -273,6 +273,8 @@ export const quizEdges = pgTable("quiz_edges", {
   resultTheme: text("result_theme"),
   // 选项级销售经理(优先级高于节点级 result_manager_id)
   resultManagerId: text("result_manager_id"),
+  // 选项是否启用:关闭(C/D)后不参与问卷、节点图与链接生成
+  isEnabled: boolean("is_enabled").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

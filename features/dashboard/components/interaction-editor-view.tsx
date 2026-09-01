@@ -317,6 +317,7 @@ export function InteractionEditorView({
           targetNodeId: o.targetNodeId,
           resultTheme: o.resultTheme,
           resultManagerId: o.resultManagerId,
+          isEnabled: o.isEnabled,
         }));
 
       const res = await fetch("/api/dashboard/template/save", {
@@ -373,7 +374,9 @@ export function InteractionEditorView({
             {t("themeEditTitle")}
           </h3>
           <div className="space-y-3">
-            {selectedNode.options.map((option) => (
+            {selectedNode.options
+              .filter((option) => option.isEnabled)
+              .map((option) => (
               <div
                 key={option.id}
                 className="flex items-center gap-3 rounded-xl border border-border bg-background p-3"
@@ -570,9 +573,11 @@ function MobilePreview({
         </h3>
       </div>
 
-      {/* 选项列表 */}
+      {/* 选项列表(已关闭的选项不显示) */}
       <div className="px-6 pb-4 space-y-2.5">
-        {node.options.map((option) => (
+        {node.options
+          .filter((option) => option.isEnabled)
+          .map((option) => (
           <div
             key={option.id}
             className="flex items-center gap-3 p-3 rounded-lg border"

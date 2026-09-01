@@ -92,6 +92,8 @@ export type QuizEdgeRecord = {
   sortOrder: number;
   resultTheme: string | null;
   resultManagerId: string | null;
+  // 选项是否启用:关闭的选项不进入客户端问卷结构
+  isEnabled: boolean;
 };
 
 // 选项标签类型
@@ -137,9 +139,11 @@ export function buildClientTemplate(
   // 构建节点索引
   const nodesById: Record<string, QuizClientNode> = {};
   for (const node of nodes) {
-    const nodeEdges = (edgesByNodeId.get(node.id) ?? []).slice().sort(
-      (a, b) => a.sortOrder - b.sortOrder
-    );
+    const nodeEdges = (edgesByNodeId.get(node.id) ?? [])
+      .slice()
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      // 过滤关闭的选项:问卷运行时(C端)不展示、不可选
+      .filter((edge) => edge.isEnabled);
 
     const options: QuizClientOption[] = nodeEdges.map((edge) => ({
       id: edge.id,
