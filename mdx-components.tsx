@@ -21,11 +21,13 @@
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import type { MDXComponents } from 'mdx/types';
 import Image, { type ImageProps } from 'next/image';
+import { QuickstartVideo } from '@/components/quickstart-video';
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     ...defaultMdxComponents,
     Image: ({ alt = '', ...props }: ImageProps) => <Image alt={alt} {...props} />,
+    QuickstartVideo,
     ...components,
   };
 }
