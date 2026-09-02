@@ -695,7 +695,8 @@
         "sectionInteraction": "Interaction Interface",
         "sectionLogic": "Logic Interface",
         "collapseSidebar": "Collapse sidebar",
-        "expandSidebar": "Expand sidebar"
+        "expandSidebar": "Expand sidebar",
+        "quickstartLink": "Quickstart"
       },
       "kanban": {
         "loadProjectsFailed": "Failed to load project data. Please refresh and try again.",

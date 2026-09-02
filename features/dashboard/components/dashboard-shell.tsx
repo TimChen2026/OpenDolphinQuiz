@@ -38,6 +38,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { PanelLeft, PanelLeftOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LocaleLink } from "@/components/locale-link";
 import { InteractionView } from "./interaction-view";
 import { InteractionEditorView } from "./interaction-editor-view";
 import { LogicView } from "./logic-view";
@@ -146,22 +147,32 @@ export function DashboardShell() {
             )}
           </button>
 
-          {!collapsed &&
-            TABS.map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setActiveTab(tab.key)}
-                className={cn(
-                  "flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition lg:rounded-xl lg:px-4 lg:py-2.5 lg:text-left",
-                  activeTab === tab.key
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
+          {!collapsed && (
+            <>
+              {TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActiveTab(tab.key)}
+                  className={cn(
+                    "flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition lg:rounded-xl lg:px-4 lg:py-2.5 lg:text-left",
+                    activeTab === tab.key
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  {t(`tabs.${tab.key}`)}
+                </button>
+              ))}
+              {/* 快速上手文档入口:非 Tab,点击跳转到当前语言的 /docs/quickstart */}
+              <LocaleLink
+                href="/docs/quickstart"
+                className="flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition text-muted-foreground hover:bg-muted hover:text-foreground lg:rounded-xl lg:px-4 lg:py-2.5 lg:text-left"
               >
-                {t(`tabs.${tab.key}`)}
-              </button>
-            ))}
+                {t("quickstartLink")}
+              </LocaleLink>
+            </>
+          )}
         </nav>
       </aside>
 

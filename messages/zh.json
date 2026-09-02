@@ -695,7 +695,8 @@
         "sectionInteraction": "交互界面",
         "sectionLogic": "逻辑界面",
         "collapseSidebar": "收起侧边栏",
-        "expandSidebar": "展开侧边栏"
+        "expandSidebar": "展开侧边栏",
+        "quickstartLink": "快速上手"
       },
       "kanban": {
         "loadProjectsFailed": "加载项目数据失败,请刷新重试",
