@@ -19,7 +19,8 @@
  */
 
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
+import type { AbstractIntlMessages } from "next-intl";
 import type { Locale } from "@/i18n.config";
 import {
   getFirstActiveClientTemplate,
@@ -77,9 +78,13 @@ export default async function QuizPage({
   // 需先查出模板所属租户(当前客户端模板不含 tenantId)
   const summaryTemplate = await loadSummaryTemplateForTemplate(template.id);
 
+  // 访客登录/注册卡片统一使用英文版:只传所需命名空间,避免整份消息进入客户端载荷
+  const enMessages = await getMessages({ locale: "en" });
+  const guestMessages = pickGuestMessages(enMessages);
+
   return (
     <Container className="py-8 sm:py-12">
-      <QuizRegisterGuard templateId={template.id}>
+      <QuizRegisterGuard templateId={template.id} guestMessages={guestMessages}>
         <QuizFlowContainer
           template={template}
           summaryTemplate={summaryTemplate}
@@ -88,6 +93,22 @@ export default async function QuizPage({
       </QuizRegisterGuard>
     </Container>
   );
+}
+
+/**
+ * 提取访客注册/补充手机号卡片所需的英文消息命名空间
+ * (quiz.register + auth.social + auth.legal)
+ */
+function pickGuestMessages(messages: AbstractIntlMessages): AbstractIntlMessages {
+  const quiz = messages.quiz as AbstractIntlMessages | undefined;
+  const auth = messages.auth as AbstractIntlMessages | undefined;
+  return {
+    quiz: quiz?.register ? { register: quiz.register } : {},
+    auth: {
+      social: auth?.social ?? {},
+      legal: auth?.legal ?? {},
+    },
+  };
 }
 
 /**

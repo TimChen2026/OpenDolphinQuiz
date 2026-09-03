@@ -19,13 +19,28 @@
  */
 
 import createMiddleware from 'next-intl/middleware';
+import { NextResponse, type NextRequest } from 'next/server';
 import { locales, defaultLocale, localePrefix } from './i18n.config';
 
-export const proxy = createMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix
-});
+// 认证相关页面统一使用英文版(login/signup/forgot-password/reset-password/
+// check-email/verify-email/verify-email-prompt),zh 前缀访问时 302 到 en 版本,
+// 保留查询参数(如 verify-email 的 token、login 的 callbackURL)
+const ZH_AUTH_PATH_PATTERN =
+  /^\/zh\/(login|signup|forgot-password|reset-password|check-email|verify-email|verify-email-prompt)(\/|$)/;
+
+export const proxy = (request: NextRequest) => {
+  const authMatch = ZH_AUTH_PATH_PATTERN.exec(request.nextUrl.pathname);
+  if (authMatch) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/en${request.nextUrl.pathname.slice('/zh'.length)}`;
+    return NextResponse.redirect(url, 308);
+  }
+  return createMiddleware({
+    locales,
+    defaultLocale,
+    localePrefix
+  })(request);
+};
 
 export const config = {
   matcher: [

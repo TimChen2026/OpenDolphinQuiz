@@ -21,6 +21,7 @@
 "use client";
 
 import * as React from "react";
+import { NextIntlClientProvider, type AbstractIntlMessages } from "next-intl";
 import { useSession } from "@/lib/auth-client";
 import { QuizRegisterCard } from "./quiz-register-card";
 import { QuizPhoneSupplementCard } from "./quiz-phone-supplement-card";
@@ -30,6 +31,8 @@ type QuizRegisterGuardProps = {
   children: React.ReactNode;
   /** 当前问卷模板 ID,客户注册后自动归属该模板所属团队 */
   templateId?: string;
+  /** 访客登录/注册卡片使用的英文消息(认证页面统一英文,见 proxy.ts) */
+  guestMessages: AbstractIntlMessages;
 };
 
 /**
@@ -44,7 +47,7 @@ type QuizRegisterGuardProps = {
  * 注意:Better Auth 的 session.user 不含 phone 字段,须通过
  * /api/auth/phone-status 查询 DB 判断手机号是否已填写
  */
-export function QuizRegisterGuard({ children, templateId }: QuizRegisterGuardProps) {
+export function QuizRegisterGuard({ children, templateId, guestMessages }: QuizRegisterGuardProps) {
   const session = useSession();
   const [forceRefresh, setForceRefresh] = React.useState(false);
   const [hasPhone, setHasPhone] = React.useState<boolean | null>(null);
@@ -90,11 +93,37 @@ export function QuizRegisterGuard({ children, templateId }: QuizRegisterGuardPro
   if (session.data?.user || forceRefresh) {
     // 已登录但未填写手机号(如 Google 登录用户):提示补充(非强制)
     if (!forceRefresh && hasPhone === false) {
-      return <QuizPhoneSupplementCard onDone={handleRegistered} />;
+      return (
+        <EnglishGuestProvider messages={guestMessages}>
+          <QuizPhoneSupplementCard onDone={handleRegistered} />
+        </EnglishGuestProvider>
+      );
     }
     return <>{children}</>;
   }
 
   // 未登录:渲染注册卡片(透传 templateId,注册后自动归属问卷所属团队)
-  return <QuizRegisterCard onRegistered={handleRegistered} templateId={templateId} />;
+  return (
+    <EnglishGuestProvider messages={guestMessages}>
+      <QuizRegisterCard onRegistered={handleRegistered} templateId={templateId} />
+    </EnglishGuestProvider>
+  );
+}
+
+/**
+ * 访客认证卡片的英文语言环境:嵌套 Provider 覆盖父级 locale,
+ * 使注册/补充手机号卡片无论页面语言如何统一展示英文
+ */
+function EnglishGuestProvider({
+  messages,
+  children,
+}: {
+  messages: AbstractIntlMessages;
+  children: React.ReactNode;
+}) {
+  return (
+    <NextIntlClientProvider locale="en" messages={messages}>
+      {children}
+    </NextIntlClientProvider>
+  );
 }
