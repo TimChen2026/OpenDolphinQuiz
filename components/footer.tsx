@@ -56,7 +56,7 @@ export const Footer = () => {
               <div>{t('common.brand.copyright')}</div>
               <div className="mt-2">{t('common.brand.allRightsReserved')}</div>
               <div className="mt-6 text-sm text-muted-foreground">
-                Support: huiting.chen@outlook.com / DolphinQuiz.service@outlook.com
+                Support: tim.chen@dolphinquiz.com / huiting.chen@outlook.com 
               </div>
 
               {/* 开源/商业版本说明 */}

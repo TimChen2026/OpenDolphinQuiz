@@ -126,7 +126,7 @@ export default async function Home({
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* 左侧文字 */}
             <div className="flex flex-col gap-8 py-8 lg:py-12">
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight tracking-tight font-display text-primary">
+              <h1 className="text-5xl lg:text-6xl xl:text-[62px] font-bold leading-tight tracking-tight font-display text-primary">
                 {t('heroH1')}
               </h1>
               <p className="text-xl lg:text-2xl leading-relaxed text-muted-foreground">
