@@ -1132,8 +1132,14 @@
   },
   "contact": {
     "title": "Contact Us",
-    "subtitle": "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+    "subtitle": "We'd love to hear from you. Choose a channel below and we'll get back to you as soon as possible.",
     "description": "Please reach out to us and we will get back to you at the speed of light.",
+    "info": {
+      "customerServiceLabel": "Customer Service",
+      "technicalSupportLabel": "Technical Support",
+      "communityLabel": "Community",
+      "openSourceLabel": "Open Source"
+    },
     "testimonial": {
       "title": "DolphinQuiz AI is used by thousands of users",
       "description": "With lots of AI applications around, DolphinQuiz AI stands out with its state of the art AI capabilities."

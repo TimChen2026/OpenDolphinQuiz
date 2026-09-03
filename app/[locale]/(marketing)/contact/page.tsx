@@ -21,10 +21,20 @@
 import { Background } from "@/components/background";
 import { Metadata } from "next";
 import { HorizontalGradient } from "@/components/horizontal-gradient";
-import { ContactForm } from "@/features/marketing/components/contact-form";
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from "@/i18n.config";
 import { generatePageMetadata } from "@/lib/metadata";
+
+// 单个联系渠道:label 为分类名,links 为该渠道下的联系方式链接
+type ContactChannel = {
+  label: string;
+  links: {
+    text: string;
+    href: string;
+    // 外部链接(社区/开源仓库)需在新标签页打开
+    external?: boolean;
+  }[];
+};
 
 export async function generateMetadata(
   props: {
@@ -47,13 +57,82 @@ export default async function ContactPage(
     params: Promise<{ locale: Locale }>;
   }
 ) {
-  await props.params;
+  const params = await props.params;
+  const t = await getTranslations({ locale: params.locale, namespace: 'contact' });
+
+  // 四类联系渠道(链接为静态展示,不随语言变化)
+  const contactChannels: ContactChannel[] = [
+    {
+      label: t('info.customerServiceLabel'),
+      links: [{ text: "Anna@dolphinquiz.com", href: "mailto:Anna@dolphinquiz.com" }],
+    },
+    {
+      label: t('info.technicalSupportLabel'),
+      links: [
+        { text: "tim.chen@dolphinquiz.com", href: "mailto:tim.chen@dolphinquiz.com" },
+        { text: "huiting.chen@outlook.com", href: "mailto:huiting.chen@outlook.com" },
+      ],
+    },
+    {
+      label: t('info.communityLabel'),
+      links: [
+        {
+          text: "dolphinquiz.discourse.group",
+          href: "https://dolphinquiz.discourse.group",
+          external: true,
+        },
+      ],
+    },
+    {
+      label: t('info.openSourceLabel'),
+      links: [
+        {
+          text: "github.com/TimChen2026/OpenDolphinQuiz",
+          href: "https://github.com/TimChen2026/OpenDolphinQuiz",
+          external: true,
+        },
+      ],
+    },
+  ];
 
   return (
     <div className="relative overflow-hidden py-20 md:py-0 px-4 md:px-20 bg-background">
       <div className="w-full min-h-screen grid grid-cols-1 md:grid-cols-2 relative overflow-hidden">
         <Background />
-        <ContactForm />
+        <div className="relative w-full z-20 flex items-center justify-center py-16 md:py-0">
+          {/* 联系渠道信息区:替代原联系表单,风格与站点主体一致 */}
+          <div className="max-w-xl w-full px-6 md:px-12 flex flex-col gap-6">
+            <div>
+              <h1 className="text-3xl font-bold font-display text-primary">
+                {t('title')}
+              </h1>
+              <p className="mt-2 text-muted-foreground">{t('subtitle')}</p>
+            </div>
+            {contactChannels.map((channel) => (
+              <div
+                key={channel.label}
+                className="rounded-2xl border border-border bg-background/80 p-5"
+              >
+                <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  {channel.label}
+                </p>
+                <div className="mt-2 flex flex-col gap-1">
+                  {channel.links.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target={link.external ? "_blank" : undefined}
+                      rel={link.external ? "noopener noreferrer" : undefined}
+                      className="text-sm font-medium break-all transition-colors text-foreground hover:text-primary"
+                    >
+                      {link.text}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="relative w-full z-20 hidden md:flex border-l border-border overflow-hidden bg-background items-center justify-center">
           {/* 右侧品牌展示区：展示 DolphinQuiz 官方 Logo（public/dolphinquiz-logo.jpg） */}
           <div className="max-w-md px-8">

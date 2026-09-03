@@ -400,33 +400,71 @@ export async function updateUserPhone(
 }
 
 /**
- * 获取模板的全部主题(P3 选项的 result_theme 去重)
+ * 获取模板当前逻辑下可达的主题
+ *
+ * 从根节点出发,沿启用(isEnabled)的选项遍历逻辑树,
+ * 只收集可达 P3 节点的选项级 result_theme。
+ * 用户在 Logic 界面关闭选项后,被关闭分支的主题不会出现在团队页,
+ * 避免展示与当前问卷无关的主题造成困惑。
  */
 export async function listTemplateThemes(templateId: string): Promise<string[]> {
-  const p3Nodes = await db
-    .select({ id: quizNodes.id })
+  const nodes = await db
+    .select({
+      id: quizNodes.id,
+      parentId: quizNodes.parentId,
+      level: quizNodes.level,
+    })
     .from(quizNodes)
-    .where(
-      and(eq(quizNodes.templateId, templateId), eq(quizNodes.level, "P3"))
-    );
-  const p3NodeIds = p3Nodes.map((n) => n.id);
-  if (p3NodeIds.length === 0) {
+    .where(eq(quizNodes.templateId, templateId));
+
+  const rootNode = nodes.find((n) => n.parentId === null);
+  if (!rootNode) {
     return [];
   }
 
+  const nodeIds = nodes.map((n) => n.id);
   const edges = await db
-    .select({ resultTheme: quizEdges.resultTheme })
+    .select({
+      nodeId: quizEdges.nodeId,
+      targetNodeId: quizEdges.targetNodeId,
+      resultTheme: quizEdges.resultTheme,
+      isEnabled: quizEdges.isEnabled,
+    })
     .from(quizEdges)
-    .where(inArray(quizEdges.nodeId, p3NodeIds));
+    .where(inArray(quizEdges.nodeId, nodeIds));
 
-  const themes = Array.from(
-    new Set(
-      edges
-        .map((e) => e.resultTheme)
-        .filter((t): t is string => t != null && t.trim() !== "")
-    )
-  );
-  return themes;
+  const enabledEdgesByNodeId = new Map<string, typeof edges>();
+  for (const edge of edges) {
+    if (!edge.isEnabled) continue;
+    const list = enabledEdgesByNodeId.get(edge.nodeId) ?? [];
+    list.push(edge);
+    enabledEdgesByNodeId.set(edge.nodeId, list);
+  }
+
+  // BFS 遍历启用选项构成的逻辑图,收集可达 P3 选项的主题
+  const themes = new Set<string>();
+  const visitedNodeIds = new Set<string>();
+  const queue: string[] = [rootNode.id];
+  while (queue.length > 0) {
+    const nodeId = queue.shift()!;
+    if (visitedNodeIds.has(nodeId)) continue;
+    visitedNodeIds.add(nodeId);
+
+    const nodeEdges = enabledEdgesByNodeId.get(nodeId) ?? [];
+    if (nodes.find((n) => n.id === nodeId)?.level === "P3") {
+      for (const edge of nodeEdges) {
+        if (edge.resultTheme && edge.resultTheme.trim() !== "") {
+          themes.add(edge.resultTheme);
+        }
+      }
+    }
+    for (const edge of nodeEdges) {
+      if (edge.targetNodeId && !visitedNodeIds.has(edge.targetNodeId)) {
+        queue.push(edge.targetNodeId);
+      }
+    }
+  }
+  return Array.from(themes);
 }
 
 /**
