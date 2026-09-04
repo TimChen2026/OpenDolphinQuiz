@@ -595,7 +595,8 @@
         "copyButton": "复制",
         "copiedButton": "已复制！",
         "openButton": "预览",
-        "invalidEmail": "请输入有效的邮箱地址"
+        "invalidEmail": "请输入有效的邮箱地址",
+        "alreadyUnsubscribedWarning": "该邮箱已退订，不能再接收营销类邮件。"
       },
       "list": {
         "title": "已退订邮箱",

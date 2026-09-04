@@ -41,11 +41,13 @@ export function UnsubscribeLinkGenerator() {
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [hasCopied, setHasCopied] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [alreadyUnsubscribed, setAlreadyUnsubscribed] = React.useState(false);
 
   async function handleGenerate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setHasCopied(false);
+    setAlreadyUnsubscribed(false);
 
     if (!EMAIL_PATTERN.test(email.trim())) {
       setError(t("invalidEmail"));
@@ -57,6 +59,7 @@ export function UnsubscribeLinkGenerator() {
       const result = await generateUnsubscribeLinkAction(email);
       if (result.success && result.url) {
         setUrl(result.url);
+        setAlreadyUnsubscribed(result.alreadyUnsubscribed === true);
       } else {
         setError(result.error === "invalid_email" ? t("invalidEmail") : result.error ?? null);
       }
@@ -107,6 +110,12 @@ export function UnsubscribeLinkGenerator() {
       </form>
 
       {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+
+      {alreadyUnsubscribed && (
+        <div className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700">
+          {t("alreadyUnsubscribedWarning")}
+        </div>
+      )}
 
       {url && (
         <div className="mt-4 space-y-2">

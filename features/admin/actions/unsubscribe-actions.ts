@@ -25,10 +25,18 @@
 
 import { isAdmin } from "@/lib/auth/admin";
 import { buildUnsubscribeUrl } from "@/lib/email-unsubscribe";
+import { db } from "@/lib/db";
+import { unsubscribers } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function generateUnsubscribeLinkAction(
   email: string
-): Promise<{ success: boolean; url?: string; error?: string }> {
+): Promise<{
+  success: boolean;
+  url?: string;
+  error?: string;
+  alreadyUnsubscribed?: boolean;
+}> {
   if (!(await isAdmin())) {
     throw new Error("Unauthorized");
   }
@@ -39,8 +47,15 @@ export async function generateUnsubscribeLinkAction(
   }
 
   try {
+    // 检查该邮箱是否已在退订名单中,提示管理员其已不能接收营销邮件
+    const existing = await db
+      .select({ id: unsubscribers.id })
+      .from(unsubscribers)
+      .where(eq(unsubscribers.email, normalizedEmail))
+      .limit(1);
+
     const url = await buildUnsubscribeUrl(normalizedEmail);
-    return { success: true, url };
+    return { success: true, url, alreadyUnsubscribed: existing.length > 0 };
   } catch (error) {
     // JWT_SECRET 未配置等情况:转换型异常,记录日志后返回业务错误码
     console.error(

@@ -595,7 +595,8 @@
         "copyButton": "Copy",
         "copiedButton": "Copied!",
         "openButton": "Preview",
-        "invalidEmail": "Please enter a valid email address"
+        "invalidEmail": "Please enter a valid email address",
+        "alreadyUnsubscribedWarning": "This email is already unsubscribed. It will no longer receive marketing emails."
       },
       "list": {
         "title": "Unsubscribed Emails",
