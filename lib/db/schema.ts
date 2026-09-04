@@ -18,7 +18,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { pgTable, text, timestamp, boolean, varchar, integer, date, time, numeric, unique } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, varchar, integer, date, time, numeric, unique, uuid } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -483,4 +483,19 @@ export const auditLogs = pgTable("audit_logs", {
   ipAddress: text("ip_address"),
   // 操作时间
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// ==================== GDPR 合规退订机制 ====================
+
+// 退订记录表:存放通过退订链接(邮件一键退订)提交的邮箱,
+// 所有营销类邮件发送前必须与本表做差集过滤(需求:GDPR 合规退订机制)
+export const unsubscribers = pgTable("unsubscribers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  email: text("email").notNull().unique(),
+  // 退订时间
+  unsubscribedAt: timestamp("unsubscribed_at").defaultNow().notNull(),
+  // 记录从哪个邮件类型退订的(如 newsletter)
+  source: text("source"),
+  // 备份退订 Token 用于审计
+  token: text("token"),
 });

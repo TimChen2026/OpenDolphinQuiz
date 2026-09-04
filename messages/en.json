@@ -462,6 +462,7 @@
       "users": "User Management",
       "usage": "Usage",
       "internal": "Internal Management",
+      "unsubscribe": "Unsubscribe",
       "backToDashboard": "Back to User Dashboard"
     },
     "header": {
@@ -579,6 +580,32 @@
       "limited": "At limit",
       "normal": "Normal",
       "emptyState": "No team data yet"
+    },
+    "unsubscribe": {
+      "title": "Unsubscribe Management",
+      "description": "GDPR-compliant opt-out list. Marketing emails are filtered against this list before sending.",
+      "generator": {
+        "title": "Generate Unsubscribe Link",
+        "description": "Enter a recipient email to generate a signed unsubscribe link (token valid for 30 days). Copy the link and paste it into the unsubscribe field of Outlook, Foxmail, or your email template.",
+        "emailLabel": "Recipient email",
+        "emailPlaceholder": "name@example.com",
+        "generateButton": "Generate link",
+        "generating": "Generating...",
+        "generatedUrlLabel": "Unsubscribe link",
+        "copyButton": "Copy",
+        "copiedButton": "Copied!",
+        "openButton": "Preview",
+        "invalidEmail": "Please enter a valid email address"
+      },
+      "list": {
+        "title": "Unsubscribed Emails",
+        "columns": {
+          "email": "Email (masked)",
+          "source": "Source",
+          "unsubscribedAt": "Unsubscribed at"
+        },
+        "emptyState": "No unsubscribed emails yet"
+      }
     }
   },
   "dashboard": {

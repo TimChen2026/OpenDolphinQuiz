@@ -27,7 +27,8 @@ import {
   Users,
   Home,
   Settings,
-  BarChart3
+  BarChart3,
+  MailX
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +52,11 @@ const adminNavItems = [
     title: "internal",
     href: "/admin/internal",
     icon: Settings,
+  },
+  {
+    title: "unsubscribe",
+    href: "/admin/unsubscribers",
+    icon: MailX,
   },
 ];
 

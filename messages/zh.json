@@ -462,6 +462,7 @@
       "users": "用户管理",
       "usage": "权限使用",
       "internal": "内部管理",
+      "unsubscribe": "退订管理",
       "backToDashboard": "返回用户面板"
     },
     "header": {
@@ -579,6 +580,32 @@
       "limited": "已达上限",
       "normal": "正常",
       "emptyState": "暂无团队数据"
+    },
+    "unsubscribe": {
+      "title": "退订管理",
+      "description": "GDPR 合规退订名单。营销邮件发送前会自动与该名单做差集过滤。",
+      "generator": {
+        "title": "生成退订链接",
+        "description": "输入收件人邮箱生成加密退订链接（Token 有效期 30 天）。复制链接后手动添加到 Outlook、Foxmail 或邮件模板的取消订阅位置即可。",
+        "emailLabel": "收件人邮箱",
+        "emailPlaceholder": "name@example.com",
+        "generateButton": "生成链接",
+        "generating": "生成中...",
+        "generatedUrlLabel": "退订链接",
+        "copyButton": "复制",
+        "copiedButton": "已复制！",
+        "openButton": "预览",
+        "invalidEmail": "请输入有效的邮箱地址"
+      },
+      "list": {
+        "title": "已退订邮箱",
+        "columns": {
+          "email": "邮箱（脱敏）",
+          "source": "来源",
+          "unsubscribedAt": "退订时间"
+        },
+        "emptyState": "暂无退订记录"
+      }
     }
   },
   "dashboard": {

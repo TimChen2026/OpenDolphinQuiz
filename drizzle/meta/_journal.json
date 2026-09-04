@@ -148,6 +148,13 @@
       "when": 1788234039599,
       "tag": "0020_cuddly_chamber",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1788510099475,
+      "tag": "0021_quiet_starfox",
+      "breakpoints": true
     }
   ]
 }
