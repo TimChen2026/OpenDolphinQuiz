@@ -21,7 +21,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLocale, useTranslations } from 'next-intl';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,10 +39,25 @@ interface LoginFormProps {
   showGoogleAuth?: boolean;
 }
 
+/**
+ * 校验登录前的回跳地址:只允许站内相对路径,
+ * 防止 ?callbackURL=https://evil.com 的开放重定向
+ */
+function sanitizeCallbackURL(raw: string | null): string | null {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) {
+    return null;
+  }
+  return raw;
+}
+
 export function LoginForm({ showGoogleAuth = true }: LoginFormProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('auth.login');
+  // 登录前的来源页(如 Quiz 问卷链接),登录成功后跳回该页而非首页
+  const callbackURL = sanitizeCallbackURL(
+    useSearchParams().get("callbackURL")
+  );
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -75,7 +90,8 @@ export function LoginForm({ showGoogleAuth = true }: LoginFormProps) {
         return;
       }
 
-      router.push(`/${locale}/`);
+      // 有来源页(如 Quiz 问卷)则回跳来源页,否则进入首页
+      router.push(callbackURL ?? `/${locale}/`);
     } catch {
       setError(t('errors.loginFailed'));
     } finally {
@@ -88,7 +104,7 @@ export function LoginForm({ showGoogleAuth = true }: LoginFormProps) {
       setIsLoading(true);
       await signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: callbackURL ?? "/",
       });
     } catch {
       setError(t('errors.googleLoginFailed'));

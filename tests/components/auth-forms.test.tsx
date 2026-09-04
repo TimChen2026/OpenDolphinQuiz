@@ -19,12 +19,18 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import messages from "@/messages/en.json";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { SignupForm } from "@/features/auth/components/signup-form";
 
 const routerPushMock = vi.fn();
+
+// 可变查询参数:测试间通过 mockSearchParams.set() 控制 useSearchParams 返回值
+const navigationMocks = vi.hoisted(() => ({
+  searchParams: new URLSearchParams(),
+}));
 
 function getNestedValue(source: Record<string, unknown>, path: string) {
   return path.split(".").reduce<unknown>((value, key) => {
@@ -59,6 +65,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: routerPushMock,
   }),
+  useSearchParams: () => navigationMocks.searchParams,
 }));
 
 vi.mock("next/link", () => ({
@@ -84,6 +91,11 @@ vi.mock("@/lib/auth-client", () => ({
 }));
 
 describe("auth forms", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    navigationMocks.searchParams = new URLSearchParams();
+  });
+
   it("hides the Google button on login when Google auth is disabled", () => {
     render(<LoginForm showGoogleAuth={false} />);
 
@@ -100,5 +112,67 @@ describe("auth forms", () => {
     render(<LoginForm showGoogleAuth />);
 
     expect(screen.getByRole("button", { name: "Continue with Google" })).toBeInTheDocument();
+  });
+
+  it("redirects back to the callbackURL after successful login", async () => {
+    const { signIn } = await import("@/lib/auth-client");
+    vi.mocked(signIn.email).mockResolvedValue({
+      data: { user: { emailVerified: true } },
+      error: null,
+    } as never);
+    navigationMocks.searchParams = new URLSearchParams(
+      "callbackURL=%2Fquiz%3Ft%3Dabc%26style%3Dyale"
+    );
+
+    render(<LoginForm showGoogleAuth={false} />);
+
+    await userEvent.type(screen.getByLabelText("Email address"), "guest@example.com");
+    await userEvent.type(screen.getByLabelText("Password"), "Passw0rd!123");
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => {
+      expect(routerPushMock).toHaveBeenCalledWith("/quiz?t=abc&style=yale");
+    });
+  });
+
+  it("redirects to the homepage when callbackURL is absent or unsafe", async () => {
+    const { signIn } = await import("@/lib/auth-client");
+    vi.mocked(signIn.email).mockResolvedValue({
+      data: { user: { emailVerified: true } },
+      error: null,
+    } as never);
+    // 开放重定向防护:外站地址必须被忽略
+    navigationMocks.searchParams = new URLSearchParams(
+      "callbackURL=https%3A%2F%2Fevil.example.com"
+    );
+
+    render(<LoginForm showGoogleAuth={false} />);
+
+    await userEvent.type(screen.getByLabelText("Email address"), "guest@example.com");
+    await userEvent.type(screen.getByLabelText("Password"), "Passw0rd!123");
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await waitFor(() => {
+      expect(routerPushMock).toHaveBeenCalledWith("/en/");
+    });
+  });
+
+  it("passes the quiz URL to Google social sign-in when callbackURL is present", async () => {
+    const { signIn } = await import("@/lib/auth-client");
+    vi.mocked(signIn.social).mockResolvedValue({} as never);
+    navigationMocks.searchParams = new URLSearchParams(
+      "callbackURL=%2Fquiz%3Ft%3Dabc%26style%3Dyale"
+    );
+
+    render(<LoginForm showGoogleAuth />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Continue with Google" }));
+
+    await waitFor(() => {
+      expect(signIn.social).toHaveBeenCalledWith({
+        provider: "google",
+        callbackURL: "/quiz?t=abc&style=yale",
+      });
+    });
   });
 });

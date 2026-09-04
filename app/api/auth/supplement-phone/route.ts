@@ -41,7 +41,8 @@ export async function POST(request: NextRequest) {
     });
     if (!session?.user) {
       return NextResponse.json(
-        { error: "请先登录" },
+        // 该端点仅服务 Guest 问卷流程,错误消息直接展示给访客,统一英文
+        { error: "Please sign in first" },
         { status: 401 }
       );
     }
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
     const phone = typeof body?.phone === "string" ? body.phone.trim() : "";
     if (!isValidPhone(phone)) {
       return NextResponse.json(
-        { error: "请输入有效的手机号" },
+        { error: "Please enter a valid phone number" },
         { status: 400 }
       );
     }
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
     // 3. 加密存储
     if (!isEncryptionEnabled()) {
       return NextResponse.json(
-        { error: "加密服务未配置,请联系管理员" },
+        { error: "Service is temporarily unavailable, please retry later" },
         { status: 500 }
       );
     }
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
     // 边界层统一异常处理
     console.error("supplement-phone 错误:", error);
     return NextResponse.json(
-      { error: "手机号补充失败,请重试" },
+      { error: "Failed to save phone number, please retry" },
       { status: 500 }
     );
   }

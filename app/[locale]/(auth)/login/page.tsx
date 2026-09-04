@@ -18,6 +18,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Suspense } from "react";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { Metadata } from "next";
 import { getTranslations } from 'next-intl/server';
@@ -42,5 +43,10 @@ export async function generateMetadata(
 }
 
 export default function LoginPage() {
-  return <LoginForm showGoogleAuth={isGoogleAuthEnabled()} />;
+  // Suspense 包裹:LoginForm 使用 useSearchParams 读取 callbackURL
+  return (
+    <Suspense>
+      <LoginForm showGoogleAuth={isGoogleAuthEnabled()} />
+    </Suspense>
+  );
 }

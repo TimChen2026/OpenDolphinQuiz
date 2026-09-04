@@ -22,6 +22,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -62,6 +63,16 @@ export function QuizRegisterCard({ onRegistered, templateId }: QuizRegisterCardP
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [isSuccess, setIsSuccess] = React.useState(false);
+
+  // 保留问卷来源参数(t/style 等),登录/注册完成后回跳同一问卷链接
+  const searchParams = useSearchParams();
+  const quizPath = React.useMemo(() => {
+    const queryString = searchParams.toString();
+    return queryString ? `/quiz?${queryString}` : "/quiz";
+  }, [searchParams]);
+
+  // 登录页链接:携带 callbackURL,已有账户登录后回到当前问卷
+  const loginHref = `/${locale}/login?callbackURL=${encodeURIComponent(quizPath)}`;
 
   const form = useForm<QuizRegisterInput>({
     resolver: zodResolver(quizRegisterSchema),
@@ -136,10 +147,10 @@ export function QuizRegisterCard({ onRegistered, templateId }: QuizRegisterCardP
   async function handleGoogleSignIn() {
     try {
       setIsLoading(true);
-      // Google 登录回调指向 Quiz 页,登录后自动返回
+      // Google 登录回调指向当前问卷链接(含 t/style 参数),登录后自动返回
       await signIn.social({
         provider: "google",
-        callbackURL: `/${locale}/quiz`,
+        callbackURL: quizPath,
       });
     } catch {
       setError(t("errors.googleSignupFailed"));
@@ -277,11 +288,11 @@ export function QuizRegisterCard({ onRegistered, templateId }: QuizRegisterCardP
           isLoading={isLoading}
         />
 
-        {/* 已有账户?登录 */}
+        {/* 已有账户?登录(回跳当前问卷链接) */}
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {t("hasAccount")}{" "}
           <Link
-            href={`/${locale}/login`}
+            href={loginHref}
             className="text-foreground hover:underline"
           >
             {t("signInLink")}
